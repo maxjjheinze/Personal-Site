@@ -23,7 +23,7 @@ export function Hero() {
       <div className="pointer-events-none absolute bottom-[20%] left-[5%] h-[400px] w-[400px] rounded-full bg-accent-purple/[0.04] blur-[100px]" />
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-7xl px-6 md:px-12 lg:px-20">
+      <div className="relative z-10 w-full max-w-7xl px-6 md:px-12 lg:px-20 scale-[0.8]">
         <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-24">
           <HeroText />
           <AvatarSection mouseX={mouse.x} mouseY={mouse.y} />

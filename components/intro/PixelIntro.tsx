@@ -64,6 +64,12 @@ function renderPageToCanvas(
     ctx.stroke();
   }
 
+  // Scale content to match hero's scale-[0.8] transform
+  const CONTENT_SCALE = 0.8;
+  ctx.save();
+  ctx.translate(w * (1 - CONTENT_SCALE) / 2, h * (1 - CONTENT_SCALE) / 2);
+  ctx.scale(CONTENT_SCALE, CONTENT_SCALE);
+
   const isDesktop = w >= 1024;
   const containerW = Math.min(w, 1280);
   const containerLeft = (w - containerW) / 2;
@@ -265,6 +271,8 @@ function renderPageToCanvas(
     ctx.textAlign = "start";
   }
 
+  ctx.restore();
+
   return offscreen;
 }
 
@@ -314,7 +322,7 @@ function sampleParticles(
 
 export function PixelIntro({
   children,
-  pixelSize = 4,
+  pixelSize = 3,
   duration = 1750,
   maxStagger = 400,
 }: PixelIntroProps) {
@@ -323,6 +331,7 @@ export function PixelIntro({
   const rafRef = useRef<number>(0);
   const startTimeRef = useRef<number>(0);
   const particlesRef = useRef<Particle[]>([]);
+  const cssDimsRef = useRef({ w: 0, h: 0 });
 
   const fadeOut = useCallback(() => {
     if (canvasRef.current) {
@@ -344,8 +353,9 @@ export function PixelIntro({
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      const w = canvas.width;
-      const h = canvas.height;
+      const { w, h } = cssDimsRef.current;
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       ctx.fillStyle = BG_CSS;
       ctx.fillRect(0, 0, w, h);
@@ -399,12 +409,15 @@ export function PixelIntro({
 
     const w = window.innerWidth;
     const h = window.innerHeight;
-    canvas.width = w;
-    canvas.height = h;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    cssDimsRef.current = { w, h };
 
     // Fill with background immediately
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.fillStyle = BG_CSS;
     ctx.fillRect(0, 0, w, h);
 

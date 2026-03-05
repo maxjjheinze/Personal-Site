@@ -15,7 +15,7 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "Max in Progress",
   description: "Aspiring Dev, Crypto Enthusiast, Algo Trader.",
-  metadataBase: new URL("https://maxinprogress.dev"),
+  metadataBase: new URL("https://maxinprogress.app"),
   openGraph: {
     title: "Max in Progress",
     description: "Aspiring Dev, Crypto Enthusiast, Algo Trader.",
