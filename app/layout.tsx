@@ -14,11 +14,11 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: "Max in Progress",
-  description: "Aspiring Dev, Crypto Enthusiast, Algo Trader.",
+  description: "Vibe Coder Who Loves Crypto and Trading.",
   metadataBase: new URL("https://maxinprogress.app"),
   openGraph: {
     title: "Max in Progress",
-    description: "Aspiring Dev, Crypto Enthusiast, Algo Trader.",
+    description: "Vibe Coder Who Loves Crypto and Trading.",
     type: "website",
   },
 };

@@ -82,14 +82,14 @@ function renderPageToCanvas(
   const paddingX = w >= 1024 ? 80 : w >= 768 ? 48 : 24;
 
   if (isDesktop) {
-    const textX = containerLeft + paddingX;
+    const textX = containerLeft + paddingX - 40;
     const contentCenterY = h / 2;
 
     // Label
     ctx.fillStyle = "#4F7BF7";
     ctx.font = "600 12px sans-serif";
     ctx.letterSpacing = "4px";
-    ctx.fillText("DIGITAL ARTEFACT / 2026", textX, contentCenterY - 180);
+    ctx.fillText("PORTFOLIO / 2026", textX, contentCenterY - 180);
     ctx.letterSpacing = "0px";
 
     // Title
@@ -108,7 +108,7 @@ function renderPageToCanvas(
     ctx.fillStyle = "#83838C";
     ctx.font = "400 20px sans-serif";
     ctx.fillText(
-      "Aspiring Dev, Crypto Enthusiast, Algo Trader.",
+      "Vibe Coder Who Loves Crypto and Trading.",
       textX,
       contentCenterY + titleSize * 0.8 + 50
     );
@@ -210,7 +210,7 @@ function renderPageToCanvas(
 
     ctx.fillStyle = "#4F7BF7";
     ctx.font = "600 10px sans-serif";
-    ctx.fillText("DIGITAL ARTEFACT / 2026", centerX, h * 0.2);
+    ctx.fillText("PORTFOLIO / 2026", centerX, h * 0.2);
 
     const titleSize = Math.min(w * 0.15, 72);
     ctx.fillStyle = "#EDEDED";
@@ -231,7 +231,7 @@ function renderPageToCanvas(
     ctx.fillStyle = "#83838C";
     ctx.font = "400 16px sans-serif";
     ctx.fillText(
-      "Aspiring Dev, Crypto Enthusiast, Algo Trader.",
+      "Vibe Coder Who Loves Crypto and Trading.",
       centerX,
       h * 0.2 + titleSize * 2 + 50
     );

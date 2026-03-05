@@ -61,7 +61,7 @@ export function HeroText() {
         className="mb-6 text-[10px] font-medium uppercase tracking-[0.35em] text-accent sm:text-xs"
         variants={itemVariants}
       >
-        Digital Artefact / 2026
+        Portfolio / 2026
       </motion.p>
 
       {/* Title */}
@@ -89,7 +89,7 @@ export function HeroText() {
         className="mt-8 text-base text-muted-foreground sm:text-lg lg:text-xl"
         variants={itemVariants}
       >
-        Aspiring Dev, Crypto Enthusiast, Algo Trader.
+        Vibe Coder Who Loves Crypto and Trading.
       </motion.p>
 
       {/* Date & Time */}
