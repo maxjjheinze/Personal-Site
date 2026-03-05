@@ -1,0 +1,33 @@
+"use client";
+
+import { motion, useSpring } from "framer-motion";
+
+interface AnimatedGridProps {
+  mouseX?: number;
+  mouseY?: number;
+}
+
+export function AnimatedGrid({ mouseX = 0, mouseY = 0 }: AnimatedGridProps) {
+  const x = useSpring(mouseX * -0.02, { stiffness: 50, damping: 30 });
+  const y = useSpring(mouseY * -0.02, { stiffness: 50, damping: 30 });
+
+  return (
+    <motion.div
+      className="pointer-events-none absolute inset-0"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1.5 }}
+    >
+      <motion.div
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
+          backgroundSize: "80px 80px",
+          x,
+          y,
+        }}
+      />
+    </motion.div>
+  );
+}
