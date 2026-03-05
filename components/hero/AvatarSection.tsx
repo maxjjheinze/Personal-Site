@@ -12,9 +12,9 @@ interface AvatarSectionProps {
 }
 
 const ORBITS = [
-  { label: "Let's Connect", radiusOffset: 50, speed: 0.35, startAngle: 0, color: "#4F7BF7" },
-  { label: "About Me", radiusOffset: 85, speed: -0.25, startAngle: 2.1, color: "#8B5CF6" },
-  { label: "My Projects", radiusOffset: 120, speed: 0.18, startAngle: 4.2, color: "#4F7BF7" },
+  { label: "Let's Connect", radiusOffset: 50, speed: 0.2625, startAngle: 0, color: "#4F7BF7" },
+  { label: "About Me", radiusOffset: 85, speed: -0.1875, startAngle: 2.1, color: "#8B5CF6" },
+  { label: "My Projects", radiusOffset: 120, speed: 0.135, startAngle: 4.2, color: "#4F7BF7" },
 ];
 
 export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
@@ -29,6 +29,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
   const avatarRef = useRef<HTMLDivElement>(null);
   const planetRefs = useRef<(HTMLDivElement | null)[]>([]);
   const anglesRef = useRef(ORBITS.map((o) => o.startAngle));
+  const flexDirRef = useRef<string[]>(ORBITS.map(() => "row"));
   const speedRef = useRef(1);
   const isNearRef = useRef(false);
   const rafRef = useRef(0);
@@ -79,7 +80,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
       lastTimeRef.current = time;
 
       // Smooth speed interpolation toward target
-      const target = isNearRef.current ? 0.5 : 1;
+      const target = isNearRef.current ? 0.375 : 0.75;
       speedRef.current += (target - speedRef.current) * 0.03;
 
       const r0 = avatarRadiusRef.current;
@@ -95,7 +96,14 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
         const el = planetRefs.current[i];
         if (el) {
           el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
-          el.style.flexDirection = x < 0 ? "row-reverse" : "row";
+          // Hysteresis to prevent rapid flipping at x ≈ 0
+          const currentDir = flexDirRef.current[i];
+          if (currentDir === "row" && x < -30) {
+            flexDirRef.current[i] = "row-reverse";
+          } else if (currentDir === "row-reverse" && x > 30) {
+            flexDirRef.current[i] = "row";
+          }
+          el.style.flexDirection = flexDirRef.current[i];
         }
       });
 
@@ -140,8 +148,8 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
                   marginLeft: -r,
                   marginTop: -r,
                 }}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.2 + i * 0.1 }}
               />
             );
@@ -172,19 +180,26 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
               ref={(el) => {
                 planetRefs.current[i] = el;
               }}
-              className="absolute left-1/2 top-1/2 flex items-center gap-2 cursor-pointer group"
+              className="absolute left-1/2 top-1/2 flex items-center cursor-pointer group"
               onClick={() => setActivePlanet(orbit.label)}
             >
               <div
-                className="h-3 w-3 rounded-full transition-all duration-300 group-hover:scale-150"
+                className="flex items-center gap-2 rounded-full border border-foreground/[0.08] bg-background/60 px-3 py-1.5 backdrop-blur-sm transition-all duration-300 group-hover:border-foreground/20 group-hover:bg-background/80"
                 style={{
-                  backgroundColor: orbit.color,
-                  boxShadow: `0 0 8px ${orbit.color}66`,
+                  boxShadow: `0 0 12px ${orbit.color}15`,
                 }}
-              />
-              <span className="text-[11px] font-medium text-muted-foreground/50 group-hover:text-foreground/80 transition-colors duration-300 whitespace-nowrap select-none">
-                {orbit.label}
-              </span>
+              >
+                <div
+                  className="h-2.5 w-2.5 flex-shrink-0 rounded-full transition-transform duration-300 group-hover:scale-125"
+                  style={{
+                    backgroundColor: orbit.color,
+                    boxShadow: `0 0 8px ${orbit.color}66`,
+                  }}
+                />
+                <span className="text-[11px] font-medium text-muted-foreground/70 group-hover:text-foreground/90 transition-colors duration-300 whitespace-nowrap select-none">
+                  {orbit.label}
+                </span>
+              </div>
             </div>
           ))}
       </motion.div>
