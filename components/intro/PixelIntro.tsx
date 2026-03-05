@@ -32,8 +32,8 @@ export function useIntroComplete() {
   return useContext(IntroContext);
 }
 
-function easeOutCubic(t: number): number {
-  return 1 - Math.pow(1 - t, 3);
+function easeOutQuart(t: number): number {
+  return 1 - Math.pow(1 - t, 4);
 }
 
 /**
@@ -82,7 +82,7 @@ function renderPageToCanvas(
   const paddingX = w >= 1024 ? 80 : w >= 768 ? 48 : 24;
 
   if (isDesktop) {
-    const textX = containerLeft + paddingX - 40;
+    const textX = containerLeft + paddingX - 80;
     const contentCenterY = h / 2;
 
     // Label
@@ -161,16 +161,15 @@ function renderPageToCanvas(
       avatarSize * 1.8
     );
 
-    // Rings
-    ctx.strokeStyle = "rgba(237,237,237,0.06)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(cx, cy, avatarSize / 2 + 20, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.strokeStyle = "rgba(237,237,237,0.03)";
-    ctx.beginPath();
-    ctx.arc(cx, cy, avatarSize / 2 + 40, 0, Math.PI * 2);
-    ctx.stroke();
+    // Orbit rings
+    const orbitOffsets = [50, 85, 120];
+    for (const offset of orbitOffsets) {
+      ctx.strokeStyle = "rgba(237,237,237,0.04)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(cx, cy, avatarSize / 2 + offset, 0, Math.PI * 2);
+      ctx.stroke();
+    }
 
     if (avatarImg) {
       ctx.save();
@@ -187,23 +186,6 @@ function renderPageToCanvas(
       ctx.stroke();
     }
 
-    // Dots
-    const dots = [
-      { x: avatarX + avatarSize + 15, y: avatarY + avatarSize * 0.1, s: 6 },
-      { x: avatarX + avatarSize + 30, y: avatarY + avatarSize * 0.5, s: 4 },
-      {
-        x: avatarX + avatarSize * 0.9,
-        y: avatarY + avatarSize + 15,
-        s: 5,
-      },
-      { x: avatarX - 10, y: avatarY + avatarSize * 0.05, s: 3 },
-    ];
-    ctx.fillStyle = "#4F7BF7";
-    for (const d of dots) {
-      ctx.beginPath();
-      ctx.arc(d.x, d.y, d.s / 2, 0, Math.PI * 2);
-      ctx.fill();
-    }
   } else {
     const centerX = w / 2;
     ctx.textAlign = "center";
@@ -328,7 +310,7 @@ function sampleParticles(
 
 export function PixelIntro({
   children,
-  pixelSize = 3,
+  pixelSize = 2,
   duration = 1750,
   maxStagger = 400,
 }: PixelIntroProps) {
@@ -380,7 +362,7 @@ export function PixelIntro({
           0,
           Math.min(1, (elapsed - p.delay) / duration)
         );
-        const eased = easeOutCubic(progress);
+        const eased = easeOutQuart(progress);
 
         if (progress >= 1) doneCount++;
 
