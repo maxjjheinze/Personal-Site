@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 
 interface Particle {
   startX: number;
@@ -25,6 +25,12 @@ const BG_R = 16;
 const BG_G = 16;
 const BG_B = 20;
 const COLOR_THRESHOLD = 20;
+
+const IntroContext = createContext(true);
+
+export function useIntroComplete() {
+  return useContext(IntroContext);
+}
 
 function easeOutCubic(t: number): number {
   return 1 - Math.pow(1 - t, 3);
@@ -327,20 +333,24 @@ export function PixelIntro({
   maxStagger = 400,
 }: PixelIntroProps) {
   const [showCanvas, setShowCanvas] = useState(true);
+  const [introComplete, setIntroComplete] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
   const startTimeRef = useRef<number>(0);
   const particlesRef = useRef<Particle[]>([]);
   const cssDimsRef = useRef({ w: 0, h: 0 });
+  const fadingRef = useRef(false);
 
   const fadeOut = useCallback(() => {
+    setIntroComplete(true);
     if (canvasRef.current) {
       canvasRef.current.style.transition =
-        "opacity 800ms ease-out, filter 800ms ease-out";
+        "opacity 1000ms ease-out, filter 1000ms ease-out, transform 1000ms ease-out";
       canvasRef.current.style.opacity = "0";
-      canvasRef.current.style.filter = "blur(16px)";
+      canvasRef.current.style.filter = "blur(32px)";
+      canvasRef.current.style.transform = "scale(1.05)";
     }
-    setTimeout(() => setShowCanvas(false), 820);
+    setTimeout(() => setShowCanvas(false), 1020);
   }, []);
 
   const animate = useCallback(
@@ -361,7 +371,7 @@ export function PixelIntro({
       ctx.fillRect(0, 0, w, h);
 
       const particles = particlesRef.current;
-      let allDone = true;
+      let doneCount = 0;
       let prevColor = "";
 
       for (let i = 0; i < particles.length; i++) {
@@ -372,7 +382,7 @@ export function PixelIntro({
         );
         const eased = easeOutCubic(progress);
 
-        if (progress < 1) allDone = false;
+        if (progress >= 1) doneCount++;
 
         const x = p.startX + (p.targetX - p.startX) * eased;
         const y = p.startY + (p.targetY - p.startY) * eased;
@@ -385,11 +395,15 @@ export function PixelIntro({
         ctx.fillRect(x, y, pixelSize, pixelSize);
       }
 
-      if (allDone) {
+      if (!fadingRef.current && doneCount > particles.length * 0.85) {
+        fadingRef.current = true;
         fadeOut();
-      } else {
-        rafRef.current = requestAnimationFrame(animate);
       }
+
+      if (doneCount === particles.length) {
+        return;
+      }
+      rafRef.current = requestAnimationFrame(animate);
     },
     [duration, pixelSize, fadeOut]
   );
@@ -400,6 +414,7 @@ export function PixelIntro({
     ).matches;
 
     if (prefersReducedMotion) {
+      setIntroComplete(true);
       setShowCanvas(false);
       return;
     }
@@ -450,7 +465,7 @@ export function PixelIntro({
   }, [pixelSize, maxStagger, animate]);
 
   return (
-    <>
+    <IntroContext.Provider value={introComplete}>
       {showCanvas && (
         <canvas
           ref={canvasRef}
@@ -465,6 +480,6 @@ export function PixelIntro({
         />
       )}
       {children}
-    </>
+    </IntroContext.Provider>
   );
 }

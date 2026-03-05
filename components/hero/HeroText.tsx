@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useIntroComplete } from "@/components/intro/PixelIntro";
 
 const containerVariants = {
   hidden: {},
@@ -45,12 +46,14 @@ function LiveDateTime() {
 }
 
 export function HeroText() {
+  const introComplete = useIntroComplete();
+
   return (
     <motion.div
       className="flex-1"
       variants={containerVariants}
       initial="hidden"
-      animate="visible"
+      animate={introComplete ? "visible" : "hidden"}
     >
       {/* Label */}
       <motion.p

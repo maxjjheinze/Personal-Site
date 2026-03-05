@@ -2,6 +2,7 @@
 
 import { motion, useSpring } from "framer-motion";
 import Image from "next/image";
+import { useIntroComplete } from "@/components/intro/PixelIntro";
 
 interface AvatarSectionProps {
   mouseX?: number;
@@ -16,6 +17,7 @@ const dots = [
 ];
 
 export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
+  const introComplete = useIntroComplete();
   const avatarX = useSpring(mouseX * 0.02, { stiffness: 100, damping: 30 });
   const avatarY = useSpring(mouseY * 0.02, { stiffness: 100, damping: 30 });
 
@@ -23,7 +25,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
     <motion.div
       className="relative flex flex-shrink-0 items-center justify-center"
       initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
+      animate={introComplete ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
       transition={{
         duration: 1,
         delay: 0.3,
