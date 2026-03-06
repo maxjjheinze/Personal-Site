@@ -50,7 +50,7 @@ export function HeroText() {
 
   return (
     <motion.div
-      className="flex-1 overflow-visible"
+      className="overflow-visible"
       variants={containerVariants}
       initial="hidden"
       animate={introComplete ? "visible" : "hidden"}

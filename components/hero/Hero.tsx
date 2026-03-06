@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useCallback } from "react";
 import { useMousePosition } from "@/hooks/useMousePosition";
 import { AnimatedGrid } from "./AnimatedGrid";
 import { HeroText } from "./HeroText";
@@ -9,6 +9,11 @@ import { AvatarSection } from "./AvatarSection";
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const mouse = useMousePosition(containerRef);
+  const [proximity, setProximity] = useState(0);
+
+  const handleProximityChange = useCallback((value: number) => {
+    setProximity(value);
+  }, []);
 
   return (
     <section
@@ -25,8 +30,20 @@ export function Hero() {
       {/* Content */}
       <div className="relative z-10 w-full max-w-7xl px-6 md:px-12 lg:px-20 scale-[0.8]">
         <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-32">
-          <HeroText />
-          <AvatarSection mouseX={mouse.x} mouseY={mouse.y} />
+          <div
+            className="flex-1 transition-[filter,opacity] duration-700 ease-out"
+            style={{
+              filter: `blur(${proximity * 3}px)`,
+              opacity: 1 - proximity * 0.25,
+            }}
+          >
+            <HeroText />
+          </div>
+          <AvatarSection
+            mouseX={mouse.x}
+            mouseY={mouse.y}
+            onProximityChange={handleProximityChange}
+          />
         </div>
       </div>
     </section>

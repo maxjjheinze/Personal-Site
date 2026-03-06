@@ -9,6 +9,7 @@ import { useIntroComplete } from "@/components/intro/PixelIntro";
 interface AvatarSectionProps {
   mouseX?: number;
   mouseY?: number;
+  onProximityChange?: (value: number) => void;
 }
 
 const ORBITS = [
@@ -188,7 +189,7 @@ function DefaultModal({ title, onClose }: { title: string; onClose: () => void }
   );
 }
 
-export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
+export function AvatarSection({ mouseX = 0, mouseY = 0, onProximityChange }: AvatarSectionProps) {
   const introComplete = useIntroComplete();
   const avatarX = useSpring(mouseX * 0.02, { stiffness: 100, damping: 30 });
   const avatarY = useSpring(mouseY * 0.02, { stiffness: 100, damping: 30 });
@@ -206,6 +207,10 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
   const rafRef = useRef(0);
   const lastTimeRef = useRef(0);
   const avatarRadiusRef = useRef(160);
+  const proximityRef = useRef(0);
+  const solarSystemRef = useRef<HTMLDivElement>(null);
+  const onProximityChangeRef = useRef(onProximityChange);
+  onProximityChangeRef.current = onProximityChange;
 
   useEffect(() => setMounted(true), []);
 
@@ -224,7 +229,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
     return () => window.removeEventListener("resize", measure);
   }, []);
 
-  // Mouse proximity detection
+  // Mouse proximity detection (continuous 0-1 value)
   useEffect(() => {
     function handleMouseMove(e: MouseEvent) {
       const el = avatarRef.current;
@@ -233,8 +238,13 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
       const dist = Math.sqrt((e.clientX - cx) ** 2 + (e.clientY - cy) ** 2);
+      const outerEdge = avatarRadiusRef.current + 200;
       const threshold = avatarRadiusRef.current + 150;
       isNearRef.current = dist < threshold;
+      // Smooth 0→1 proximity (1 = on top of avatar, 0 = far away)
+      const raw = 1 - Math.min(dist / outerEdge, 1);
+      // Ease-in curve for a more natural ramp
+      proximityRef.current = raw * raw;
     }
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
@@ -278,6 +288,16 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
         }
       });
 
+      // Apply scale to solar system based on proximity
+      const ss = solarSystemRef.current;
+      if (ss) {
+        const scale = 1 + proximityRef.current * 0.08;
+        ss.style.transform = `scale(${scale})`;
+      }
+
+      // Report proximity to parent for blur effect
+      onProximityChangeRef.current?.(proximityRef.current);
+
       rafRef.current = requestAnimationFrame(tick);
     }
 
@@ -289,6 +309,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
 
   return (
     <>
+      <div ref={solarSystemRef} className="transition-transform duration-200 ease-out">
       <motion.div
         className="relative flex flex-shrink-0 items-center justify-center"
         initial={{ opacity: 0, scale: 0.9 }}
@@ -374,6 +395,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
             </div>
           ))}
       </motion.div>
+      </div>
 
       {/* Modal portal */}
       {mounted &&
