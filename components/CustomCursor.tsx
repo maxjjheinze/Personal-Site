@@ -34,7 +34,7 @@ export function CustomCursor() {
   return (
     <div
       ref={ringRef}
-      className="pointer-events-none fixed left-0 top-0 z-[9999] hidden h-6 w-6 rounded-full border-2 border-foreground/40 md:block"
+      className="pointer-events-none fixed left-0 top-0 z-[99999] hidden h-6 w-6 rounded-full border-2 border-foreground/40 md:block"
       style={{
         boxShadow: "0 0 10px rgba(79,123,247,0.3), 0 0 20px rgba(79,123,247,0.1)",
       }}
