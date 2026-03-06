@@ -240,11 +240,16 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
       const dx = Math.max(0, Math.abs(e.clientX - cx) - rect.width / 2);
       const dy = Math.max(0, Math.abs(e.clientY - cy) - rect.height / 2);
       const dist = Math.sqrt(dx * dx + dy * dy);
+      const isInside = dist === 0;
       const fadeZone = 150;
       isNearRef.current = dist < fadeZone;
-      // 1 = inside solar system, 0 = far away
-      const raw = 1 - Math.min(dist / fadeZone, 1);
-      proximityRef.current = raw * raw;
+      // Binary inside (1) with smooth fade-out only outside
+      if (isInside) {
+        proximityRef.current = 1;
+      } else {
+        const raw = 1 - Math.min(dist / fadeZone, 1);
+        proximityRef.current = raw * raw;
+      }
     }
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
