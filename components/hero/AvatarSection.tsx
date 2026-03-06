@@ -281,7 +281,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
 
         const el = planetRefs.current[i];
         if (el) {
-          const planetScale = 1 + p * 0.25;
+          const planetScale = 1 + p * 0.15;
           el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${planetScale})`;
           // Hysteresis to prevent rapid flipping at x ≈ 0
           const currentDir = flexDirRef.current[i];
@@ -297,14 +297,14 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
       // Scale up solar system
       const ss = solarSystemRef.current;
       if (ss) {
-        ss.style.transform = `scale(${1 + p * 0.08})`;
+        ss.style.transform = `scale(${1 + p * 0.05})`;
       }
 
       // Intensify glow
       const glow = glowRef.current;
       if (glow) {
-        const glowScale = 1.5 + p * 0.8;
-        const glowOpacity = 0.1 + p * 0.25;
+        const glowScale = 1.5 + p * 0.5;
+        const glowOpacity = 0.1 + p * 0.15;
         glow.style.transform = `scale(${glowScale})`;
         glow.style.opacity = String(glowOpacity);
       }
