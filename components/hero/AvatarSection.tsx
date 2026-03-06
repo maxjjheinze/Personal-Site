@@ -275,7 +275,8 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
 
         const el = planetRefs.current[i];
         if (el) {
-          el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+          const planetScale = 1 + p * 0.25;
+          el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${planetScale})`;
           // Hysteresis to prevent rapid flipping at x ≈ 0
           const currentDir = flexDirRef.current[i];
           if (currentDir === "row" && x < -30) {
