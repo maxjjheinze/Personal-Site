@@ -38,10 +38,15 @@ const config: Config = {
           "0%, 100%": { opacity: "0.4" },
           "50%": { opacity: "0.8" },
         },
+        blink: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0" },
+        },
       },
       animation: {
         float: "float 6s ease-in-out infinite",
         "glow-pulse": "glow-pulse 4s ease-in-out infinite",
+        blink: "blink 1s step-end infinite",
       },
     },
   },

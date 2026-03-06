@@ -57,9 +57,10 @@ export function HeroText() {
     >
       {/* Label */}
       <motion.p
-        className="mb-6 font-mono text-[9px] font-medium uppercase tracking-[0.4em] text-accent sm:text-[11px]"
+        className="mb-6 flex items-center gap-3 font-mono text-[9px] font-medium uppercase tracking-[0.4em] text-accent sm:text-[11px]"
         variants={itemVariants}
       >
+        <span className="inline-block h-4 w-[2px] animate-blink bg-accent" />
         Portfolio / 2026
       </motion.p>
 
