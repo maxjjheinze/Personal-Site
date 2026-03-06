@@ -17,7 +17,7 @@ export function Hero() {
     const wrapper = textWrapperRef.current;
     if (!overlay || !wrapper) return;
 
-    const blur = value * 24;
+    const blur = value * 10;
     // Gradient starts far right and sweeps left as cursor approaches
     const gradientStart = Math.max(0, 50 - value * 70);
 
