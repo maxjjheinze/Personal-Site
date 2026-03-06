@@ -12,10 +12,133 @@ interface AvatarSectionProps {
 }
 
 const ORBITS = [
-  { label: "Let's Connect", radiusOffset: 50, speed: 0.2625, startAngle: 0, color: "#4F7BF7" },
-  { label: "About Me", radiusOffset: 85, speed: -0.1875, startAngle: 2.1, color: "#8B5CF6" },
-  { label: "My Projects", radiusOffset: 120, speed: 0.135, startAngle: 4.2, color: "#38BDF8" },
+  { label: "LET'S CONNECT", radiusOffset: 50, speed: 0.2625, startAngle: 0, color: "#4F7BF7" },
+  { label: "ABOUT ME", radiusOffset: 85, speed: -0.1875, startAngle: 2.1, color: "#8B5CF6" },
+  { label: "MY PROJECTS", radiusOffset: 120, speed: 0.135, startAngle: 4.2, color: "#38BDF8" },
 ];
+
+function ConnectModal({ onClose }: { onClose: () => void }) {
+  return (
+    <motion.div
+      key="planet-modal"
+      className="fixed inset-0 z-[10000] flex items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <motion.div
+        className="relative z-10 mx-4 w-full max-w-md rounded-2xl border border-border bg-background/95 p-10 backdrop-blur-xl"
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-8 flex items-center justify-between">
+          <h2 className="font-mono text-xs font-medium uppercase tracking-[0.3em] text-muted-foreground">
+            Get in Touch
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-lg text-muted-foreground transition-colors hover:text-foreground"
+          >
+            &#x2715;
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          <a
+            href="https://x.com/maxjjheinze"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex w-full items-center gap-4 rounded-xl border border-foreground/[0.08] bg-foreground/[0.03] px-6 py-4 transition-all duration-300 hover:border-foreground/20 hover:bg-foreground/[0.06]"
+          >
+            <svg viewBox="0 0 24 24" className="h-5 w-5 flex-shrink-0 text-foreground/70 transition-colors group-hover:text-foreground" fill="currentColor">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+            <div className="flex-1">
+              <p className="font-mono text-sm font-medium text-foreground/90 group-hover:text-foreground">
+                Follow on X
+              </p>
+              <p className="font-mono text-xs text-muted-foreground/60">
+                @maxjjheinze
+              </p>
+            </div>
+            <svg viewBox="0 0 24 24" className="h-4 w-4 text-muted-foreground/40 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M7 17L17 7M17 7H7M17 7v10" />
+            </svg>
+          </a>
+
+          <a
+            href="mailto:maxjjheinze42@gmail.com"
+            className="group flex w-full items-center gap-4 rounded-xl border border-foreground/[0.08] bg-foreground/[0.03] px-6 py-4 transition-all duration-300 hover:border-foreground/20 hover:bg-foreground/[0.06]"
+          >
+            <svg viewBox="0 0 24 24" className="h-5 w-5 flex-shrink-0 text-foreground/70 transition-colors group-hover:text-foreground" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+            <div className="flex-1">
+              <p className="font-mono text-sm font-medium text-foreground/90 group-hover:text-foreground">
+                Send an Email
+              </p>
+              <p className="font-mono text-xs text-muted-foreground/60">
+                maxjjheinze42@gmail.com
+              </p>
+            </div>
+            <svg viewBox="0 0 24 24" className="h-4 w-4 text-muted-foreground/40 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M7 17L17 7M17 7H7M17 7v10" />
+            </svg>
+          </a>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function DefaultModal({ title, onClose }: { title: string; onClose: () => void }) {
+  return (
+    <motion.div
+      key="planet-modal"
+      className="fixed inset-0 z-[10000] flex items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <motion.div
+        className="relative z-10 mx-4 w-full max-w-lg rounded-2xl border border-border bg-background/95 p-8 backdrop-blur-xl"
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="font-display text-xl font-semibold">
+            {title}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-lg text-muted-foreground transition-colors hover:text-foreground"
+          >
+            &#x2715;
+          </button>
+        </div>
+        <div className="flex min-h-[200px] items-center justify-center text-muted-foreground">
+          Coming soon...
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
 
 export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
   const introComplete = useIntroComplete();
@@ -196,7 +319,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
                     boxShadow: `0 0 8px ${orbit.color}66`,
                   }}
                 />
-                <span className="text-[11px] font-medium text-muted-foreground/70 group-hover:text-foreground/90 transition-colors duration-300 whitespace-nowrap select-none">
+                <span className="font-mono text-[10px] font-medium uppercase tracking-[0.15em] text-muted-foreground/70 group-hover:text-foreground/90 transition-colors duration-300 whitespace-nowrap select-none">
                   {orbit.label}
                 </span>
               </div>
@@ -208,43 +331,11 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
       {mounted &&
         createPortal(
           <AnimatePresence>
-            {activePlanet && (
-              <motion.div
-                key="planet-modal"
-                className="fixed inset-0 z-[10000] flex items-center justify-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div
-                  className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                  onClick={closePlanet}
-                />
-                <motion.div
-                  className="relative z-10 mx-4 w-full max-w-lg rounded-2xl border border-border bg-background/95 p-8 backdrop-blur-xl"
-                  initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                  animate={{ scale: 1, opacity: 1, y: 0 }}
-                  exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="mb-6 flex items-center justify-between">
-                    <h2 className="font-display text-xl font-semibold">
-                      {activePlanet}
-                    </h2>
-                    <button
-                      onClick={closePlanet}
-                      className="text-lg text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      &#x2715;
-                    </button>
-                  </div>
-                  <div className="flex min-h-[200px] items-center justify-center text-muted-foreground">
-                    Coming soon...
-                  </div>
-                </motion.div>
-              </motion.div>
+            {activePlanet === "LET'S CONNECT" && (
+              <ConnectModal onClose={closePlanet} />
+            )}
+            {activePlanet && activePlanet !== "LET'S CONNECT" && (
+              <DefaultModal title={activePlanet} onClose={closePlanet} />
             )}
           </AnimatePresence>,
           document.body

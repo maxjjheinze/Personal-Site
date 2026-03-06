@@ -13,7 +13,7 @@ export function Hero() {
   return (
     <section
       ref={containerRef}
-      className="relative flex min-h-screen items-center justify-center overflow-hidden"
+      className="relative flex min-h-screen items-center justify-center overflow-x-clip"
     >
       {/* Grid background */}
       <AnimatedGrid mouseX={mouse.x} mouseY={mouse.y} />
