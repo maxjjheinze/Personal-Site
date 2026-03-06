@@ -9,7 +9,6 @@ import { useIntroComplete } from "@/components/intro/PixelIntro";
 interface AvatarSectionProps {
   mouseX?: number;
   mouseY?: number;
-  onProximityChange?: (value: number) => void;
 }
 
 const ORBITS = [
@@ -189,7 +188,7 @@ function DefaultModal({ title, onClose }: { title: string; onClose: () => void }
   );
 }
 
-export function AvatarSection({ mouseX = 0, mouseY = 0, onProximityChange }: AvatarSectionProps) {
+export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
   const introComplete = useIntroComplete();
   const avatarX = useSpring(mouseX * 0.02, { stiffness: 100, damping: 30 });
   const avatarY = useSpring(mouseY * 0.02, { stiffness: 100, damping: 30 });
@@ -209,8 +208,8 @@ export function AvatarSection({ mouseX = 0, mouseY = 0, onProximityChange }: Ava
   const avatarRadiusRef = useRef(160);
   const proximityRef = useRef(0);
   const solarSystemRef = useRef<HTMLDivElement>(null);
-  const onProximityChangeRef = useRef(onProximityChange);
-  onProximityChangeRef.current = onProximityChange;
+  const glowRef = useRef<HTMLDivElement>(null);
+  const ringRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => setMounted(true), []);
 
@@ -288,15 +287,29 @@ export function AvatarSection({ mouseX = 0, mouseY = 0, onProximityChange }: Ava
         }
       });
 
-      // Apply scale to solar system based on proximity
+      const p = proximityRef.current;
+
+      // Scale up solar system
       const ss = solarSystemRef.current;
       if (ss) {
-        const scale = 1 + proximityRef.current * 0.08;
-        ss.style.transform = `scale(${scale})`;
+        ss.style.transform = `scale(${1 + p * 0.08})`;
       }
 
-      // Report proximity to parent for blur effect
-      onProximityChangeRef.current?.(proximityRef.current);
+      // Intensify glow
+      const glow = glowRef.current;
+      if (glow) {
+        const glowScale = 1.5 + p * 0.8;
+        const glowOpacity = 0.1 + p * 0.25;
+        glow.style.transform = `scale(${glowScale})`;
+        glow.style.opacity = String(glowOpacity);
+      }
+
+      // Brighten orbit rings
+      ringRefs.current.forEach((ring) => {
+        if (ring) {
+          ring.style.borderColor = `rgba(237, 237, 237, ${0.04 + p * 0.12})`;
+        }
+      });
 
       rafRef.current = requestAnimationFrame(tick);
     }
@@ -322,7 +335,11 @@ export function AvatarSection({ mouseX = 0, mouseY = 0, onProximityChange }: Ava
         style={{ x: avatarX, y: avatarY }}
       >
         {/* Glow backdrop */}
-        <div className="absolute inset-0 scale-150 rounded-full bg-accent/10 blur-3xl animate-glow-pulse" />
+        <div
+          ref={glowRef}
+          className="absolute inset-0 scale-150 rounded-full bg-accent/10 blur-3xl transition-none"
+          style={{ opacity: 0.1 }}
+        />
 
         {/* Orbit rings */}
         {introComplete &&
@@ -331,6 +348,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0, onProximityChange }: Ava
             return (
               <motion.div
                 key={`ring-${i}`}
+                ref={(el) => { ringRefs.current[i] = el; }}
                 className="absolute rounded-full border border-foreground/[0.04]"
                 style={{
                   width: r * 2,

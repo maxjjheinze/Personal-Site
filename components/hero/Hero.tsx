@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback } from "react";
+import { useRef } from "react";
 import { useMousePosition } from "@/hooks/useMousePosition";
 import { AnimatedGrid } from "./AnimatedGrid";
 import { HeroText } from "./HeroText";
@@ -8,25 +8,7 @@ import { AvatarSection } from "./AvatarSection";
 
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const textWrapperRef = useRef<HTMLDivElement>(null);
-  const blurOverlayRef = useRef<HTMLDivElement>(null);
   const mouse = useMousePosition(containerRef);
-
-  const handleProximityChange = useCallback((value: number) => {
-    const overlay = blurOverlayRef.current;
-    const wrapper = textWrapperRef.current;
-    if (!overlay || !wrapper) return;
-
-    const blur = value * 10;
-    // Gradient starts far right and sweeps left as cursor approaches
-    const gradientStart = Math.max(0, 50 - value * 70);
-
-    overlay.style.backdropFilter = `blur(${blur}px)`;
-    overlay.style.setProperty("-webkit-backdrop-filter", `blur(${blur}px)`);
-    overlay.style.opacity = String(value > 0.01 ? 1 : 0);
-    overlay.style.maskImage = `linear-gradient(to right, transparent ${gradientStart}%, black 100%)`;
-    overlay.style.setProperty("-webkit-mask-image", `linear-gradient(to right, transparent ${gradientStart}%, black 100%)`);
-  }, []);
 
   return (
     <section
@@ -43,23 +25,10 @@ export function Hero() {
       {/* Content */}
       <div className="relative z-10 w-full max-w-7xl px-6 md:px-12 lg:px-20 scale-[0.8]">
         <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-32">
-          <div ref={textWrapperRef} className="relative flex-1">
+          <div className="flex-1">
             <HeroText />
-            {/* Gradient blur overlay — darkens + blurs from right to left */}
-            <div
-              ref={blurOverlayRef}
-              className="pointer-events-none absolute inset-0 opacity-0"
-              style={{
-                maskImage: "linear-gradient(to right, transparent 50%, black 100%)",
-                WebkitMaskImage: "linear-gradient(to right, transparent 50%, black 100%)",
-              }}
-            />
           </div>
-          <AvatarSection
-            mouseX={mouse.x}
-            mouseY={mouse.y}
-            onProximityChange={handleProximityChange}
-          />
+          <AvatarSection mouseX={mouse.x} mouseY={mouse.y} />
         </div>
       </div>
     </section>
