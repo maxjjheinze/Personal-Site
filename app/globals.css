@@ -37,6 +37,12 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  @media (pointer: fine) {
+    *, *::before, *::after {
+      cursor: none !important;
+    }
+  }
+
   ::selection {
     background-color: hsl(var(--accent) / 0.3);
     color: hsl(var(--foreground));
