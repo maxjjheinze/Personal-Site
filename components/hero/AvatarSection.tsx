@@ -264,6 +264,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
       speedRef.current += (target - speedRef.current) * 0.03;
 
       const r0 = avatarRadiusRef.current;
+      const p = proximityRef.current;
 
       ORBITS.forEach((orbit, i) => {
         anglesRef.current[i] += orbit.speed * (delta / 1000) * speedRef.current;
@@ -287,8 +288,6 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
           el.style.flexDirection = flexDirRef.current[i];
         }
       });
-
-      const p = proximityRef.current;
 
       // Scale up solar system
       const ss = solarSystemRef.current;
