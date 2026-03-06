@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useCallback } from "react";
 import { useMousePosition } from "@/hooks/useMousePosition";
 import { AnimatedGrid } from "./AnimatedGrid";
 import { HeroText } from "./HeroText";
@@ -8,11 +8,28 @@ import { AvatarSection } from "./AvatarSection";
 
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const textWrapperRef = useRef<HTMLDivElement>(null);
+  const blurOverlayRef = useRef<HTMLDivElement>(null);
   const mouse = useMousePosition(containerRef);
-  const [proximity, setProximity] = useState(0);
 
   const handleProximityChange = useCallback((value: number) => {
-    setProximity(value);
+    const overlay = blurOverlayRef.current;
+    const wrapper = textWrapperRef.current;
+    if (!overlay || !wrapper) return;
+
+    const blur = value * 5;
+    const opacity = value * 0.35;
+    // As proximity increases, the gradient starts further left (more text gets blurred)
+    const gradientStart = Math.max(0, 60 - value * 60);
+
+    overlay.style.backdropFilter = `blur(${blur}px)`;
+    overlay.style.setProperty("-webkit-backdrop-filter", `blur(${blur}px)`);
+    overlay.style.opacity = String(opacity > 0.01 ? 1 : 0);
+    overlay.style.maskImage = `linear-gradient(to right, transparent ${gradientStart}%, black 100%)`;
+    overlay.style.setProperty("-webkit-mask-image", `linear-gradient(to right, transparent ${gradientStart}%, black 100%)`);
+
+    // Subtle dim on the text (only the right portion feels affected)
+    wrapper.style.opacity = String(1 - value * 0.15);
   }, []);
 
   return (
@@ -30,14 +47,17 @@ export function Hero() {
       {/* Content */}
       <div className="relative z-10 w-full max-w-7xl px-6 md:px-12 lg:px-20 scale-[0.8]">
         <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-32">
-          <div
-            className="flex-1 transition-[filter,opacity] duration-700 ease-out"
-            style={{
-              filter: `blur(${proximity * 3}px)`,
-              opacity: 1 - proximity * 0.25,
-            }}
-          >
+          <div ref={textWrapperRef} className="relative flex-1 transition-opacity duration-500 ease-out">
             <HeroText />
+            {/* Gradient blur overlay */}
+            <div
+              ref={blurOverlayRef}
+              className="pointer-events-none absolute inset-0 opacity-0"
+              style={{
+                maskImage: "linear-gradient(to right, transparent 60%, black 100%)",
+                WebkitMaskImage: "linear-gradient(to right, transparent 60%, black 100%)",
+              }}
+            />
           </div>
           <AvatarSection
             mouseX={mouse.x}
