@@ -53,7 +53,7 @@ function ConnectModal({ onClose }: { onClose: () => void }) {
 
         <div className="space-y-4">
           <a
-            href="https://x.com/maxjjheinze"
+            href="https://x.com/MaxInProgress"
             target="_blank"
             rel="noopener noreferrer"
             className="group flex w-full items-center gap-4 rounded-xl border border-foreground/[0.08] bg-foreground/[0.03] px-6 py-4 transition-all duration-300 hover:border-foreground/20 hover:bg-foreground/[0.06]"
@@ -66,7 +66,7 @@ function ConnectModal({ onClose }: { onClose: () => void }) {
                 Follow on X
               </p>
               <p className="font-mono text-xs text-muted-foreground/60">
-                @maxjjheinze
+                @MaxInProgress
               </p>
             </div>
             <svg viewBox="0 0 24 24" className="h-4 w-4 text-muted-foreground/40 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="2">
