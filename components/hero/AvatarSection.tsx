@@ -89,6 +89,72 @@ function ConnectModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+function AboutModal({ onClose }: { onClose: () => void }) {
+  return (
+    <motion.div
+      key="about-modal"
+      className="fixed inset-0 z-[10000] flex items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <motion.div
+        className="relative z-10 mx-4 w-full max-w-lg rounded-2xl border border-border bg-background/95 p-10 backdrop-blur-xl"
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-8 flex items-center justify-between">
+          <h2 className="font-mono text-xs font-medium uppercase tracking-[0.3em] text-muted-foreground">
+            About Me
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-lg text-muted-foreground transition-colors hover:text-foreground"
+          >
+            &#x2715;
+          </button>
+        </div>
+
+        <div className="space-y-5 text-sm leading-relaxed text-foreground/80">
+          <p>
+            I&apos;m Max, 23, based in Melbourne, Australia. By day I work in chemical distribution
+            &mdash; by night I&apos;m building my way out of the 9&ndash;5.
+          </p>
+
+          <p>
+            I studied pharmaceutical science (graduated 2024), worked pharmacy and retail through
+            uni, and eventually realised the traditional path wasn&apos;t the whole picture for me.
+            So I started building.
+          </p>
+
+          <p>
+            I vibe code apps, micro-tools, and websites &mdash; some for myself, some for others,
+            all for fun and profit. I&apos;m deep into crypto investing and algorithmic trading,
+            and I&apos;m working toward a simple goal:{" "}
+            <span className="text-foreground">$10k/month</span> from a mix of side hustles,
+            projects, and trading.
+          </p>
+
+          <p>
+            The dream is laptop-only, location-free. I believe in building in public, good karma,
+            and surrounding yourself with the right people. If you&apos;re on a similar path,
+            let&apos;s connect &mdash; I started sharing everything on X in early 2026 and I&apos;m
+            just getting started.
+          </p>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 function DefaultModal({ title, onClose }: { title: string; onClose: () => void }) {
   return (
     <motion.div
@@ -324,7 +390,10 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
             {activePlanet === "LET'S CONNECT" && (
               <ConnectModal onClose={closePlanet} />
             )}
-            {activePlanet && activePlanet !== "LET'S CONNECT" && (
+            {activePlanet === "ABOUT ME" && (
+              <AboutModal onClose={closePlanet} />
+            )}
+            {activePlanet === "MY PROJECTS" && (
               <DefaultModal title={activePlanet} onClose={closePlanet} />
             )}
           </AnimatePresence>,

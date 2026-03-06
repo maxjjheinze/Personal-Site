@@ -39,7 +39,7 @@ function LiveDateTime() {
   const timeStr = now.toLocaleTimeString("en-US", { hour12: false });
 
   return (
-    <p className="mt-4 font-mono text-base uppercase tracking-[0.2em] text-muted-foreground/60">
+    <p className="mt-4 font-mono text-sm uppercase tracking-[0.25em] text-muted-foreground/60">
       {dateStr} &nbsp;&middot;&nbsp; {timeStr}
     </p>
   );
@@ -57,7 +57,7 @@ export function HeroText() {
     >
       {/* Label */}
       <motion.p
-        className="mb-6 font-mono text-[10px] font-medium uppercase tracking-[0.35em] text-accent sm:text-xs"
+        className="mb-6 font-mono text-[9px] font-medium uppercase tracking-[0.4em] text-accent sm:text-[11px]"
         variants={itemVariants}
       >
         Portfolio / 2026
@@ -82,7 +82,7 @@ export function HeroText() {
 
       {/* Tagline */}
       <motion.p
-        className="mt-8 font-mono text-base text-muted-foreground sm:text-lg lg:text-xl"
+        className="mt-8 font-mono text-sm text-muted-foreground sm:text-base lg:text-lg"
         variants={itemVariants}
       >
         Vibe Coder Who Loves Crypto and Trading.
