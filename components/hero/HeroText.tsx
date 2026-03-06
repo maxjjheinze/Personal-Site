@@ -60,7 +60,7 @@ export function HeroText() {
         className="mb-6 flex items-center gap-3 font-mono text-[9px] font-medium uppercase tracking-[0.4em] text-accent sm:text-[11px]"
         variants={itemVariants}
       >
-        <span className="h-4 w-[3px] shrink-0 animate-blink rounded-full bg-accent" />
+        <span className="h-4 w-[3px] shrink-0 animate-blink rounded-full bg-foreground" />
         Portfolio / 2026
       </motion.p>
 

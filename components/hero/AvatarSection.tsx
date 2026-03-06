@@ -228,21 +228,22 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
     return () => window.removeEventListener("resize", measure);
   }, []);
 
-  // Mouse proximity detection (continuous 0-1 value)
+  // Mouse proximity detection (continuous 0-1 value based on solar system bounds)
   useEffect(() => {
     function handleMouseMove(e: MouseEvent) {
-      const el = avatarRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
+      const ss = solarSystemRef.current;
+      if (!ss) return;
+      const rect = ss.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
-      const dist = Math.sqrt((e.clientX - cx) ** 2 + (e.clientY - cy) ** 2);
-      const outerEdge = avatarRadiusRef.current + 200;
-      const threshold = avatarRadiusRef.current + 150;
-      isNearRef.current = dist < threshold;
-      // Smooth 0→1 proximity (1 = on top of avatar, 0 = far away)
-      const raw = 1 - Math.min(dist / outerEdge, 1);
-      // Ease-in curve for a more natural ramp
+      // Distance from edge of solar system bounding box, not center
+      const dx = Math.max(0, Math.abs(e.clientX - cx) - rect.width / 2);
+      const dy = Math.max(0, Math.abs(e.clientY - cy) - rect.height / 2);
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const fadeZone = 150;
+      isNearRef.current = dist < fadeZone;
+      // 1 = inside solar system, 0 = far away
+      const raw = 1 - Math.min(dist / fadeZone, 1);
       proximityRef.current = raw * raw;
     }
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
