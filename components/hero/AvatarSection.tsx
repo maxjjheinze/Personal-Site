@@ -125,29 +125,21 @@ function AboutModal({ onClose }: { onClose: () => void }) {
 
         <div className="space-y-5 text-sm leading-relaxed text-foreground/80">
           <p>
-            I&apos;m Max, 23, based in Melbourne, Australia. By day I work in chemical distribution
-            &mdash; by night I&apos;m building my way out of the 9&ndash;5.
+            I&apos;m Max, 23, from Melbourne. I work a 9 to 5 in chemical distribution
+            but I&apos;m trying to build my way out of it. I studied pharmaceutical science,
+            graduated in 2024, and somewhere along the way realised I wanted more.
           </p>
 
           <p>
-            I studied pharmaceutical science (graduated 2024), worked pharmacy and retail through
-            uni, and eventually realised the traditional path wasn&apos;t the whole picture for me.
-            So I started building.
+            Now I vibe code apps, tools, and websites, trade crypto, and mess around with
+            algo trading. The goal is{" "}
+            <span className="text-foreground">$10k/month</span> and a laptop I can work
+            from anywhere with. I build everything in public on X.
           </p>
 
           <p>
-            I vibe code apps, micro-tools, and websites &mdash; some for myself, some for others,
-            all for fun and profit. I&apos;m deep into crypto investing and algorithmic trading,
-            and I&apos;m working toward a simple goal:{" "}
-            <span className="text-foreground">$10k/month</span> from a mix of side hustles,
-            projects, and trading.
-          </p>
-
-          <p>
-            The dream is laptop-only, location-free. I believe in building in public, good karma,
-            and surrounding yourself with the right people. If you&apos;re on a similar path,
-            let&apos;s connect &mdash; I started sharing everything on X in early 2026 and I&apos;m
-            just getting started.
+            I believe in good karma and having the right people around you. If you&apos;re
+            on a similar path, hit me up.
           </p>
         </div>
       </motion.div>
