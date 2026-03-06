@@ -17,19 +17,15 @@ export function Hero() {
     const wrapper = textWrapperRef.current;
     if (!overlay || !wrapper) return;
 
-    const blur = value * 14;
-    const opacity = value * 0.8;
-    // As proximity increases, the gradient starts further left (more text gets blurred)
-    const gradientStart = Math.max(0, 60 - value * 80);
+    const blur = value * 24;
+    // Gradient starts far right and sweeps left as cursor approaches
+    const gradientStart = Math.max(0, 50 - value * 70);
 
-    overlay.style.backdropFilter = `blur(${blur}px)`;
-    overlay.style.setProperty("-webkit-backdrop-filter", `blur(${blur}px)`);
-    overlay.style.opacity = String(opacity > 0.01 ? 1 : 0);
+    overlay.style.backdropFilter = `blur(${blur}px) brightness(${1 - value * 0.3})`;
+    overlay.style.setProperty("-webkit-backdrop-filter", `blur(${blur}px) brightness(${1 - value * 0.3})`);
+    overlay.style.opacity = String(value > 0.01 ? 1 : 0);
     overlay.style.maskImage = `linear-gradient(to right, transparent ${gradientStart}%, black 100%)`;
     overlay.style.setProperty("-webkit-mask-image", `linear-gradient(to right, transparent ${gradientStart}%, black 100%)`);
-
-    // Subtle dim on the text (only the right portion feels affected)
-    wrapper.style.opacity = String(1 - value * 0.3);
   }, []);
 
   return (
@@ -47,15 +43,15 @@ export function Hero() {
       {/* Content */}
       <div className="relative z-10 w-full max-w-7xl px-6 md:px-12 lg:px-20 scale-[0.8]">
         <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-32">
-          <div ref={textWrapperRef} className="relative flex-1 transition-opacity duration-500 ease-out">
+          <div ref={textWrapperRef} className="relative flex-1">
             <HeroText />
-            {/* Gradient blur overlay */}
+            {/* Gradient blur overlay — darkens + blurs from right to left */}
             <div
               ref={blurOverlayRef}
               className="pointer-events-none absolute inset-0 opacity-0"
               style={{
-                maskImage: "linear-gradient(to right, transparent 60%, black 100%)",
-                WebkitMaskImage: "linear-gradient(to right, transparent 60%, black 100%)",
+                maskImage: "linear-gradient(to right, transparent 50%, black 100%)",
+                WebkitMaskImage: "linear-gradient(to right, transparent 50%, black 100%)",
               }}
             />
           </div>
