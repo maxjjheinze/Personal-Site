@@ -21,8 +21,8 @@ export function Hero() {
     // Gradient starts far right and sweeps left as cursor approaches
     const gradientStart = Math.max(0, 50 - value * 70);
 
-    overlay.style.backdropFilter = `blur(${blur}px) brightness(${1 - value * 0.3})`;
-    overlay.style.setProperty("-webkit-backdrop-filter", `blur(${blur}px) brightness(${1 - value * 0.3})`);
+    overlay.style.backdropFilter = `blur(${blur}px)`;
+    overlay.style.setProperty("-webkit-backdrop-filter", `blur(${blur}px)`);
     overlay.style.opacity = String(value > 0.01 ? 1 : 0);
     overlay.style.maskImage = `linear-gradient(to right, transparent ${gradientStart}%, black 100%)`;
     overlay.style.setProperty("-webkit-mask-image", `linear-gradient(to right, transparent ${gradientStart}%, black 100%)`);
