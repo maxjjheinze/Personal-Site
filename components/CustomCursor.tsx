@@ -3,11 +3,9 @@
 import { useEffect, useRef } from "react";
 
 export function CustomCursor() {
-  const dotRef = useRef<HTMLDivElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
-  const pos = useRef({ x: -100, y: -100 });
-  const smoothPos = useRef({ x: -100, y: -100 });
+  const cursorRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef(0);
+  const pos = useRef({ x: -100, y: -100 });
 
   useEffect(() => {
     if (window.matchMedia("(pointer: coarse)").matches) return;
@@ -17,19 +15,10 @@ export function CustomCursor() {
     }
 
     function tick() {
-      smoothPos.current.x += (pos.current.x - smoothPos.current.x) * 0.15;
-      smoothPos.current.y += (pos.current.y - smoothPos.current.y) * 0.15;
-
-      const dot = dotRef.current;
-      const glow = glowRef.current;
-
-      if (dot) {
-        dot.style.transform = `translate(${pos.current.x}px, ${pos.current.y}px) translate(-50%, -50%)`;
+      const el = cursorRef.current;
+      if (el) {
+        el.style.transform = `translate(${pos.current.x}px, ${pos.current.y}px)`;
       }
-      if (glow) {
-        glow.style.transform = `translate(${smoothPos.current.x}px, ${smoothPos.current.y}px) translate(-50%, -50%)`;
-      }
-
       rafRef.current = requestAnimationFrame(tick);
     }
 
@@ -43,24 +32,17 @@ export function CustomCursor() {
   }, []);
 
   return (
-    <>
-      {/* Soft trailing glow */}
+    <div
+      ref={cursorRef}
+      className="pointer-events-none fixed left-0 top-0 z-[9999] hidden md:block"
+    >
       <div
-        ref={glowRef}
-        className="pointer-events-none fixed left-0 top-0 z-[9999] hidden h-8 w-8 rounded-full md:block"
+        className="h-5 w-[10px] -translate-x-1/2 animate-blink rounded-[1px]"
         style={{
-          background: "radial-gradient(circle, rgba(79,123,247,0.2) 0%, rgba(139,92,246,0.08) 40%, transparent 70%)",
+          background: "linear-gradient(180deg, #4F7BF7, #8B5CF6)",
+          boxShadow: "0 0 8px rgba(79,123,247,0.4), 0 0 16px rgba(139,92,246,0.15)",
         }}
       />
-      {/* Gradient dot */}
-      <div
-        ref={dotRef}
-        className="pointer-events-none fixed left-0 top-0 z-[9999] hidden h-3 w-3 rounded-full md:block"
-        style={{
-          background: "linear-gradient(135deg, #4F7BF7, #8B5CF6)",
-          boxShadow: "0 0 6px rgba(79,123,247,0.5), 0 0 12px rgba(139,92,246,0.25)",
-        }}
-      />
-    </>
+    </div>
   );
 }
