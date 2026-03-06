@@ -265,7 +265,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
       lastTimeRef.current = time;
 
       // Smooth speed interpolation toward target
-      const target = isNearRef.current ? 0.375 : 0.75;
+      const target = isNearRef.current ? 0.1875 : 1.125;
       speedRef.current += (target - speedRef.current) * 0.03;
 
       const r0 = avatarRadiusRef.current;

@@ -85,6 +85,10 @@ function renderPageToCanvas(
     const textX = containerLeft + paddingX - 80;
     const contentCenterY = h / 2;
 
+    // Blinking line (drawn as static white bar for pixel snapshot)
+    ctx.fillStyle = "#EDEDED";
+    ctx.fillRect(textX - 12, contentCenterY - 188, 3, 16);
+
     // Label
     ctx.fillStyle = "#4F7BF7";
     ctx.font = "600 12px sans-serif";
@@ -189,6 +193,10 @@ function renderPageToCanvas(
   } else {
     const centerX = w / 2;
     ctx.textAlign = "center";
+
+    // Blinking line (static white bar for pixel snapshot)
+    ctx.fillStyle = "#EDEDED";
+    ctx.fillRect(centerX - 55, h * 0.2 - 10, 3, 14);
 
     ctx.fillStyle = "#4F7BF7";
     ctx.font = "600 10px sans-serif";
