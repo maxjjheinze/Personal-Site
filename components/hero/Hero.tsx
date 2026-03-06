@@ -17,10 +17,10 @@ export function Hero() {
     const wrapper = textWrapperRef.current;
     if (!overlay || !wrapper) return;
 
-    const blur = value * 5;
-    const opacity = value * 0.35;
+    const blur = value * 14;
+    const opacity = value * 0.8;
     // As proximity increases, the gradient starts further left (more text gets blurred)
-    const gradientStart = Math.max(0, 60 - value * 60);
+    const gradientStart = Math.max(0, 60 - value * 80);
 
     overlay.style.backdropFilter = `blur(${blur}px)`;
     overlay.style.setProperty("-webkit-backdrop-filter", `blur(${blur}px)`);
@@ -29,7 +29,7 @@ export function Hero() {
     overlay.style.setProperty("-webkit-mask-image", `linear-gradient(to right, transparent ${gradientStart}%, black 100%)`);
 
     // Subtle dim on the text (only the right portion feels affected)
-    wrapper.style.opacity = String(1 - value * 0.15);
+    wrapper.style.opacity = String(1 - value * 0.3);
   }, []);
 
   return (
