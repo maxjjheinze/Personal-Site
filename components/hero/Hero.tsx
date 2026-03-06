@@ -24,7 +24,7 @@ export function Hero() {
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-7xl px-6 md:px-12 lg:px-20 scale-[0.8]">
-        <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-24">
+        <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-32">
           <HeroText />
           <AvatarSection mouseX={mouse.x} mouseY={mouse.y} />
         </div>

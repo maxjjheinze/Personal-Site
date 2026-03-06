@@ -14,7 +14,7 @@ interface AvatarSectionProps {
 const ORBITS = [
   { label: "Let's Connect", radiusOffset: 50, speed: 0.2625, startAngle: 0, color: "#4F7BF7" },
   { label: "About Me", radiusOffset: 85, speed: -0.1875, startAngle: 2.1, color: "#8B5CF6" },
-  { label: "My Projects", radiusOffset: 120, speed: 0.135, startAngle: 4.2, color: "#4F7BF7" },
+  { label: "My Projects", radiusOffset: 120, speed: 0.135, startAngle: 4.2, color: "#38BDF8" },
 ];
 
 export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {

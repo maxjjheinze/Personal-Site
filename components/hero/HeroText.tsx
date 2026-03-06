@@ -39,7 +39,7 @@ function LiveDateTime() {
   const timeStr = now.toLocaleTimeString("en-US", { hour12: false });
 
   return (
-    <p className="mt-4 text-xs uppercase tracking-[0.2em] text-muted-foreground/60">
+    <p className="mt-4 text-base uppercase tracking-[0.2em] text-muted-foreground/60">
       {dateStr} &nbsp;&middot;&nbsp; {timeStr}
     </p>
   );
@@ -75,7 +75,7 @@ export function HeroText() {
 
       <motion.h1
 
-        className="font-display text-5xl font-bold leading-[0.9] tracking-tighter sm:text-6xl lg:text-7xl xl:text-[9rem]"
+        className="font-display text-5xl font-bold leading-[0.9] tracking-tighter pr-2 sm:text-6xl lg:text-7xl xl:text-[9rem]"
         variants={itemVariants}
       >
         <span className="bg-gradient-to-r from-[#4F7BF7] to-[#8B5CF6] bg-clip-text text-transparent">
