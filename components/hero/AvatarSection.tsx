@@ -228,26 +228,25 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
     return () => window.removeEventListener("resize", measure);
   }, []);
 
-  // Mouse proximity detection (continuous 0-1 value based on solar system bounds)
+  // Mouse proximity detection (continuous 0-1 value based on full solar system radius)
   useEffect(() => {
     function handleMouseMove(e: MouseEvent) {
-      const ss = solarSystemRef.current;
-      if (!ss) return;
-      const rect = ss.getBoundingClientRect();
+      const el = avatarRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
-      // Distance from edge of solar system bounding box, not center
-      const dx = Math.max(0, Math.abs(e.clientX - cx) - rect.width / 2);
-      const dy = Math.max(0, Math.abs(e.clientY - cy) - rect.height / 2);
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const isInside = dist === 0;
-      const fadeZone = 150;
-      isNearRef.current = dist < fadeZone;
-      // Binary inside (1) with smooth fade-out only outside
-      if (isInside) {
+      const dist = Math.sqrt((e.clientX - cx) ** 2 + (e.clientY - cy) ** 2);
+      // Full solar system radius = avatar radius + outermost orbit offset + padding for planet pill
+      const solarRadius = avatarRadiusRef.current + 120 + 60;
+      const fadeZone = 120;
+      isNearRef.current = dist < solarRadius + fadeZone;
+      if (dist <= solarRadius) {
+        // Inside the solar system — full effect everywhere
         proximityRef.current = 1;
       } else {
-        const raw = 1 - Math.min(dist / fadeZone, 1);
+        // Smooth fade-out outside
+        const raw = 1 - Math.min((dist - solarRadius) / fadeZone, 1);
         proximityRef.current = raw * raw;
       }
     }
