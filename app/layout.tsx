@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Space_Grotesk, Space_Mono, JetBrains_Mono } from "next/font/google";
+import { Inter, Space_Grotesk, Space_Mono } from "next/font/google";
 
 import "./globals.css";
 
@@ -17,11 +17,6 @@ const spaceMono = Space_Mono({
   subsets: ["latin"],
   weight: ["400", "700"],
   variable: "--font-space-mono",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
 });
 
 export const viewport: Viewport = {
@@ -47,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" style={{ colorScheme: "dark" }}>
       <body
-        className={`${inter.variable} ${spaceGrotesk.variable} ${spaceMono.variable} ${jetbrainsMono.variable} font-sans antialiased`}
+        className={`${inter.variable} ${spaceGrotesk.variable} ${spaceMono.variable} font-sans antialiased`}
       >
         <a
           href="#main-content"

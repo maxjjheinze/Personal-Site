@@ -495,7 +495,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
                     boxShadow: `0 0 8px ${orbit.color}66`,
                   }}
                 />
-                <span className="font-mono text-[12px] font-medium uppercase tracking-[0.15em] text-muted-foreground/70 group-hover:text-foreground/90 transition-colors duration-300 whitespace-nowrap select-none">
+                <span className="font-display text-[12px] font-medium uppercase tracking-[0.15em] text-muted-foreground/70 group-hover:text-foreground/90 transition-colors duration-300 whitespace-nowrap select-none">
                   {orbit.label}
                 </span>
               </div>
