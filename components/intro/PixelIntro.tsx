@@ -247,7 +247,7 @@ function sampleParticles(
 
 export function PixelIntro({
   children,
-  pixelSize = 1,
+  pixelSize = 2,
   duration = 1750,
   maxStagger = 800,
 }: PixelIntroProps) {
