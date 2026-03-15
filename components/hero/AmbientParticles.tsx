@@ -2,15 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 
-interface HeatTrailProps {
+interface GridWarpProps {
   mouseX?: number;
   mouseY?: number;
 }
 
-const TRAIL_LIFETIME = 3000; // ms before a trail point fully fades
-const TRAIL_EMIT_INTERVAL = 30; // ms between emitting trail points
-const TRAIL_RADIUS = 40; // glow radius per point
+const GRID_SIZE = 80;
+const WARP_RADIUS = 200;
+const WARP_STRENGTH = 30;
 const ZONE_PADDING = 60;
+const ZONE_FADE = 80;
 
 interface ExclusionZone {
   cx: number;
@@ -18,19 +19,12 @@ interface ExclusionZone {
   r: number;
 }
 
-interface TrailPoint {
-  x: number;
-  y: number;
-  birth: number;
-}
-
-export function AmbientParticles({ mouseX = 0, mouseY = 0 }: HeatTrailProps) {
+export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridWarpProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef(0);
   const cursorRef = useRef({ x: -9999, y: -9999 });
+  const smoothCursorRef = useRef({ x: -9999, y: -9999 });
   const exclusionRef = useRef<ExclusionZone | null>(null);
-  const trailRef = useRef<TrailPoint[]>([]);
-  const lastEmitRef = useRef(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   void mouseX;
@@ -74,8 +68,13 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: HeatTrailProps) {
     const initialTimer = setTimeout(measureExclusionZone, 100);
     window.addEventListener("resize", measureExclusionZone);
 
+    let firstMove = true;
     function handleMouse(e: MouseEvent) {
       cursorRef.current = { x: e.clientX, y: e.clientY };
+      if (firstMove) {
+        smoothCursorRef.current = { x: e.clientX, y: e.clientY };
+        firstMove = false;
+      }
       measureExclusionZone();
     }
     window.addEventListener("mousemove", handleMouse, { passive: true });
@@ -85,9 +84,28 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: HeatTrailProps) {
     }
     document.addEventListener("mouseleave", handleLeave);
 
-    const trail = trailRef.current;
+    function warpPoint(px: number, py: number, cx: number, cy: number): [number, number] {
+      const dx = px - cx;
+      const dy = py - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist >= WARP_RADIUS || dist === 0) return [px, py];
 
-    function tick(now: number) {
+      const zone = exclusionRef.current;
+      if (zone) {
+        const dzx = px - zone.cx;
+        const dzy = py - zone.cy;
+        if (Math.sqrt(dzx * dzx + dzy * dzy) < zone.r) return [px, py];
+        const cdx = cx - zone.cx;
+        const cdy = cy - zone.cy;
+        if (Math.sqrt(cdx * cdx + cdy * cdy) < zone.r) return [px, py];
+      }
+
+      const factor = (1 - dist / WARP_RADIUS);
+      const push = factor * factor * WARP_STRENGTH;
+      return [px + (dx / dist) * push, py + (dy / dist) * push];
+    }
+
+    function tick() {
       const ctx = canvas!.getContext("2d");
       if (!ctx) return;
       const dpr = window.devicePixelRatio || 1;
@@ -96,59 +114,80 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: HeatTrailProps) {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, cw, ch);
 
-      const cursor = cursorRef.current;
+      const target = cursorRef.current;
+      const smooth = smoothCursorRef.current;
+      smooth.x += (target.x - smooth.x) * 0.12;
+      smooth.y += (target.y - smooth.y) * 0.12;
+
+      const cx = smooth.x;
+      const cy = smooth.y;
       const zone = exclusionRef.current;
 
-      // Emit trail points
-      const cursorInZone = zone
-        ? Math.sqrt((cursor.x - zone.cx) ** 2 + (cursor.y - zone.cy) ** 2) < zone.r
-        : false;
+      const cols = Math.ceil(cw / GRID_SIZE) + 1;
+      const rows = Math.ceil(ch / GRID_SIZE) + 1;
 
-      if (cursor.x > -1000 && !cursorInZone && now - lastEmitRef.current > TRAIL_EMIT_INTERVAL) {
-        trail.push({ x: cursor.x, y: cursor.y, birth: now });
-        lastEmitRef.current = now;
-      }
+      ctx.lineWidth = 1;
 
-      // Remove expired points
-      while (trail.length > 0 && now - trail[0].birth > TRAIL_LIFETIME) {
-        trail.shift();
-      }
+      // Vertical lines
+      for (let col = 0; col <= cols; col++) {
+        const baseX = col * GRID_SIZE;
+        ctx.beginPath();
 
-      // Render trail — each point is a soft radial glow
-      for (const point of trail) {
-        const age = (now - point.birth) / TRAIL_LIFETIME;
-        const fadeOut = 1 - age;
-        // Ease out for smooth fade
-        const alpha = fadeOut * fadeOut * 0.12;
+        for (let row = 0; row <= rows; row++) {
+          const baseY = row * GRID_SIZE;
+          const [wx, wy] = warpPoint(baseX, baseY, cx, cy);
 
-        if (alpha < 0.002) continue;
+          let alpha = 0.025;
+          if (zone) {
+            const dzx = baseX - zone.cx;
+            const dzy = baseY - zone.cy;
+            const distToZone = Math.sqrt(dzx * dzx + dzy * dzy);
+            if (distToZone < zone.r) alpha = 0;
+            else if (distToZone < zone.r + ZONE_FADE) alpha *= (distToZone - zone.r) / ZONE_FADE;
+          }
 
-        // Skip if inside exclusion zone
-        if (zone) {
-          const dzx = point.x - zone.cx;
-          const dzy = point.y - zone.cy;
-          if (Math.sqrt(dzx * dzx + dzy * dzy) < zone.r) continue;
+          if (alpha <= 0) {
+            ctx.stroke();
+            ctx.beginPath();
+            continue;
+          }
+
+          ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+          if (row === 0) ctx.moveTo(wx, wy);
+          else ctx.lineTo(wx, wy);
         }
+        ctx.stroke();
+      }
 
-        // Color shifts from blue to purple as it cools
-        const r = Math.round(79 + (139 - 79) * age);
-        const g = Math.round(123 + (92 - 123) * age);
-        const b = Math.round(247 + (246 - 247) * age);
+      // Horizontal lines
+      for (let row = 0; row <= rows; row++) {
+        const baseY = row * GRID_SIZE;
+        ctx.beginPath();
 
-        const grad = ctx.createRadialGradient(
-          point.x, point.y, 0,
-          point.x, point.y, TRAIL_RADIUS * (1 + age * 0.5)
-        );
-        grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${alpha})`);
-        grad.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${alpha * 0.4})`);
-        grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-        ctx.fillStyle = grad;
-        ctx.fillRect(
-          point.x - TRAIL_RADIUS * 1.5,
-          point.y - TRAIL_RADIUS * 1.5,
-          TRAIL_RADIUS * 3,
-          TRAIL_RADIUS * 3
-        );
+        for (let col = 0; col <= cols; col++) {
+          const baseX = col * GRID_SIZE;
+          const [wx, wy] = warpPoint(baseX, baseY, cx, cy);
+
+          let alpha = 0.025;
+          if (zone) {
+            const dzx = baseX - zone.cx;
+            const dzy = baseY - zone.cy;
+            const distToZone = Math.sqrt(dzx * dzx + dzy * dzy);
+            if (distToZone < zone.r) alpha = 0;
+            else if (distToZone < zone.r + ZONE_FADE) alpha *= (distToZone - zone.r) / ZONE_FADE;
+          }
+
+          if (alpha <= 0) {
+            ctx.stroke();
+            ctx.beginPath();
+            continue;
+          }
+
+          ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+          if (col === 0) ctx.moveTo(wx, wy);
+          else ctx.lineTo(wx, wy);
+        }
+        ctx.stroke();
       }
 
       rafRef.current = requestAnimationFrame(tick);

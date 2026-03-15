@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useSpring } from "framer-motion";
 
 interface AnimatedGridProps {
   mouseX?: number;
@@ -8,8 +8,8 @@ interface AnimatedGridProps {
 }
 
 export function AnimatedGrid({ mouseX = 0, mouseY = 0 }: AnimatedGridProps) {
-  void mouseX;
-  void mouseY;
+  const x = useSpring(mouseX * -0.02, { stiffness: 50, damping: 30 });
+  const y = useSpring(mouseY * -0.02, { stiffness: 50, damping: 30 });
 
   return (
     <motion.div
@@ -18,6 +18,22 @@ export function AnimatedGrid({ mouseX = 0, mouseY = 0 }: AnimatedGridProps) {
       animate={{ opacity: 1 }}
       transition={{ duration: 1.5 }}
     >
+      {/* Line grid with radial fade toward center */}
+      <motion.div
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
+          backgroundSize: "80px 80px",
+          maskImage:
+            "radial-gradient(ellipse 60% 60% at 65% 50%, transparent 20%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,1) 80%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse 60% 60% at 65% 50%, transparent 20%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,1) 80%)",
+          x,
+          y,
+        }}
+      />
+
       {/* Gradient blobs */}
       <motion.div
         className="absolute -left-[10%] top-[15%] h-[500px] w-[500px] rounded-full bg-accent/[0.04] blur-[120px]"
