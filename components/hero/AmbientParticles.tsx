@@ -9,8 +9,6 @@ interface GridGlowProps {
 
 const GRID_SIZE = 80;
 const GLOW_RADIUS = 180;
-// Max distance between two intersections to draw a constellation line
-const LINE_MAX_DIST = 140;
 // Extra padding beyond the solar system bounding box to ensure no glow bleeds in
 const ZONE_PADDING = 60;
 // Soft fade zone — glow attenuates as intersections approach the exclusion boundary
@@ -158,16 +156,11 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridGlowProps) {
         }
       }
 
-      // Collect active nodes with their positions and opacities for line drawing
-      const nodes: { x: number; y: number; opacity: number }[] = [];
-
       // Render glowing dots
       for (const [key, opacity] of glowMap.entries()) {
         const [colStr, rowStr] = key.split(",");
         const ix = parseInt(colStr) * GRID_SIZE;
         const iy = parseInt(rowStr) * GRID_SIZE;
-
-        nodes.push({ x: ix, y: iy, opacity });
 
         const grad = ctx.createRadialGradient(ix, iy, 0, ix, iy, 6);
         grad.addColorStop(0, `rgba(79, 123, 247, ${opacity * 0.6})`);
@@ -180,28 +173,6 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridGlowProps) {
         ctx.arc(ix, iy, 1.5, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(237, 237, 237, ${opacity})`;
         ctx.fill();
-      }
-
-      // Draw constellation lines between nearby active intersections
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const a = nodes[i];
-          const b = nodes[j];
-          const dx = a.x - b.x;
-          const dy = a.y - b.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < LINE_MAX_DIST) {
-            const lineOpacity = Math.min(a.opacity, b.opacity) * (1 - dist / LINE_MAX_DIST) * 0.4;
-            if (lineOpacity > 0.003) {
-              ctx.beginPath();
-              ctx.moveTo(a.x, a.y);
-              ctx.lineTo(b.x, b.y);
-              ctx.strokeStyle = `rgba(79, 123, 247, ${lineOpacity})`;
-              ctx.lineWidth = 1;
-              ctx.stroke();
-            }
-          }
-        }
       }
 
       rafRef.current = requestAnimationFrame(tick);
