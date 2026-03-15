@@ -24,7 +24,7 @@ export function AnimatedGrid({ mouseX = 0, mouseY = 0 }: AnimatedGridProps) {
         style={{
           backgroundImage:
             "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
-          backgroundSize: "80px 80px",
+          backgroundSize: "68px 68px",
           maskImage:
             "radial-gradient(ellipse 60% 60% at 65% 50%, transparent 20%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,1) 80%)",
           WebkitMaskImage:
