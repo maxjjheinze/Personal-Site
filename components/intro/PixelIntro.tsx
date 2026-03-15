@@ -80,18 +80,7 @@ function renderPageToCanvas(
     const textX = containerLeft + paddingX - 80;
     const contentCenterY = h / 2;
 
-    // Blinking line
-    ctx.fillStyle = "#EDEDED";
-    ctx.fillRect(textX - 12, contentCenterY - 188, 3, 16);
-
-    // Label
-    ctx.fillStyle = "#4F7BF7";
-    ctx.font = "600 14px sans-serif";
-    ctx.letterSpacing = "4px";
-    ctx.fillText("PORTFOLIO / 2026", textX, contentCenterY - 180);
-    ctx.letterSpacing = "0px";
-
-    // Title — sizes match new HeroText (no 0.8 scale)
+    // Title
     const titleSize = w >= 1280 ? 115 : 58;
     ctx.fillStyle = "#EDEDED";
     ctx.font = `800 ${titleSize}px sans-serif`;
@@ -103,15 +92,6 @@ function renderPageToCanvas(
     ctx.fillStyle = grad;
     ctx.fillText("PROGRESS", textX, contentCenterY + titleSize * 0.8);
 
-    // Tagline
-    ctx.fillStyle = "#83838C";
-    ctx.font = "400 18px sans-serif";
-    ctx.fillText(
-      "Vibe Coder Who Loves Crypto and Trading.",
-      textX,
-      contentCenterY + titleSize * 0.8 + 50
-    );
-
     // Activity ticker placeholder
     ctx.fillStyle = "rgba(131,131,140,0.6)";
     ctx.font = "400 14px sans-serif";
@@ -119,7 +99,7 @@ function renderPageToCanvas(
     ctx.fillText(
       "BUILDING IN PUBLIC · MELBOURNE, AU",
       textX,
-      contentCenterY + titleSize * 0.8 + 80
+      contentCenterY + titleSize * 0.8 + 50
     );
     ctx.letterSpacing = "0px";
 
@@ -180,14 +160,6 @@ function renderPageToCanvas(
     const centerX = w / 2;
     ctx.textAlign = "center";
 
-    // Blinking line
-    ctx.fillStyle = "#EDEDED";
-    ctx.fillRect(centerX - 55, h * 0.2 - 10, 3, 14);
-
-    ctx.fillStyle = "#4F7BF7";
-    ctx.font = "600 12px sans-serif";
-    ctx.fillText("PORTFOLIO / 2026", centerX, h * 0.2);
-
     const titleSize = Math.min(w * 0.12, 58);
     ctx.fillStyle = "#EDEDED";
     ctx.font = `800 ${titleSize}px sans-serif`;
@@ -204,21 +176,13 @@ function renderPageToCanvas(
     ctx.fillStyle = grad;
     ctx.fillText("PROGRESS", centerX, h * 0.2 + titleSize * 2 + 10);
 
-    ctx.fillStyle = "#83838C";
-    ctx.font = "400 14px sans-serif";
-    ctx.fillText(
-      "Vibe Coder Who Loves Crypto and Trading.",
-      centerX,
-      h * 0.2 + titleSize * 2 + 50
-    );
-
     ctx.fillStyle = "rgba(131,131,140,0.6)";
     ctx.font = "400 12px sans-serif";
     ctx.letterSpacing = "3px";
     ctx.fillText(
       "BUILDING IN PUBLIC · MELBOURNE, AU",
       centerX,
-      h * 0.2 + titleSize * 2 + 75
+      h * 0.2 + titleSize * 2 + 50
     );
     ctx.letterSpacing = "0px";
 

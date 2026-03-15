@@ -32,13 +32,20 @@ function ActivityTicker() {
   }, []);
 
   const getMessages = useCallback(() => {
+    const dateStr = now
+      ? now.toLocaleDateString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+        }).toUpperCase()
+      : "";
     const timeStr = now
       ? now.toLocaleTimeString("en-US", { hour12: false })
       : "";
     return [
       "BUILDING IN PUBLIC \u00B7 MELBOURNE, AU",
-      `CURRENTLY CODING \u00B7 ${timeStr}`,
-      "TRADING CRYPTO \u00B7 LIVE",
+      `${dateStr} \u00B7 ${timeStr}`,
+      "@MAXINPROGRESS \u00B7 ON X",
     ];
   }, [now]);
 
@@ -53,7 +60,7 @@ function ActivityTicker() {
   const messages = getMessages();
 
   return (
-    <div className="mt-4 h-6 overflow-hidden">
+    <div className="mt-8 h-6 overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.p
           key={index}
@@ -80,16 +87,7 @@ export function HeroText() {
       initial="hidden"
       animate={introComplete ? "visible" : "hidden"}
     >
-      {/* Label */}
-      <motion.p
-        className="mb-6 flex items-center gap-3 font-mono text-[12px] font-medium uppercase tracking-[0.4em] text-accent sm:text-[14px]"
-        variants={itemVariants}
-      >
-        <span className="h-4 w-[3px] shrink-0 animate-blink rounded-full bg-foreground" />
-        Portfolio / 2026
-      </motion.p>
-
-      {/* Title — single h1 with block spans */}
+      {/* Title */}
       <motion.h1
         className="font-display text-4xl font-bold leading-[0.9] tracking-tighter sm:text-5xl lg:text-[58px] xl:text-[7.2rem]"
         variants={itemVariants}
@@ -99,14 +97,6 @@ export function HeroText() {
           PROGRESS
         </span>
       </motion.h1>
-
-      {/* Tagline */}
-      <motion.p
-        className="mt-8 font-mono text-sm text-muted-foreground sm:text-base lg:text-lg"
-        variants={itemVariants}
-      >
-        Vibe Coder Who Loves Crypto and Trading.
-      </motion.p>
 
       {/* Activity Ticker */}
       <motion.div variants={itemVariants}>
