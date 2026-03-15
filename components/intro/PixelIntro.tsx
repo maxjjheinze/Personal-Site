@@ -37,8 +37,9 @@ function easeOutQuart(t: number): number {
 }
 
 /**
- * Renders an approximation of the hero page onto an offscreen canvas,
- * then samples pixels from it to create particles.
+ * Measures actual DOM element positions and renders a matching snapshot
+ * onto an offscreen canvas. This guarantees the pixel intro aligns
+ * perfectly with the real hero layout.
  */
 function renderPageToCanvas(
   w: number,
@@ -54,7 +55,7 @@ function renderPageToCanvas(
   ctx.fillStyle = BG_CSS;
   ctx.fillRect(0, 0, w, h);
 
-  // Grid lines (matching AnimatedGrid line pattern)
+  // Grid lines
   ctx.strokeStyle = "rgba(255,255,255,0.025)";
   ctx.lineWidth = 1;
   for (let x = 0; x < w; x += 80) {
@@ -70,149 +71,91 @@ function renderPageToCanvas(
     ctx.stroke();
   }
 
-  // No scale transform — content renders at native size now
-  const isDesktop = w >= 1024;
-  const containerW = Math.min(w, 1280);
-  const containerLeft = (w - containerW) / 2;
-  const paddingX = w >= 1024 ? 80 : w >= 768 ? 48 : 24;
+  // Measure real DOM positions
+  const titleEl = document.querySelector("[data-intro-title]");
+  const progressEl = document.querySelector("[data-intro-progress]");
+  const tickerEl = document.querySelector("[data-intro-ticker]");
+  const avatarEl = document.querySelector("[data-intro-avatar]");
 
-  if (isDesktop) {
-    const contentCenterY = h / 2;
+  // The hero elements are rendered with Framer Motion hidden state (y: 40px offset).
+  // Subtract 40 from measured Y to get their final visible positions.
+  const HIDDEN_Y_OFFSET = 40;
 
-    // Match the hero's CSS layout:
-    // - max-w-7xl (1280px) container centered with lg:px-20 (80px) padding
-    // - flex-row with gap-32 (128px)
-    // - flex-1 text area + avatar
-    const avatarSize = w >= 1280 ? 256 : 230;
-    const gap = 128; // lg:gap-32
-    const innerW = containerW - paddingX * 2;
-    // flex-1 takes remaining space after avatar + gap
-    const textAreaW = innerW - avatarSize - gap;
-    const textX = containerLeft + paddingX;
+  if (titleEl) {
+    const titleRect = titleEl.getBoundingClientRect();
+    const titleX = titleRect.left;
+    const titleY = titleRect.top - HIDDEN_Y_OFFSET;
 
-    // Title — shifted left by 0.07em to match CSS marginLeft: -0.07em
-    const titleSize = w >= 1280 ? 115 : 58;
-    const titleOffsetX = textX - titleSize * 0.07;
+    const titleStyle = getComputedStyle(titleEl);
+    const fontSize = parseFloat(titleStyle.fontSize);
+
+    // "MAX IN" — first line
     ctx.fillStyle = "#EDEDED";
-    ctx.font = `800 ${titleSize}px sans-serif`;
-    ctx.fillText("MAX IN", titleOffsetX, contentCenterY - 50);
+    ctx.font = `800 ${fontSize}px sans-serif`;
+    ctx.fillText("MAX IN", titleX, titleY + fontSize * 0.82);
 
-    const grad = ctx.createLinearGradient(titleOffsetX, 0, titleOffsetX + 500, 0);
-    grad.addColorStop(0, "#4F7BF7");
-    grad.addColorStop(1, "#8B5CF6");
-    ctx.fillStyle = grad;
-    ctx.fillText("PROGRESS", titleOffsetX, contentCenterY + titleSize * 0.8);
+    // "PROGRESS" — use measured position
+    if (progressEl) {
+      const progRect = progressEl.getBoundingClientRect();
+      const grad = ctx.createLinearGradient(progRect.left, 0, progRect.right, 0);
+      grad.addColorStop(0, "#4F7BF7");
+      grad.addColorStop(1, "#8B5CF6");
+      ctx.fillStyle = grad;
+      ctx.fillText("PROGRESS", progRect.left, progRect.top - HIDDEN_Y_OFFSET + fontSize * 0.82);
+    }
 
-    // Activity ticker — aligned with title
-    ctx.fillStyle = "rgba(131,131,140,0.6)";
-    ctx.font = "700 14px sans-serif";
-    ctx.letterSpacing = "3px";
-    ctx.fillText(
-      "BUILDING IN PUBLIC · MELBOURNE, AU",
-      titleOffsetX,
-      contentCenterY + titleSize * 0.8 + 50
-    );
-    ctx.letterSpacing = "0px";
+    // Activity ticker (has its own y:40 offset from itemVariants)
+    if (tickerEl) {
+      const tickerRect = tickerEl.getBoundingClientRect();
+      ctx.fillStyle = "rgba(131,131,140,0.85)";
+      ctx.font = "700 14px sans-serif";
+      ctx.letterSpacing = "3px";
+      ctx.fillText(
+        "BUILDING IN PUBLIC · MELBOURNE, AU",
+        tickerRect.left,
+        tickerRect.top - HIDDEN_Y_OFFSET + 14
+      );
+      ctx.letterSpacing = "0px";
+    }
+  }
 
-    const avatarX = textX + textAreaW + gap;
-    const avatarY = contentCenterY - avatarSize / 2;
-    const cx = avatarX + avatarSize / 2;
-    const cy = avatarY + avatarSize / 2;
+  // Avatar — uses scale animation not y offset, so no Y adjustment needed
+  if (avatarEl && avatarImg) {
+    const avatarRect = avatarEl.getBoundingClientRect();
+    const cx = avatarRect.left + avatarRect.width / 2;
+    const cy = avatarRect.top + avatarRect.height / 2;
+    const radius = avatarRect.width / 2;
 
     // Glow
-    const glowGrad = ctx.createRadialGradient(
-      cx,
-      cy,
-      avatarSize * 0.3,
-      cx,
-      cy,
-      avatarSize * 0.9
-    );
+    const glowGrad = ctx.createRadialGradient(cx, cy, radius * 0.3, cx, cy, radius * 1.8);
     glowGrad.addColorStop(0, "rgba(79,123,247,0.15)");
     glowGrad.addColorStop(1, "rgba(79,123,247,0)");
     ctx.fillStyle = glowGrad;
-    ctx.fillRect(
-      avatarX - avatarSize * 0.4,
-      avatarY - avatarSize * 0.4,
-      avatarSize * 1.8,
-      avatarSize * 1.8
-    );
+    ctx.fillRect(cx - radius * 1.8, cy - radius * 1.8, radius * 3.6, radius * 3.6);
 
-    // Orbit rings — updated offsets
+    // Orbit rings
     const orbitOffsets = [40, 68, 96];
     for (const offset of orbitOffsets) {
       ctx.strokeStyle = "rgba(237,237,237,0.04)";
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.arc(cx, cy, avatarSize / 2 + offset, 0, Math.PI * 2);
+      ctx.arc(cx, cy, radius + offset, 0, Math.PI * 2);
       ctx.stroke();
     }
 
-    if (avatarImg) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, avatarSize / 2, 0, Math.PI * 2);
-      ctx.clip();
-      ctx.drawImage(avatarImg, avatarX, avatarY, avatarSize, avatarSize);
-      ctx.restore();
+    // Avatar image
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.drawImage(avatarImg, avatarRect.left, avatarRect.top, avatarRect.width, avatarRect.height);
+    ctx.restore();
 
-      ctx.strokeStyle = "rgba(237,237,237,0.1)";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(cx, cy, avatarSize / 2, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-
-  } else {
-    const centerX = w / 2;
-    ctx.textAlign = "center";
-
-    const titleSize = Math.min(w * 0.12, 58);
-    ctx.fillStyle = "#EDEDED";
-    ctx.font = `800 ${titleSize}px sans-serif`;
-    ctx.fillText("MAX IN", centerX, h * 0.2 + titleSize + 10);
-
-    const grad = ctx.createLinearGradient(
-      centerX - 200,
-      0,
-      centerX + 200,
-      0
-    );
-    grad.addColorStop(0, "#4F7BF7");
-    grad.addColorStop(1, "#8B5CF6");
-    ctx.fillStyle = grad;
-    ctx.fillText("PROGRESS", centerX, h * 0.2 + titleSize * 2 + 10);
-
-    ctx.fillStyle = "rgba(131,131,140,0.6)";
-    ctx.font = "700 12px sans-serif";
-    ctx.letterSpacing = "3px";
-    ctx.fillText(
-      "BUILDING IN PUBLIC · MELBOURNE, AU",
-      centerX,
-      h * 0.2 + titleSize * 2 + 50
-    );
-    ctx.letterSpacing = "0px";
-
-    const avatarSize = Math.min(154, w * 0.4);
-    const avatarX = centerX - avatarSize / 2;
-    const avatarY = h * 0.55;
-
-    if (avatarImg) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(
-        avatarX + avatarSize / 2,
-        avatarY + avatarSize / 2,
-        avatarSize / 2,
-        0,
-        Math.PI * 2
-      );
-      ctx.clip();
-      ctx.drawImage(avatarImg, avatarX, avatarY, avatarSize, avatarSize);
-      ctx.restore();
-    }
-
-    ctx.textAlign = "start";
+    ctx.strokeStyle = "rgba(237,237,237,0.1)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.stroke();
   }
 
   return offscreen;
@@ -237,7 +180,6 @@ function sampleParticles(
       const g = pixels[idx + 1];
       const b = pixels[idx + 2];
 
-      // Skip background-like pixels
       if (
         Math.abs(r - BG_R) < COLOR_THRESHOLD &&
         Math.abs(g - BG_G) < COLOR_THRESHOLD &&
@@ -365,31 +307,31 @@ export function PixelIntro({
     canvas.height = h * dpr;
     cssDimsRef.current = { w, h };
 
-    // Fill with background immediately
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.fillStyle = BG_CSS;
     ctx.fillRect(0, 0, w, h);
 
-    // Load the avatar image, then render and start animation
     const avatarImg = new Image();
     avatarImg.crossOrigin = "anonymous";
     avatarImg.src = "/profile.png";
 
     function startAnimation(img: HTMLImageElement | null) {
-      const offscreen = renderPageToCanvas(w, h, img);
-      const particles = sampleParticles(offscreen, pixelSize, maxStagger);
+      // Brief delay to let the hero DOM render so we can measure positions
+      requestAnimationFrame(() => {
+        const offscreen = renderPageToCanvas(w, h, img);
+        const particles = sampleParticles(offscreen, pixelSize, maxStagger);
 
-      particlesRef.current = particles;
-      startTimeRef.current = 0;
-      rafRef.current = requestAnimationFrame(animate);
+        particlesRef.current = particles;
+        startTimeRef.current = 0;
+        rafRef.current = requestAnimationFrame(animate);
+      });
     }
 
     avatarImg.onload = () => startAnimation(avatarImg);
     avatarImg.onerror = () => startAnimation(null);
 
-    // Fallback if image takes too long
     const timeout = setTimeout(() => {
       if (!startTimeRef.current) startAnimation(null);
     }, 2000);

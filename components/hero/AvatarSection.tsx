@@ -452,6 +452,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
         {/* Avatar with breathing animation */}
         <motion.div
           ref={avatarRef}
+          data-intro-avatar
           className="relative h-[154px] w-[154px] overflow-hidden rounded-full border-2 border-foreground/10 sm:h-[179px] sm:w-[179px] lg:h-[230px] lg:w-[230px] xl:h-64 xl:w-64"
           animate={prefersReducedMotion ? {} : { scale: [1, 1.02, 1] }}
           whileHover={{ scale: 1.05 }}

@@ -89,18 +89,19 @@ export function HeroText() {
     >
       {/* Title */}
       <motion.h1
+        data-intro-title
         className="font-display text-4xl font-bold leading-[0.9] tracking-tighter sm:text-5xl lg:text-[58px] xl:text-[7.2rem]"
         style={{ marginLeft: "-0.07em" }}
         variants={itemVariants}
       >
         <span className="block">MAX IN</span>
-        <span className="inline-block bg-gradient-to-r from-[#4F7BF7] to-[#8B5CF6] bg-clip-text pr-[0.05em] text-transparent">
+        <span data-intro-progress className="inline-block bg-gradient-to-r from-[#4F7BF7] to-[#8B5CF6] bg-clip-text pr-[0.05em] text-transparent">
           PROGRESS
         </span>
       </motion.h1>
 
       {/* Activity Ticker */}
-      <motion.div variants={itemVariants}>
+      <motion.div data-intro-ticker variants={itemVariants}>
         <ActivityTicker />
       </motion.div>
     </motion.div>
