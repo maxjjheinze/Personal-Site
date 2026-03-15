@@ -2,14 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 
-interface ColorWaveProps {
+interface GridDissolveProps {
   mouseX?: number;
   mouseY?: number;
 }
 
 const GRID_SIZE = 80;
-const WAVE_SPEED = 150; // pixels per second
-const WAVE_RADIUS = 350;
+const DISSOLVE_RADIUS = 200;
 const ZONE_PADDING = 60;
 const ZONE_FADE = 80;
 
@@ -19,19 +18,27 @@ interface ExclusionZone {
   r: number;
 }
 
-interface WaveSource {
-  x: number;
-  y: number;
-  time: number;
+interface Fragment {
+  // Original grid position
+  originX: number;
+  originY: number;
+  // Current offset from origin
+  offsetX: number;
+  offsetY: number;
+  // Velocity
+  vx: number;
+  vy: number;
+  // State: 0 = on grid, 1 = fully scattered
+  scatter: number;
+  size: number;
 }
 
-export function AmbientParticles({ mouseX = 0, mouseY = 0 }: ColorWaveProps) {
+export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridDissolveProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef(0);
   const cursorRef = useRef({ x: -9999, y: -9999 });
   const exclusionRef = useRef<ExclusionZone | null>(null);
-  const wavesRef = useRef<WaveSource[]>([]);
-  const lastEmitRef = useRef(0);
+  const fragmentsRef = useRef<Map<string, Fragment>>(new Map());
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   void mouseX;
@@ -86,7 +93,9 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: ColorWaveProps) {
     }
     document.addEventListener("mouseleave", handleLeave);
 
-    function tick(now: number) {
+    const fragments = fragmentsRef.current;
+
+    function tick() {
       const ctx = canvas!.getContext("2d");
       if (!ctx) return;
       const dpr = window.devicePixelRatio || 1;
@@ -97,90 +106,132 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: ColorWaveProps) {
 
       const cursor = cursorRef.current;
       const zone = exclusionRef.current;
-      const waves = wavesRef.current;
 
-      // Emit a new wave every 200ms while cursor is on screen
       const cursorInZone = zone
         ? Math.sqrt((cursor.x - zone.cx) ** 2 + (cursor.y - zone.cy) ** 2) < zone.r
         : false;
 
-      if (cursor.x > -1000 && !cursorInZone && now - lastEmitRef.current > 200) {
-        waves.push({ x: cursor.x, y: cursor.y, time: now });
-        lastEmitRef.current = now;
-        // Keep max 15 waves
-        if (waves.length > 15) waves.shift();
-      }
-
-      // Remove expired waves
-      while (waves.length > 0 && now - waves[0].time > (WAVE_RADIUS / WAVE_SPEED) * 1000 + 500) {
-        waves.shift();
-      }
-
       const cols = Math.ceil(cw / GRID_SIZE) + 1;
       const rows = Math.ceil(ch / GRID_SIZE) + 1;
 
-      // Draw grid with color wave effect
-      // For each grid segment, calculate wave influence and color accordingly
+      // For each grid intersection, manage fragments
+      for (let col = 0; col <= cols; col++) {
+        for (let row = 0; row <= rows; row++) {
+          const gx = col * GRID_SIZE;
+          const gy = row * GRID_SIZE;
+          const key = `${col},${row}`;
+
+          // Exclusion zone
+          let zoneAlpha = 1;
+          if (zone) {
+            const dzx = gx - zone.cx;
+            const dzy = gy - zone.cy;
+            const distToZone = Math.sqrt(dzx * dzx + dzy * dzy);
+            if (distToZone < zone.r) { zoneAlpha = 0; }
+            else if (distToZone < zone.r + ZONE_FADE) {
+              zoneAlpha = (distToZone - zone.r) / ZONE_FADE;
+            }
+          }
+          if (zoneAlpha <= 0) {
+            fragments.delete(key);
+            continue;
+          }
+
+          // Distance from cursor to this intersection
+          const dx = gx - cursor.x;
+          const dy = gy - cursor.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const inRange = !cursorInZone && dist < DISSOLVE_RADIUS;
+
+          let frag = fragments.get(key);
+
+          if (inRange) {
+            // Should be dissolving
+            if (!frag) {
+              // Create fragment — burst away from cursor
+              const angle = Math.atan2(dy, dx) + (Math.random() - 0.5) * 1.2;
+              const speed = 1.5 + Math.random() * 2;
+              frag = {
+                originX: gx,
+                originY: gy,
+                offsetX: 0,
+                offsetY: 0,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                scatter: 0,
+                size: 1.5 + Math.random() * 1.5,
+              };
+              fragments.set(key, frag);
+            }
+            // Increase scatter
+            frag.scatter = Math.min(1, frag.scatter + 0.06);
+            // Apply velocity
+            frag.offsetX += frag.vx;
+            frag.offsetY += frag.vy;
+            // Dampen slightly
+            frag.vx *= 0.98;
+            frag.vy *= 0.98;
+          } else if (frag) {
+            // Should be reforming — pull back to origin
+            frag.scatter = Math.max(0, frag.scatter - 0.03);
+            frag.offsetX *= 0.92;
+            frag.offsetY *= 0.92;
+            frag.vx *= 0.9;
+            frag.vy *= 0.9;
+
+            // Clean up when fully reformed
+            if (frag.scatter < 0.01 && Math.abs(frag.offsetX) < 0.5 && Math.abs(frag.offsetY) < 0.5) {
+              fragments.delete(key);
+              frag = undefined;
+            }
+          }
+
+          if (frag && frag.scatter > 0.01) {
+            // Draw scattered fragment
+            const fx = gx + frag.offsetX;
+            const fy = gy + frag.offsetY;
+            const alpha = (0.15 + frag.scatter * 0.25) * zoneAlpha;
+            ctx.beginPath();
+            ctx.arc(fx, fy, frag.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(79, 123, 247, ${alpha})`;
+            ctx.fill();
+          }
+        }
+      }
+
+      // Draw grid lines (skip segments near scattered intersections)
       ctx.lineWidth = 1;
 
+      // Vertical lines
       for (let col = 0; col <= cols; col++) {
         const gx = col * GRID_SIZE;
-
-        // Vertical line segments
         for (let row = 0; row < rows; row++) {
           const gy1 = row * GRID_SIZE;
           const gy2 = (row + 1) * GRID_SIZE;
           const midY = (gy1 + gy2) / 2;
 
-          // Base alpha
           let alpha = 0.025;
-
-          // Exclusion zone
           if (zone) {
             const dzx = gx - zone.cx;
             const dzy = midY - zone.cy;
-            const distToZone = Math.sqrt(dzx * dzx + dzy * dzy);
-            if (distToZone < zone.r) { alpha = 0; }
-            else if (distToZone < zone.r + ZONE_FADE) {
-              alpha *= (distToZone - zone.r) / ZONE_FADE;
-            }
+            const d = Math.sqrt(dzx * dzx + dzy * dzy);
+            if (d < zone.r) alpha = 0;
+            else if (d < zone.r + ZONE_FADE) alpha *= (d - zone.r) / ZONE_FADE;
           }
-
           if (alpha <= 0) continue;
 
-          // Calculate wave influence at this segment
-          let waveIntensity = 0;
-          let waveHue = 0; // 0 = blue, 1 = purple
-          for (const wave of waves) {
-            const dx = gx - wave.x;
-            const dy = midY - wave.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            const elapsed = (now - wave.time) / 1000;
-            const waveEdge = elapsed * WAVE_SPEED;
-            const waveDelta = Math.abs(dist - waveEdge);
-            const waveWidth = 60;
+          // Check if either endpoint is scattered
+          const frag1 = fragments.get(`${col},${row}`);
+          const frag2 = fragments.get(`${col},${row + 1}`);
+          const s1 = frag1?.scatter ?? 0;
+          const s2 = frag2?.scatter ?? 0;
+          const maxScatter = Math.max(s1, s2);
 
-            if (waveDelta < waveWidth) {
-              const strength = (1 - waveDelta / waveWidth);
-              const fade = Math.max(0, 1 - waveEdge / WAVE_RADIUS);
-              const intensity = strength * strength * fade;
-              if (intensity > waveIntensity) {
-                waveIntensity = intensity;
-                waveHue = Math.min(1, waveEdge / WAVE_RADIUS);
-              }
-            }
-          }
+          // Fade out line as endpoints scatter
+          const lineAlpha = alpha * (1 - maxScatter);
+          if (lineAlpha < 0.002) continue;
 
-          if (waveIntensity > 0.01) {
-            const r = Math.round(79 + (139 - 79) * waveHue);
-            const g = Math.round(123 + (92 - 123) * waveHue);
-            const b = Math.round(247 + (246 - 247) * waveHue);
-            const finalAlpha = alpha + waveIntensity * 0.15;
-            ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${finalAlpha})`;
-          } else {
-            ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-          }
-
+          ctx.strokeStyle = `rgba(255, 255, 255, ${lineAlpha})`;
           ctx.beginPath();
           ctx.moveTo(gx, gy1);
           ctx.lineTo(gx, gy2);
@@ -188,61 +239,34 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: ColorWaveProps) {
         }
       }
 
+      // Horizontal lines
       for (let row = 0; row <= rows; row++) {
         const gy = row * GRID_SIZE;
-
-        // Horizontal line segments
         for (let col = 0; col < cols; col++) {
           const gx1 = col * GRID_SIZE;
           const gx2 = (col + 1) * GRID_SIZE;
           const midX = (gx1 + gx2) / 2;
 
           let alpha = 0.025;
-
           if (zone) {
             const dzx = midX - zone.cx;
             const dzy = gy - zone.cy;
-            const distToZone = Math.sqrt(dzx * dzx + dzy * dzy);
-            if (distToZone < zone.r) { alpha = 0; }
-            else if (distToZone < zone.r + ZONE_FADE) {
-              alpha *= (distToZone - zone.r) / ZONE_FADE;
-            }
+            const d = Math.sqrt(dzx * dzx + dzy * dzy);
+            if (d < zone.r) alpha = 0;
+            else if (d < zone.r + ZONE_FADE) alpha *= (d - zone.r) / ZONE_FADE;
           }
-
           if (alpha <= 0) continue;
 
-          let waveIntensity = 0;
-          let waveHue = 0;
-          for (const wave of waves) {
-            const dx = midX - wave.x;
-            const dy = gy - wave.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            const elapsed = (now - wave.time) / 1000;
-            const waveEdge = elapsed * WAVE_SPEED;
-            const waveDelta = Math.abs(dist - waveEdge);
-            const waveWidth = 60;
+          const frag1 = fragments.get(`${col},${row}`);
+          const frag2 = fragments.get(`${col + 1},${row}`);
+          const s1 = frag1?.scatter ?? 0;
+          const s2 = frag2?.scatter ?? 0;
+          const maxScatter = Math.max(s1, s2);
 
-            if (waveDelta < waveWidth) {
-              const strength = (1 - waveDelta / waveWidth);
-              const fade = Math.max(0, 1 - waveEdge / WAVE_RADIUS);
-              const intensity = strength * strength * fade;
-              if (intensity > waveIntensity) {
-                waveIntensity = intensity;
-                waveHue = Math.min(1, waveEdge / WAVE_RADIUS);
-              }
-            }
-          }
+          const lineAlpha = alpha * (1 - maxScatter);
+          if (lineAlpha < 0.002) continue;
 
-          if (waveIntensity > 0.01) {
-            const r = Math.round(79 + (139 - 79) * waveHue);
-            const g = Math.round(123 + (92 - 123) * waveHue);
-            const b = Math.round(247 + (246 - 247) * waveHue);
-            const finalAlpha = alpha + waveIntensity * 0.15;
-            ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${finalAlpha})`;
-          } else {
-            ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-          }
-
+          ctx.strokeStyle = `rgba(255, 255, 255, ${lineAlpha})`;
           ctx.beginPath();
           ctx.moveTo(gx1, gy);
           ctx.lineTo(gx2, gy);
