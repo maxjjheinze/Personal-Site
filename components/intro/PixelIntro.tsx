@@ -36,11 +36,6 @@ function easeOutQuart(t: number): number {
   return 1 - Math.pow(1 - t, 4);
 }
 
-/**
- * Measures actual DOM element positions and renders a matching snapshot
- * onto an offscreen canvas. This guarantees the pixel intro aligns
- * perfectly with the real hero layout.
- */
 function renderPageToCanvas(
   w: number,
   h: number,
@@ -51,96 +46,70 @@ function renderPageToCanvas(
   offscreen.height = h;
   const ctx = offscreen.getContext("2d")!;
 
-  // Background
   ctx.fillStyle = BG_CSS;
   ctx.fillRect(0, 0, w, h);
 
   // Grid lines
   ctx.strokeStyle = "rgba(255,255,255,0.025)";
   ctx.lineWidth = 1;
-  for (let x = 0; x < w; x += 80) {
+  for (let gx = 0; gx < w; gx += 80) {
     ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, h);
+    ctx.moveTo(gx, 0);
+    ctx.lineTo(gx, h);
     ctx.stroke();
   }
-  for (let y = 0; y < h; y += 80) {
+  for (let gy = 0; gy < h; gy += 80) {
     ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(w, y);
+    ctx.moveTo(0, gy);
+    ctx.lineTo(w, gy);
     ctx.stroke();
   }
 
-  // Measure real DOM positions
-  const titleEl = document.querySelector("[data-intro-title]");
-  const progressEl = document.querySelector("[data-intro-progress]");
-  const tickerEl = document.querySelector("[data-intro-ticker]");
-  const avatarEl = document.querySelector("[data-intro-avatar]");
+  const isDesktop = w >= 1024;
+  const containerW = Math.min(w, 1280);
+  const containerLeft = (w - containerW) / 2;
+  const paddingX = w >= 1024 ? 80 : w >= 768 ? 48 : 24;
 
-  // The hero elements are rendered with Framer Motion hidden state (y: 40px offset).
-  // Subtract 40 from measured Y to get their final visible positions.
-  const HIDDEN_Y_OFFSET = 40;
+  if (isDesktop) {
+    const centerY = h / 2;
+    const avatarSize = w >= 1280 ? 256 : 230;
 
-  // Use ticker's left edge as the single alignment anchor for all text.
-  // The title has marginLeft: -0.07em to compensate for Space Grotesk glyph
-  // bearing, but the canvas uses sans-serif which has different metrics.
-  // Using one X for everything guarantees alignment in the canvas.
-  const anchorX = tickerEl
-    ? tickerEl.getBoundingClientRect().left
-    : titleEl
-      ? titleEl.getBoundingClientRect().left
-      : 0;
+    // Single X for ALL text — title, progress, and ticker
+    const textX = containerLeft + paddingX;
+    const titleSize = w >= 1280 ? 115 : 58;
 
-  if (titleEl) {
-    const titleRect = titleEl.getBoundingClientRect();
-    const titleY = titleRect.top - HIDDEN_Y_OFFSET;
-
-    const titleStyle = getComputedStyle(titleEl);
-    const fontSize = parseFloat(titleStyle.fontSize);
-
-    // "MAX IN" — first line
+    // "MAX IN"
     ctx.fillStyle = "#EDEDED";
-    ctx.font = `800 ${fontSize}px sans-serif`;
-    ctx.fillText("MAX IN", anchorX, titleY + fontSize * 0.82);
+    ctx.font = `800 ${titleSize}px sans-serif`;
+    ctx.fillText("MAX IN", textX, centerY - 50);
 
     // "PROGRESS"
-    if (progressEl) {
-      const progRect = progressEl.getBoundingClientRect();
-      const grad = ctx.createLinearGradient(anchorX, 0, anchorX + (progRect.right - progRect.left), 0);
-      grad.addColorStop(0, "#4F7BF7");
-      grad.addColorStop(1, "#8B5CF6");
-      ctx.fillStyle = grad;
-      ctx.fillText("PROGRESS", anchorX, progRect.top - HIDDEN_Y_OFFSET + fontSize * 0.82);
-    }
+    const progY = centerY + titleSize * 0.8;
+    const grad = ctx.createLinearGradient(textX, 0, textX + 500, 0);
+    grad.addColorStop(0, "#4F7BF7");
+    grad.addColorStop(1, "#8B5CF6");
+    ctx.fillStyle = grad;
+    ctx.fillText("PROGRESS", textX, progY);
 
-    // Activity ticker
-    if (tickerEl) {
-      const tickerRect = tickerEl.getBoundingClientRect();
-      ctx.fillStyle = "rgba(131,131,140,0.85)";
-      ctx.font = "700 14px sans-serif";
-      ctx.letterSpacing = "3px";
-      ctx.fillText(
-        "BUILDING IN PUBLIC · MELBOURNE, AU",
-        anchorX,
-        tickerRect.top - HIDDEN_Y_OFFSET + 14
-      );
-      ctx.letterSpacing = "0px";
-    }
-  }
+    // Ticker — same textX, no letterSpacing (was causing offset issues)
+    ctx.fillStyle = "rgba(131,131,140,0.85)";
+    ctx.font = "700 14px sans-serif";
+    ctx.fillText("BUILDING IN PUBLIC · MELBOURNE, AU", textX, progY + 50);
 
-  // Avatar — uses scale animation not y offset, so no Y adjustment needed
-  if (avatarEl && avatarImg) {
-    const avatarRect = avatarEl.getBoundingClientRect();
-    const cx = avatarRect.left + avatarRect.width / 2;
-    const cy = avatarRect.top + avatarRect.height / 2;
-    const radius = avatarRect.width / 2;
+    // Avatar
+    const gap = 128;
+    const textAreaW = containerW - paddingX * 2 - avatarSize - gap;
+    const avatarX = containerLeft + paddingX + textAreaW + gap;
+    const avatarY = centerY - avatarSize / 2;
+    const cx = avatarX + avatarSize / 2;
+    const cy = avatarY + avatarSize / 2;
 
     // Glow
-    const glowGrad = ctx.createRadialGradient(cx, cy, radius * 0.3, cx, cy, radius * 1.8);
+    const glowGrad = ctx.createRadialGradient(cx, cy, avatarSize * 0.3, cx, cy, avatarSize * 0.9);
     glowGrad.addColorStop(0, "rgba(79,123,247,0.15)");
     glowGrad.addColorStop(1, "rgba(79,123,247,0)");
     ctx.fillStyle = glowGrad;
-    ctx.fillRect(cx - radius * 1.8, cy - radius * 1.8, radius * 3.6, radius * 3.6);
+    ctx.fillRect(avatarX - avatarSize * 0.4, avatarY - avatarSize * 0.4, avatarSize * 1.8, avatarSize * 1.8);
 
     // Orbit rings
     const orbitOffsets = [40, 68, 96];
@@ -148,23 +117,58 @@ function renderPageToCanvas(
       ctx.strokeStyle = "rgba(237,237,237,0.04)";
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.arc(cx, cy, radius + offset, 0, Math.PI * 2);
+      ctx.arc(cx, cy, avatarSize / 2 + offset, 0, Math.PI * 2);
       ctx.stroke();
     }
 
-    // Avatar image
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-    ctx.clip();
-    ctx.drawImage(avatarImg, avatarRect.left, avatarRect.top, avatarRect.width, avatarRect.height);
-    ctx.restore();
+    if (avatarImg) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, avatarSize / 2, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(avatarImg, avatarX, avatarY, avatarSize, avatarSize);
+      ctx.restore();
 
-    ctx.strokeStyle = "rgba(237,237,237,0.1)";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-    ctx.stroke();
+      ctx.strokeStyle = "rgba(237,237,237,0.1)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, avatarSize / 2, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+  } else {
+    const centerX = w / 2;
+    ctx.textAlign = "center";
+
+    const titleSize = Math.min(w * 0.12, 58);
+    ctx.fillStyle = "#EDEDED";
+    ctx.font = `800 ${titleSize}px sans-serif`;
+    ctx.fillText("MAX IN", centerX, h * 0.2 + titleSize + 10);
+
+    const grad = ctx.createLinearGradient(centerX - 200, 0, centerX + 200, 0);
+    grad.addColorStop(0, "#4F7BF7");
+    grad.addColorStop(1, "#8B5CF6");
+    ctx.fillStyle = grad;
+    ctx.fillText("PROGRESS", centerX, h * 0.2 + titleSize * 2 + 10);
+
+    ctx.fillStyle = "rgba(131,131,140,0.85)";
+    ctx.font = "700 12px sans-serif";
+    ctx.fillText("BUILDING IN PUBLIC · MELBOURNE, AU", centerX, h * 0.2 + titleSize * 2 + 50);
+
+    const avatarSize = Math.min(154, w * 0.4);
+    const avatarX = centerX - avatarSize / 2;
+    const avatarY = h * 0.55;
+
+    if (avatarImg) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(avatarImg, avatarX, avatarY, avatarSize, avatarSize);
+      ctx.restore();
+    }
+
+    ctx.textAlign = "start";
   }
 
   return offscreen;
@@ -263,10 +267,7 @@ export function PixelIntro({
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
-        const progress = Math.max(
-          0,
-          Math.min(1, (elapsed - p.delay) / duration)
-        );
+        const progress = Math.max(0, Math.min(1, (elapsed - p.delay) / duration));
         const eased = easeOutQuart(progress);
 
         if (progress >= 1) doneCount++;
@@ -287,18 +288,14 @@ export function PixelIntro({
         fadeOut();
       }
 
-      if (doneCount === particles.length) {
-        return;
-      }
+      if (doneCount === particles.length) return;
       rafRef.current = requestAnimationFrame(animate);
     },
     [duration, pixelSize, fadeOut]
   );
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (prefersReducedMotion) {
       setIntroComplete(true);
@@ -327,15 +324,12 @@ export function PixelIntro({
     avatarImg.src = "/profile.png";
 
     function startAnimation(img: HTMLImageElement | null) {
-      // Brief delay to let the hero DOM render so we can measure positions
-      requestAnimationFrame(() => {
-        const offscreen = renderPageToCanvas(w, h, img);
-        const particles = sampleParticles(offscreen, pixelSize, maxStagger);
+      const offscreen = renderPageToCanvas(w, h, img);
+      const particles = sampleParticles(offscreen, pixelSize, maxStagger);
 
-        particlesRef.current = particles;
-        startTimeRef.current = 0;
-        rafRef.current = requestAnimationFrame(animate);
-      });
+      particlesRef.current = particles;
+      startTimeRef.current = 0;
+      rafRef.current = requestAnimationFrame(animate);
     }
 
     avatarImg.onload = () => startAnimation(avatarImg);
