@@ -67,8 +67,13 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: SpotlightGridProps)
     const initialTimer = setTimeout(measureExclusionZone, 100);
     window.addEventListener("resize", measureExclusionZone);
 
+    let firstMove = true;
     function handleMouse(e: MouseEvent) {
       cursorRef.current = { x: e.clientX, y: e.clientY };
+      if (firstMove) {
+        smoothCursorRef.current = { x: e.clientX, y: e.clientY };
+        firstMove = false;
+      }
       measureExclusionZone();
     }
     window.addEventListener("mousemove", handleMouse, { passive: true });
