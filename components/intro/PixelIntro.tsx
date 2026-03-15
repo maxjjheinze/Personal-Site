@@ -80,25 +80,26 @@ function renderPageToCanvas(
     const textX = containerLeft + paddingX - 80;
     const contentCenterY = h / 2;
 
-    // Title
+    // Title — shifted left by 0.07em to match CSS marginLeft: -0.07em
     const titleSize = w >= 1280 ? 115 : 58;
+    const titleOffsetX = textX - titleSize * 0.07;
     ctx.fillStyle = "#EDEDED";
     ctx.font = `800 ${titleSize}px sans-serif`;
-    ctx.fillText("MAX IN", textX, contentCenterY - 50);
+    ctx.fillText("MAX IN", titleOffsetX, contentCenterY - 50);
 
-    const grad = ctx.createLinearGradient(textX, 0, textX + 500, 0);
+    const grad = ctx.createLinearGradient(titleOffsetX, 0, titleOffsetX + 500, 0);
     grad.addColorStop(0, "#4F7BF7");
     grad.addColorStop(1, "#8B5CF6");
     ctx.fillStyle = grad;
-    ctx.fillText("PROGRESS", textX, contentCenterY + titleSize * 0.8);
+    ctx.fillText("PROGRESS", titleOffsetX, contentCenterY + titleSize * 0.8);
 
-    // Activity ticker placeholder
+    // Activity ticker placeholder — stays at textX (aligned with title after offset)
     ctx.fillStyle = "rgba(131,131,140,0.6)";
-    ctx.font = "400 14px sans-serif";
+    ctx.font = "700 14px sans-serif";
     ctx.letterSpacing = "3px";
     ctx.fillText(
       "BUILDING IN PUBLIC · MELBOURNE, AU",
-      textX,
+      titleOffsetX,
       contentCenterY + titleSize * 0.8 + 50
     );
     ctx.letterSpacing = "0px";
@@ -177,7 +178,7 @@ function renderPageToCanvas(
     ctx.fillText("PROGRESS", centerX, h * 0.2 + titleSize * 2 + 10);
 
     ctx.fillStyle = "rgba(131,131,140,0.6)";
-    ctx.font = "400 12px sans-serif";
+    ctx.font = "700 12px sans-serif";
     ctx.letterSpacing = "3px";
     ctx.fillText(
       "BUILDING IN PUBLIC · MELBOURNE, AU",
