@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useSpring } from "framer-motion";
+import { motion } from "framer-motion";
 
 interface AnimatedGridProps {
   mouseX?: number;
@@ -8,12 +8,8 @@ interface AnimatedGridProps {
 }
 
 export function AnimatedGrid({ mouseX = 0, mouseY = 0 }: AnimatedGridProps) {
-  // Foreground grid moves more
-  const x1 = useSpring(mouseX * -0.03, { stiffness: 50, damping: 30 });
-  const y1 = useSpring(mouseY * -0.03, { stiffness: 50, damping: 30 });
-  // Background grid moves less — creates depth
-  const x2 = useSpring(mouseX * -0.01, { stiffness: 30, damping: 40 });
-  const y2 = useSpring(mouseY * -0.01, { stiffness: 30, damping: 40 });
+  void mouseX;
+  void mouseY;
 
   return (
     <motion.div
@@ -22,38 +18,6 @@ export function AnimatedGrid({ mouseX = 0, mouseY = 0 }: AnimatedGridProps) {
       animate={{ opacity: 1 }}
       transition={{ duration: 1.5 }}
     >
-      {/* Background grid — larger spacing, fainter, slower parallax */}
-      <motion.div
-        className="absolute inset-0"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)",
-          backgroundSize: "160px 160px",
-          maskImage:
-            "radial-gradient(ellipse 60% 60% at 65% 50%, transparent 20%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,1) 80%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 60% 60% at 65% 50%, transparent 20%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,1) 80%)",
-          x: x2,
-          y: y2,
-        }}
-      />
-
-      {/* Foreground grid — tighter spacing, brighter, more parallax */}
-      <motion.div
-        className="absolute inset-0"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
-          backgroundSize: "80px 80px",
-          maskImage:
-            "radial-gradient(ellipse 60% 60% at 65% 50%, transparent 20%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,1) 80%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 60% 60% at 65% 50%, transparent 20%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,1) 80%)",
-          x: x1,
-          y: y1,
-        }}
-      />
-
       {/* Gradient blobs */}
       <motion.div
         className="absolute -left-[10%] top-[15%] h-[500px] w-[500px] rounded-full bg-accent/[0.04] blur-[120px]"

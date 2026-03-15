@@ -2,16 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 
-interface GridGlowProps {
+interface GridWarpProps {
   mouseX?: number;
   mouseY?: number;
 }
 
 const GRID_SIZE = 80;
-const GLOW_RADIUS = 180;
-// Extra padding beyond the solar system bounding box to ensure no glow bleeds in
+const WARP_RADIUS = 200;
+const WARP_STRENGTH = 30;
 const ZONE_PADDING = 60;
-// Soft fade zone — glow attenuates as intersections approach the exclusion boundary
 const ZONE_FADE = 80;
 
 interface ExclusionZone {
@@ -20,11 +19,11 @@ interface ExclusionZone {
   r: number;
 }
 
-export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridGlowProps) {
+export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridWarpProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef(0);
   const cursorRef = useRef({ x: -9999, y: -9999 });
-  const glowMapRef = useRef<Map<string, number>>(new Map());
+  const smoothCursorRef = useRef({ x: -9999, y: -9999 });
   const exclusionRef = useRef<ExclusionZone | null>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
@@ -61,16 +60,13 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridGlowProps) {
         const rect = solarEl.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
         const cy = rect.top + rect.height / 2;
-        // Use the larger dimension as radius + padding for planet pills extending beyond
         const r = Math.max(rect.width, rect.height) / 2 + ZONE_PADDING;
         exclusionRef.current = { cx, cy, r };
       }
     }
 
-    // Measure on mount (after a tick so layout is settled) and on resize/scroll
     const initialTimer = setTimeout(measureExclusionZone, 100);
     window.addEventListener("resize", measureExclusionZone);
-    window.addEventListener("scroll", measureExclusionZone, { passive: true });
 
     function handleMouse(e: MouseEvent) {
       cursorRef.current = { x: e.clientX, y: e.clientY };
@@ -83,7 +79,34 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridGlowProps) {
     }
     document.addEventListener("mouseleave", handleLeave);
 
-    const glowMap = glowMapRef.current;
+    // Warp a point away from the cursor
+    function warpPoint(px: number, py: number, cx: number, cy: number): [number, number] {
+      const dx = px - cx;
+      const dy = py - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist >= WARP_RADIUS || dist === 0) return [px, py];
+
+      const zone = exclusionRef.current;
+      if (zone) {
+        const dzx = px - zone.cx;
+        const dzy = py - zone.cy;
+        const distToZone = Math.sqrt(dzx * dzx + dzy * dzy);
+        if (distToZone < zone.r) return [px, py];
+      }
+
+      // Cursor inside exclusion zone — no warp
+      if (zone) {
+        const cdx = cx - zone.cx;
+        const cdy = cy - zone.cy;
+        if (Math.sqrt(cdx * cdx + cdy * cdy) < zone.r) return [px, py];
+      }
+
+      const factor = (1 - dist / WARP_RADIUS);
+      const push = factor * factor * WARP_STRENGTH;
+      const nx = px + (dx / dist) * push;
+      const ny = py + (dy / dist) * push;
+      return [nx, ny];
+    }
 
     function tick() {
       const ctx = canvas!.getContext("2d");
@@ -94,85 +117,98 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridGlowProps) {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, cw, ch);
 
-      const cursor = cursorRef.current;
+      // Smooth cursor for fluid warp
+      const target = cursorRef.current;
+      const smooth = smoothCursorRef.current;
+      smooth.x += (target.x - smooth.x) * 0.12;
+      smooth.y += (target.y - smooth.y) * 0.12;
+
+      const cx = smooth.x;
+      const cy = smooth.y;
+
       const zone = exclusionRef.current;
 
-      // Check if cursor is inside the exclusion zone (including fade buffer)
-      const cursorDistToZone = zone
-        ? Math.sqrt((cursor.x - zone.cx) ** 2 + (cursor.y - zone.cy) ** 2)
-        : Infinity;
-      const cursorInZone = zone ? cursorDistToZone < zone.r : false;
+      // Calculate grid bounds with padding
+      const cols = Math.ceil(cw / GRID_SIZE) + 1;
+      const rows = Math.ceil(ch / GRID_SIZE) + 1;
 
-      const activeKeys = new Set<string>();
+      ctx.lineWidth = 1;
 
-      if (!cursorInZone) {
-        const startCol = Math.max(0, Math.floor((cursor.x - GLOW_RADIUS) / GRID_SIZE));
-        const endCol = Math.ceil((cursor.x + GLOW_RADIUS) / GRID_SIZE);
-        const startRow = Math.max(0, Math.floor((cursor.y - GLOW_RADIUS) / GRID_SIZE));
-        const endRow = Math.ceil((cursor.y + GLOW_RADIUS) / GRID_SIZE);
-
-        for (let col = startCol; col <= endCol; col++) {
-          for (let row = startRow; row <= endRow; row++) {
-            const ix = col * GRID_SIZE;
-            const iy = row * GRID_SIZE;
-
-            // Calculate distance from this intersection to the exclusion zone center
-            let zoneAttenuation = 1;
-            if (zone) {
-              const dzx = ix - zone.cx;
-              const dzy = iy - zone.cy;
-              const distToCenter = Math.sqrt(dzx * dzx + dzy * dzy);
-              // Hard exclude anything inside the zone
-              if (distToCenter < zone.r) continue;
-              // Soft fade in the buffer region outside the zone
-              if (distToCenter < zone.r + ZONE_FADE) {
-                zoneAttenuation = (distToCenter - zone.r) / ZONE_FADE;
-              }
-            }
-
-            const dx = cursor.x - ix;
-            const dy = cursor.y - iy;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < GLOW_RADIUS) {
-              const key = `${col},${row}`;
-              activeKeys.add(key);
-              const targetOpacity = (1 - dist / GLOW_RADIUS) * 0.35 * zoneAttenuation;
-              const current = glowMap.get(key) ?? 0;
-              glowMap.set(key, current + (targetOpacity - current) * 0.15);
-            }
-          }
-        }
-      }
-
-      // Fade out inactive intersections
-      for (const [key, val] of glowMap.entries()) {
-        if (!activeKeys.has(key)) {
-          const next = val * 0.9;
-          if (next < 0.002) {
-            glowMap.delete(key);
-          } else {
-            glowMap.set(key, next);
-          }
-        }
-      }
-
-      // Render glowing dots
-      for (const [key, opacity] of glowMap.entries()) {
-        const [colStr, rowStr] = key.split(",");
-        const ix = parseInt(colStr) * GRID_SIZE;
-        const iy = parseInt(rowStr) * GRID_SIZE;
-
-        const grad = ctx.createRadialGradient(ix, iy, 0, ix, iy, 6);
-        grad.addColorStop(0, `rgba(79, 123, 247, ${opacity * 0.6})`);
-        grad.addColorStop(0.5, `rgba(79, 123, 247, ${opacity * 0.2})`);
-        grad.addColorStop(1, `rgba(79, 123, 247, 0)`);
-        ctx.fillStyle = grad;
-        ctx.fillRect(ix - 6, iy - 6, 12, 12);
-
+      // Draw vertical lines (as warped curves)
+      for (let col = 0; col <= cols; col++) {
+        const baseX = col * GRID_SIZE;
         ctx.beginPath();
-        ctx.arc(ix, iy, 1.5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(237, 237, 237, ${opacity})`;
-        ctx.fill();
+
+        for (let row = 0; row <= rows; row++) {
+          const baseY = row * GRID_SIZE;
+          const [wx, wy] = warpPoint(baseX, baseY, cx, cy);
+
+          // Calculate opacity — fade near exclusion zone
+          let alpha = 0.025;
+          if (zone) {
+            const dzx = baseX - zone.cx;
+            const dzy = baseY - zone.cy;
+            const distToZone = Math.sqrt(dzx * dzx + dzy * dzy);
+            if (distToZone < zone.r) {
+              alpha = 0;
+            } else if (distToZone < zone.r + ZONE_FADE) {
+              alpha *= (distToZone - zone.r) / ZONE_FADE;
+            }
+          }
+
+          if (alpha <= 0) {
+            ctx.stroke();
+            ctx.beginPath();
+            continue;
+          }
+
+          ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+
+          if (row === 0) {
+            ctx.moveTo(wx, wy);
+          } else {
+            ctx.lineTo(wx, wy);
+          }
+        }
+        ctx.stroke();
+      }
+
+      // Draw horizontal lines (as warped curves)
+      for (let row = 0; row <= rows; row++) {
+        const baseY = row * GRID_SIZE;
+        ctx.beginPath();
+
+        for (let col = 0; col <= cols; col++) {
+          const baseX = col * GRID_SIZE;
+          const [wx, wy] = warpPoint(baseX, baseY, cx, cy);
+
+          let alpha = 0.025;
+          if (zone) {
+            const dzx = baseX - zone.cx;
+            const dzy = baseY - zone.cy;
+            const distToZone = Math.sqrt(dzx * dzx + dzy * dzy);
+            if (distToZone < zone.r) {
+              alpha = 0;
+            } else if (distToZone < zone.r + ZONE_FADE) {
+              alpha *= (distToZone - zone.r) / ZONE_FADE;
+            }
+          }
+
+          if (alpha <= 0) {
+            ctx.stroke();
+            ctx.beginPath();
+            continue;
+          }
+
+          ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+
+          if (col === 0) {
+            ctx.moveTo(wx, wy);
+          } else {
+            ctx.lineTo(wx, wy);
+          }
+        }
+        ctx.stroke();
       }
 
       rafRef.current = requestAnimationFrame(tick);
@@ -185,7 +221,6 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridGlowProps) {
       cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", resize);
       window.removeEventListener("resize", measureExclusionZone);
-      window.removeEventListener("scroll", measureExclusionZone);
       window.removeEventListener("mousemove", handleMouse);
       document.removeEventListener("mouseleave", handleLeave);
     };
