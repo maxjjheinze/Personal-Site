@@ -74,27 +74,38 @@ function renderPageToCanvas(
     const centerY = h / 2;
     const avatarSize = w >= 1280 ? 256 : 230;
 
-    // Single X for ALL text — title, progress, and ticker
-    const textX = containerLeft + paddingX;
+    const baseX = containerLeft + paddingX;
     const titleSize = w >= 1280 ? 115 : 58;
+
+    // Measure the visual left-side bearing of the title "M" at its font size.
+    // Large glyphs have more invisible whitespace before the visible stroke.
+    // We offset the ticker by the same amount so they visually align.
+    ctx.font = `800 ${titleSize}px sans-serif`;
+    const titleBearing = ctx.measureText("M").actualBoundingBoxLeft;
+
+    ctx.font = "700 14px sans-serif";
+    const tickerBearing = ctx.measureText("B").actualBoundingBoxLeft;
+
+    // The ticker needs to shift right by the difference in glyph bearings
+    const bearingDiff = titleBearing - tickerBearing;
 
     // "MAX IN"
     ctx.fillStyle = "#EDEDED";
     ctx.font = `800 ${titleSize}px sans-serif`;
-    ctx.fillText("MAX IN", textX, centerY - 50);
+    ctx.fillText("MAX IN", baseX, centerY - 50);
 
     // "PROGRESS"
     const progY = centerY + titleSize * 0.8;
-    const grad = ctx.createLinearGradient(textX, 0, textX + 500, 0);
+    const grad = ctx.createLinearGradient(baseX, 0, baseX + 500, 0);
     grad.addColorStop(0, "#4F7BF7");
     grad.addColorStop(1, "#8B5CF6");
     ctx.fillStyle = grad;
-    ctx.fillText("PROGRESS", textX, progY);
+    ctx.fillText("PROGRESS", baseX, progY);
 
-    // Ticker — same textX, no letterSpacing (was causing offset issues)
+    // Ticker — shifted right to visually align with the large title glyphs
     ctx.fillStyle = "rgba(131,131,140,0.85)";
     ctx.font = "700 14px sans-serif";
-    ctx.fillText("BUILDING IN PUBLIC · MELBOURNE, AU", textX, progY + 50);
+    ctx.fillText("BUILDING IN PUBLIC · MELBOURNE, AU", baseX + bearingDiff, progY + 50);
 
     // Avatar
     const gap = 128;
