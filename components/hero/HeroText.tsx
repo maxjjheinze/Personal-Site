@@ -90,7 +90,7 @@ export function HeroText() {
       {/* Title */}
       <motion.h1
         data-intro-title
-        className="font-display text-3xl font-bold leading-[0.9] tracking-tighter sm:text-4xl lg:text-[46px] xl:text-[5.75rem]"
+        className="font-display text-3xl font-bold leading-[1.05] tracking-tighter sm:text-4xl lg:text-[46px] xl:text-[5.75rem]"
         style={{ marginLeft: "-0.07em" }}
         variants={itemVariants}
       >
