@@ -29,10 +29,10 @@ export function Hero() {
       {/* Content */}
       <div className="relative z-20 w-full max-w-7xl px-6 md:px-12 lg:px-20">
         <div className="flex flex-col items-center gap-10 lg:flex-row lg:gap-6">
-          <div className="flex-1 lg:pl-[68px]">
+          <div className="flex-1 lg:translate-x-[68px]">
             <HeroText />
           </div>
-          <div className="lg:-ml-[68px]">
+          <div className="lg:-translate-x-[136px]">
             <AvatarSection mouseX={mouse.x} mouseY={mouse.y} />
           </div>
         </div>
