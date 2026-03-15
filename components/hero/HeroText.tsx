@@ -60,7 +60,7 @@ function ActivityTicker() {
   const messages = getMessages();
 
   return (
-    <div className="mt-8 h-6 overflow-hidden pl-[0.05em]">
+    <div className="mt-8 h-6 overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.p
           key={index}
@@ -89,7 +89,7 @@ export function HeroText() {
     >
       {/* Title */}
       <motion.h1
-        className="font-display text-4xl font-bold leading-[0.9] tracking-tighter sm:text-5xl lg:text-[58px] xl:text-[7.2rem]"
+        className="font-display text-4xl font-bold leading-[0.9] tracking-tighter sm:text-5xl lg:text-[58px] xl:text-[7.2rem] ml-[-0.04em]"
         variants={itemVariants}
       >
         <span className="block">MAX IN</span>
