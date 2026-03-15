@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const EDGE_FADE_DISTANCE = 50;
-// Frames to show cursor at full opacity on re-entry before edge fade kicks in
 const ENTRY_GRACE_FRAMES = 10;
 
 const TRANSPARENT_CURSOR =
@@ -11,15 +10,20 @@ const TRANSPARENT_CURSOR =
 
 export function CustomCursor() {
   const ringRef = useRef<HTMLDivElement>(null);
+  const shieldRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef(0);
   const pos = useRef({ x: -100, y: -100 });
   const visible = useRef(true);
   const entryGraceRef = useRef(0);
+  const [isFinePointer, setIsFinePointer] = useState(false);
 
   useEffect(() => {
-    if (window.matchMedia("(pointer: coarse)").matches) return;
+    setIsFinePointer(!window.matchMedia("(pointer: coarse)").matches);
+  }, []);
 
-    // Reinforce transparent cursor via JS so it's always set
+  useEffect(() => {
+    if (!isFinePointer) return;
+
     document.documentElement.style.cursor = TRANSPARENT_CURSOR;
     document.body.style.cursor = TRANSPARENT_CURSOR;
 
@@ -37,7 +41,6 @@ export function CustomCursor() {
       visible.current = true;
       entryGraceRef.current = ENTRY_GRACE_FRAMES;
 
-      // Reinforce cursor hiding on every re-entry
       document.documentElement.style.cursor = TRANSPARENT_CURSOR;
       document.body.style.cursor = TRANSPARENT_CURSOR;
     }
@@ -54,11 +57,9 @@ export function CustomCursor() {
         if (!visible.current) {
           clampedFade = 0;
         } else if (entryGraceRef.current > 0) {
-          // During grace period, show at full opacity regardless of edge proximity
           entryGraceRef.current--;
           clampedFade = 1;
         } else {
-          // Normal edge fade
           const edgeFactor = Math.min(
             x / EDGE_FADE_DISTANCE,
             y / EDGE_FADE_DISTANCE,
@@ -88,16 +89,68 @@ export function CustomCursor() {
       document.removeEventListener("mouseenter", handleMouseEnter);
       cancelAnimationFrame(rafRef.current);
     };
-  }, []);
+  }, [isFinePointer]);
+
+  useEffect(() => {
+    if (!isFinePointer) return;
+
+    // The shield captures cursor display but must forward all interactions.
+    // We briefly disable pointer-events on the shield during click/mousedown
+    // so the real target underneath receives the event.
+    const shield = shieldRef.current;
+    if (!shield) return;
+
+    function letThrough(e: MouseEvent) {
+      shield!.style.pointerEvents = "none";
+      // Re-dispatch to the real target underneath
+      const target = document.elementFromPoint(e.clientX, e.clientY);
+      if (target && target !== shield) {
+        const cloned = new MouseEvent(e.type, e);
+        target.dispatchEvent(cloned);
+      }
+      // Re-enable shield on next frame
+      requestAnimationFrame(() => {
+        if (shield) shield.style.pointerEvents = "auto";
+      });
+    }
+
+    shield.addEventListener("click", letThrough, true);
+    shield.addEventListener("mousedown", letThrough, true);
+    shield.addEventListener("mouseup", letThrough, true);
+    shield.addEventListener("dblclick", letThrough, true);
+    shield.addEventListener("contextmenu", letThrough, true);
+
+    return () => {
+      shield.removeEventListener("click", letThrough, true);
+      shield.removeEventListener("mousedown", letThrough, true);
+      shield.removeEventListener("mouseup", letThrough, true);
+      shield.removeEventListener("dblclick", letThrough, true);
+      shield.removeEventListener("contextmenu", letThrough, true);
+    };
+  }, [isFinePointer]);
+
+  if (!isFinePointer) return null;
 
   return (
-    <div
-      ref={ringRef}
-      className="pointer-events-none fixed left-0 top-0 z-[99999] hidden h-6 w-6 rounded-full border-2 border-foreground/40 md:block"
-      style={{
-        boxShadow: "0 0 10px rgba(79,123,247,0.3), 0 0 20px rgba(79,123,247,0.1)",
-        willChange: "transform, opacity",
-      }}
-    />
+    <>
+      {/* Layer 1: Full-screen cursor shield — ensures native cursor never shows.
+          Captures cursor display with the transparent SVG cursor, forwards
+          all click/interaction events to elements underneath. */}
+      <div
+        ref={shieldRef}
+        className="fixed inset-0 z-[99998]"
+        style={{ cursor: TRANSPARENT_CURSOR }}
+      />
+
+      {/* Layer 2: The visible custom orbit ring cursor */}
+      <div
+        ref={ringRef}
+        className="pointer-events-none fixed left-0 top-0 z-[99999] h-6 w-6 rounded-full border-2 border-foreground/40"
+        style={{
+          boxShadow: "0 0 10px rgba(79,123,247,0.3), 0 0 20px rgba(79,123,247,0.1)",
+          willChange: "transform, opacity",
+        }}
+      />
+    </>
   );
 }
