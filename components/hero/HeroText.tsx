@@ -90,12 +90,12 @@ export function HeroText() {
       {/* Title */}
       <motion.h1
         data-intro-title
-        className="font-display text-3xl font-bold leading-none tracking-tighter sm:text-4xl lg:text-[46px] xl:text-[5.75rem]"
-        style={{ marginLeft: "-0.07em" }}
+        className="font-display text-3xl font-bold tracking-tighter sm:text-4xl lg:text-[46px] xl:text-[5.75rem]"
+        style={{ marginLeft: "-0.07em", lineHeight: 1.2 }}
         variants={itemVariants}
       >
-        <span className="block">MAX IN</span>
-        <span data-intro-progress className="mt-3 block bg-gradient-to-r from-[#4F7BF7] to-[#8B5CF6] bg-clip-text pr-[0.05em] text-transparent">
+        <span className="block pb-2">MAX IN</span>
+        <span data-intro-progress className="block bg-gradient-to-r from-[#4F7BF7] to-[#8B5CF6] bg-clip-text pr-[0.05em] pt-2 text-transparent">
           PROGRESS
         </span>
       </motion.h1>
