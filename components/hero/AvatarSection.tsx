@@ -12,12 +12,25 @@ interface AvatarSectionProps {
 }
 
 const ORBITS = [
-  { label: "LET'S CONNECT", radiusOffset: 50, speed: 0.2625, startAngle: 0, color: "#4F7BF7" },
-  { label: "ABOUT ME", radiusOffset: 85, speed: -0.1875, startAngle: 2.1, color: "#8B5CF6" },
-  { label: "MY PROJECTS", radiusOffset: 120, speed: 0.135, startAngle: 4.2, color: "#38BDF8" },
+  { label: "LET'S CONNECT", radiusOffset: 40, speed: 0.2625, startAngle: 0, color: "#4F7BF7" },
+  { label: "ABOUT ME", radiusOffset: 68, speed: -0.1875, startAngle: 2.1, color: "#8B5CF6" },
+  { label: "MY PROJECTS", radiusOffset: 96, speed: 0.135, startAngle: 4.2, color: "#38BDF8" },
 ];
 
-function ConnectModal({ onClose }: { onClose: () => void }) {
+interface ModalProps {
+  onClose: () => void;
+  originRect?: { x: number; y: number } | null;
+}
+
+function ConnectModal({ onClose, originRect }: ModalProps) {
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [onClose]);
+
   return (
     <motion.div
       key="planet-modal"
@@ -28,15 +41,18 @@ function ConnectModal({ onClose }: { onClose: () => void }) {
       transition={{ duration: 0.2 }}
     >
       <div
+        role="presentation"
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        style={{ overscrollBehavior: "contain" }}
         onClick={onClose}
       />
       <motion.div
         className="relative z-10 mx-4 w-full max-w-md rounded-2xl border border-border bg-background/95 p-10 backdrop-blur-xl"
-        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        initial={{ scale: 0.5, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        exit={{ scale: 0.5, opacity: 0, y: 20 }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        style={originRect ? { transformOrigin: `${originRect.x}px ${originRect.y}px` } : undefined}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-8 flex items-center justify-between">
@@ -45,6 +61,7 @@ function ConnectModal({ onClose }: { onClose: () => void }) {
           </h2>
           <button
             onClick={onClose}
+            aria-label="Close"
             className="text-lg text-muted-foreground transition-colors hover:text-foreground"
           >
             &#x2715;
@@ -89,7 +106,15 @@ function ConnectModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-function AboutModal({ onClose }: { onClose: () => void }) {
+function AboutModal({ onClose, originRect }: ModalProps) {
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [onClose]);
+
   return (
     <motion.div
       key="about-modal"
@@ -100,15 +125,18 @@ function AboutModal({ onClose }: { onClose: () => void }) {
       transition={{ duration: 0.2 }}
     >
       <div
+        role="presentation"
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        style={{ overscrollBehavior: "contain" }}
         onClick={onClose}
       />
       <motion.div
         className="relative z-10 mx-4 w-full max-w-lg rounded-2xl border border-border bg-background/95 p-10 backdrop-blur-xl"
-        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        initial={{ scale: 0.5, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        exit={{ scale: 0.5, opacity: 0, y: 20 }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        style={originRect ? { transformOrigin: `${originRect.x}px ${originRect.y}px` } : undefined}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-8 flex items-center justify-between">
@@ -117,6 +145,7 @@ function AboutModal({ onClose }: { onClose: () => void }) {
           </h2>
           <button
             onClick={onClose}
+            aria-label="Close"
             className="text-lg text-muted-foreground transition-colors hover:text-foreground"
           >
             &#x2715;
@@ -147,55 +176,15 @@ function AboutModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-function DefaultModal({ title, onClose }: { title: string; onClose: () => void }) {
-  return (
-    <motion.div
-      key="planet-modal"
-      className="fixed inset-0 z-[10000] flex items-center justify-center"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-    >
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      <motion.div
-        className="relative z-10 mx-4 w-full max-w-lg rounded-2xl border border-border bg-background/95 p-8 backdrop-blur-xl"
-        initial={{ scale: 0.9, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="font-display text-xl font-semibold">
-            {title}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-lg text-muted-foreground transition-colors hover:text-foreground"
-          >
-            &#x2715;
-          </button>
-        </div>
-        <div className="flex min-h-[200px] items-center justify-center text-muted-foreground">
-          Coming soon...
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
 export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
   const introComplete = useIntroComplete();
   const avatarX = useSpring(mouseX * 0.02, { stiffness: 100, damping: 30 });
   const avatarY = useSpring(mouseY * 0.02, { stiffness: 100, damping: 30 });
 
   const [activePlanet, setActivePlanet] = useState<string | null>(null);
+  const [modalOrigin, setModalOrigin] = useState<{ x: number; y: number } | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [avatarRadius, setAvatarRadius] = useState(160);
+  const [avatarRadius, setAvatarRadius] = useState(128);
 
   const avatarRef = useRef<HTMLDivElement>(null);
   const planetRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -205,11 +194,15 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
   const isNearRef = useRef(false);
   const rafRef = useRef(0);
   const lastTimeRef = useRef(0);
-  const avatarRadiusRef = useRef(160);
+  const avatarRadiusRef = useRef(128);
   const proximityRef = useRef(0);
   const solarSystemRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
   const ringRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Magnetic cursor state
+  const cursorRef = useRef({ x: 0, y: 0 });
+  const avatarCenterRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => setMounted(true), []);
 
@@ -221,6 +214,8 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
         const r = el.offsetWidth / 2;
         setAvatarRadius(r);
         avatarRadiusRef.current = r;
+        const rect = el.getBoundingClientRect();
+        avatarCenterRef.current = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
       }
     };
     measure();
@@ -228,24 +223,23 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
     return () => window.removeEventListener("resize", measure);
   }, []);
 
-  // Mouse proximity detection (continuous 0-1 value based on full solar system radius)
+  // Mouse proximity + cursor tracking
   useEffect(() => {
     function handleMouseMove(e: MouseEvent) {
+      cursorRef.current = { x: e.clientX, y: e.clientY };
       const el = avatarRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
+      avatarCenterRef.current = { x: cx, y: cy };
       const dist = Math.sqrt((e.clientX - cx) ** 2 + (e.clientY - cy) ** 2);
-      // Full solar system radius = avatar radius + outermost orbit offset + padding for planet pill
-      const solarRadius = avatarRadiusRef.current + 120 + 60;
+      const solarRadius = avatarRadiusRef.current + 96 + 60;
       const fadeZone = 120;
       isNearRef.current = dist < solarRadius + fadeZone;
       if (dist <= solarRadius) {
-        // Inside the solar system — full effect everywhere
         proximityRef.current = 1;
       } else {
-        // Smooth fade-out outside
         const raw = 1 - Math.min((dist - solarRadius) / fadeZone, 1);
         proximityRef.current = raw * raw;
       }
@@ -254,7 +248,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  // Orbit animation loop
+  // Orbit animation loop with magnetic cursor
   useEffect(() => {
     if (!introComplete) return;
 
@@ -264,26 +258,38 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
       const delta = lastTimeRef.current ? time - lastTimeRef.current : 16;
       lastTimeRef.current = time;
 
-      // Smooth speed interpolation toward target
       const target = isNearRef.current ? 0.1875 : 1.125;
       speedRef.current += (target - speedRef.current) * 0.03;
 
       const r0 = avatarRadiusRef.current;
       const p = proximityRef.current;
+      const center = avatarCenterRef.current;
+      const cursor = cursorRef.current;
 
       ORBITS.forEach((orbit, i) => {
         anglesRef.current[i] += orbit.speed * (delta / 1000) * speedRef.current;
 
         const r = r0 + orbit.radiusOffset;
         const angle = anglesRef.current[i];
-        const x = Math.cos(angle) * r;
-        const y = Math.sin(angle) * r;
+        let x = Math.cos(angle) * r;
+        let y = Math.sin(angle) * r;
+
+        // Magnetic cursor pull
+        const planetWorldX = center.x + x;
+        const planetWorldY = center.y + y;
+        const dx = cursor.x - planetWorldX;
+        const dy = cursor.y - planetWorldY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 80 && dist > 0) {
+          const strength = (1 - dist / 80) * 6;
+          x += (dx / dist) * strength;
+          y += (dy / dist) * strength;
+        }
 
         const el = planetRefs.current[i];
         if (el) {
           const planetScale = 1 + p * 0.15;
           el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${planetScale})`;
-          // Hysteresis to prevent rapid flipping at x ≈ 0
           const currentDir = flexDirRef.current[i];
           if (currentDir === "row" && x < -30) {
             flexDirRef.current[i] = "row-reverse";
@@ -294,13 +300,11 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
         }
       });
 
-      // Scale up solar system
       const ss = solarSystemRef.current;
       if (ss) {
         ss.style.transform = `scale(${1 + p * 0.05})`;
       }
 
-      // Intensify glow
       const glow = glowRef.current;
       if (glow) {
         const glowScale = 1.5 + p * 0.5;
@@ -309,7 +313,6 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
         glow.style.opacity = String(glowOpacity);
       }
 
-      // Brighten orbit rings
       ringRefs.current.forEach((ring) => {
         if (ring) {
           ring.style.borderColor = `rgba(237, 237, 237, ${0.04 + p * 0.12})`;
@@ -323,7 +326,37 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
     return () => cancelAnimationFrame(rafRef.current);
   }, [introComplete]);
 
-  const closePlanet = useCallback(() => setActivePlanet(null), []);
+  const closePlanet = useCallback(() => {
+    setActivePlanet(null);
+    setModalOrigin(null);
+  }, []);
+
+  const handlePlanetClick = useCallback((label: string, index: number) => {
+    if (label === "MY PROJECTS") {
+      const el = document.getElementById("projects");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+    }
+    // Capture pill position for source-aware transition
+    const pillEl = planetRefs.current[index];
+    if (pillEl) {
+      const rect = pillEl.getBoundingClientRect();
+      setModalOrigin({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+    }
+    setActivePlanet(label);
+  }, []);
+
+  // Reduced motion check for breathing animation
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   return (
     <>
@@ -370,12 +403,15 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
             );
           })}
 
-        {/* Avatar */}
+        {/* Avatar with breathing animation */}
         <motion.div
           ref={avatarRef}
-          className="relative h-48 w-48 overflow-hidden rounded-full border-2 border-foreground/10 sm:h-56 sm:w-56 lg:h-72 lg:w-72 xl:h-80 xl:w-80"
+          className="relative h-[154px] w-[154px] overflow-hidden rounded-full border-2 border-foreground/10 sm:h-[179px] sm:w-[179px] lg:h-[230px] lg:w-[230px] xl:h-64 xl:w-64"
+          animate={prefersReducedMotion ? {} : { scale: [1, 1.02, 1] }}
           whileHover={{ scale: 1.05 }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          transition={prefersReducedMotion ? { type: "spring", stiffness: 300, damping: 20 } : {
+            scale: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+          }}
         >
           <Image
             src="/profile.png"
@@ -383,20 +419,21 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
             fill
             className="object-cover"
             priority
-            sizes="(max-width: 640px) 192px, (max-width: 1024px) 224px, (max-width: 1280px) 288px, 320px"
+            sizes="(max-width: 640px) 154px, (max-width: 1024px) 179px, (max-width: 1280px) 230px, 256px"
           />
         </motion.div>
 
         {/* Orbiting planets */}
         {introComplete &&
           ORBITS.map((orbit, i) => (
-            <div
+            <button
               key={orbit.label}
               ref={(el) => {
-                planetRefs.current[i] = el;
+                planetRefs.current[i] = el as HTMLDivElement | null;
               }}
-              className="absolute left-1/2 top-1/2 flex items-center cursor-pointer group"
-              onClick={() => setActivePlanet(orbit.label)}
+              className="absolute left-1/2 top-1/2 flex items-center cursor-pointer group border-0 bg-transparent p-0"
+              aria-label={orbit.label}
+              onClick={() => handlePlanetClick(orbit.label, i)}
             >
               <div
                 className="flex items-center gap-2 rounded-full border border-foreground/[0.08] bg-background/60 px-3 py-1.5 backdrop-blur-sm transition-all duration-300 group-hover:border-foreground/20 group-hover:bg-background/80"
@@ -411,11 +448,11 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
                     boxShadow: `0 0 8px ${orbit.color}66`,
                   }}
                 />
-                <span className="font-mono text-[10px] font-medium uppercase tracking-[0.15em] text-muted-foreground/70 group-hover:text-foreground/90 transition-colors duration-300 whitespace-nowrap select-none">
+                <span className="font-mono text-[12px] font-medium uppercase tracking-[0.15em] text-muted-foreground/70 group-hover:text-foreground/90 transition-colors duration-300 whitespace-nowrap select-none">
                   {orbit.label}
                 </span>
               </div>
-            </div>
+            </button>
           ))}
       </motion.div>
       </div>
@@ -425,13 +462,10 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
         createPortal(
           <AnimatePresence>
             {activePlanet === "LET'S CONNECT" && (
-              <ConnectModal onClose={closePlanet} />
+              <ConnectModal onClose={closePlanet} originRect={modalOrigin} />
             )}
             {activePlanet === "ABOUT ME" && (
-              <AboutModal onClose={closePlanet} />
-            )}
-            {activePlanet === "MY PROJECTS" && (
-              <DefaultModal title={activePlanet} onClose={closePlanet} />
+              <AboutModal onClose={closePlanet} originRect={modalOrigin} />
             )}
           </AnimatePresence>,
           document.body

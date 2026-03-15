@@ -54,28 +54,17 @@ function renderPageToCanvas(
   ctx.fillStyle = BG_CSS;
   ctx.fillRect(0, 0, w, h);
 
-  // Grid lines
-  ctx.strokeStyle = "rgba(255,255,255,0.03)";
-  ctx.lineWidth = 1;
+  // Dot grid (matching AnimatedGrid dot pattern)
+  ctx.fillStyle = "rgba(255,255,255,0.15)";
   for (let x = 0; x < w; x += 80) {
-    ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, h);
-    ctx.stroke();
-  }
-  for (let y = 0; y < h; y += 80) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(w, y);
-    ctx.stroke();
+    for (let y = 0; y < h; y += 80) {
+      ctx.beginPath();
+      ctx.arc(x, y, 1, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
-  // Scale content to match hero's scale-[0.8] transform
-  const CONTENT_SCALE = 0.8;
-  ctx.save();
-  ctx.translate(w * (1 - CONTENT_SCALE) / 2, h * (1 - CONTENT_SCALE) / 2);
-  ctx.scale(CONTENT_SCALE, CONTENT_SCALE);
-
+  // No scale transform — content renders at native size now
   const isDesktop = w >= 1024;
   const containerW = Math.min(w, 1280);
   const containerLeft = (w - containerW) / 2;
@@ -85,24 +74,24 @@ function renderPageToCanvas(
     const textX = containerLeft + paddingX - 80;
     const contentCenterY = h / 2;
 
-    // Blinking line (drawn as static white bar for pixel snapshot)
+    // Blinking line
     ctx.fillStyle = "#EDEDED";
     ctx.fillRect(textX - 12, contentCenterY - 188, 3, 16);
 
     // Label
     ctx.fillStyle = "#4F7BF7";
-    ctx.font = "600 12px sans-serif";
+    ctx.font = "600 14px sans-serif";
     ctx.letterSpacing = "4px";
     ctx.fillText("PORTFOLIO / 2026", textX, contentCenterY - 180);
     ctx.letterSpacing = "0px";
 
-    // Title
-    const titleSize = w >= 1280 ? 144 : 72;
+    // Title — sizes match new HeroText (no 0.8 scale)
+    const titleSize = w >= 1280 ? 115 : 58;
     ctx.fillStyle = "#EDEDED";
     ctx.font = `800 ${titleSize}px sans-serif`;
     ctx.fillText("MAX IN", textX, contentCenterY - 50);
 
-    const grad = ctx.createLinearGradient(textX, 0, textX + 600, 0);
+    const grad = ctx.createLinearGradient(textX, 0, textX + 500, 0);
     grad.addColorStop(0, "#4F7BF7");
     grad.addColorStop(1, "#8B5CF6");
     ctx.fillStyle = grad;
@@ -110,35 +99,26 @@ function renderPageToCanvas(
 
     // Tagline
     ctx.fillStyle = "#83838C";
-    ctx.font = "400 20px sans-serif";
+    ctx.font = "400 18px sans-serif";
     ctx.fillText(
       "Vibe Coder Who Loves Crypto and Trading.",
       textX,
       contentCenterY + titleSize * 0.8 + 50
     );
 
-    // Date & Time
-    const now = new Date();
-    const dateStr = now
-      .toLocaleDateString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-      })
-      .toUpperCase();
-    const timeStr = now.toLocaleTimeString("en-US", { hour12: false });
+    // Activity ticker placeholder
     ctx.fillStyle = "rgba(131,131,140,0.6)";
-    ctx.font = "400 12px sans-serif";
+    ctx.font = "400 14px sans-serif";
     ctx.letterSpacing = "3px";
     ctx.fillText(
-      `${dateStr}  ·  ${timeStr}`,
+      "BUILDING IN PUBLIC · MELBOURNE, AU",
       textX,
       contentCenterY + titleSize * 0.8 + 80
     );
     ctx.letterSpacing = "0px";
 
-    // Avatar
-    const avatarSize = w >= 1280 ? 320 : 288;
+    // Avatar — sizes match new AvatarSection (no 0.8 scale)
+    const avatarSize = w >= 1280 ? 256 : 230;
     const gap = 96;
     const textWidth = containerW - paddingX * 2 - gap - avatarSize;
     const avatarX = containerLeft + paddingX + textWidth + gap;
@@ -165,8 +145,8 @@ function renderPageToCanvas(
       avatarSize * 1.8
     );
 
-    // Orbit rings
-    const orbitOffsets = [50, 85, 120];
+    // Orbit rings — updated offsets
+    const orbitOffsets = [40, 68, 96];
     for (const offset of orbitOffsets) {
       ctx.strokeStyle = "rgba(237,237,237,0.04)";
       ctx.lineWidth = 1;
@@ -194,15 +174,15 @@ function renderPageToCanvas(
     const centerX = w / 2;
     ctx.textAlign = "center";
 
-    // Blinking line (static white bar for pixel snapshot)
+    // Blinking line
     ctx.fillStyle = "#EDEDED";
     ctx.fillRect(centerX - 55, h * 0.2 - 10, 3, 14);
 
     ctx.fillStyle = "#4F7BF7";
-    ctx.font = "600 10px sans-serif";
+    ctx.font = "600 12px sans-serif";
     ctx.fillText("PORTFOLIO / 2026", centerX, h * 0.2);
 
-    const titleSize = Math.min(w * 0.15, 72);
+    const titleSize = Math.min(w * 0.12, 58);
     ctx.fillStyle = "#EDEDED";
     ctx.font = `800 ${titleSize}px sans-serif`;
     ctx.fillText("MAX IN", centerX, h * 0.2 + titleSize + 10);
@@ -219,33 +199,24 @@ function renderPageToCanvas(
     ctx.fillText("PROGRESS", centerX, h * 0.2 + titleSize * 2 + 10);
 
     ctx.fillStyle = "#83838C";
-    ctx.font = "400 16px sans-serif";
+    ctx.font = "400 14px sans-serif";
     ctx.fillText(
       "Vibe Coder Who Loves Crypto and Trading.",
       centerX,
       h * 0.2 + titleSize * 2 + 50
     );
 
-    const now = new Date();
-    const dateStr = now
-      .toLocaleDateString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-      })
-      .toUpperCase();
-    const timeStr = now.toLocaleTimeString("en-US", { hour12: false });
     ctx.fillStyle = "rgba(131,131,140,0.6)";
-    ctx.font = "400 10px sans-serif";
+    ctx.font = "400 12px sans-serif";
     ctx.letterSpacing = "3px";
     ctx.fillText(
-      `${dateStr}  ·  ${timeStr}`,
+      "BUILDING IN PUBLIC · MELBOURNE, AU",
       centerX,
       h * 0.2 + titleSize * 2 + 75
     );
     ctx.letterSpacing = "0px";
 
-    const avatarSize = Math.min(192, w * 0.45);
+    const avatarSize = Math.min(154, w * 0.4);
     const avatarX = centerX - avatarSize / 2;
     const avatarY = h * 0.55;
 
@@ -266,8 +237,6 @@ function renderPageToCanvas(
 
     ctx.textAlign = "start";
   }
-
-  ctx.restore();
 
   return offscreen;
 }

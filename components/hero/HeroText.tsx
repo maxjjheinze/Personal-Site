@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useIntroComplete } from "@/components/intro/PixelIntro";
 
 const containerVariants = {
@@ -20,28 +20,53 @@ const itemVariants = {
   },
 };
 
-function LiveDateTime() {
+function ActivityTicker() {
+  const [index, setIndex] = useState(0);
   const [now, setNow] = useState<Date | null>(null);
+  const indexRef = useRef(0);
 
   useEffect(() => {
     setNow(new Date());
-    const id = setInterval(() => setNow(new Date()), 1000);
+    const clockId = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(clockId);
+  }, []);
+
+  const getMessages = useCallback(() => {
+    const timeStr = now
+      ? now.toLocaleTimeString("en-US", { hour12: false })
+      : "";
+    return [
+      "BUILDING IN PUBLIC \u00B7 MELBOURNE, AU",
+      `CURRENTLY CODING \u00B7 ${timeStr}`,
+      "TRADING CRYPTO \u00B7 LIVE",
+    ];
+  }, [now]);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      indexRef.current = (indexRef.current + 1) % 3;
+      setIndex(indexRef.current);
+    }, 4500);
     return () => clearInterval(id);
   }, []);
 
-  if (!now) return null;
-
-  const dateStr = now.toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  });
-  const timeStr = now.toLocaleTimeString("en-US", { hour12: false });
+  const messages = getMessages();
 
   return (
-    <p className="mt-4 font-mono text-sm uppercase tracking-[0.25em] text-muted-foreground/60">
-      {dateStr} &nbsp;&middot;&nbsp; {timeStr}
-    </p>
+    <div className="mt-4 h-6 overflow-hidden">
+      <AnimatePresence mode="wait">
+        <motion.p
+          key={index}
+          className="font-mono text-sm uppercase tracking-[0.25em] text-muted-foreground/60"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -20, opacity: 0 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
+          {messages[index]}
+        </motion.p>
+      </AnimatePresence>
+    </div>
   );
 }
 
@@ -57,25 +82,19 @@ export function HeroText() {
     >
       {/* Label */}
       <motion.p
-        className="mb-6 flex items-center gap-3 font-mono text-[9px] font-medium uppercase tracking-[0.4em] text-accent sm:text-[11px]"
+        className="mb-6 flex items-center gap-3 font-mono text-[12px] font-medium uppercase tracking-[0.4em] text-accent sm:text-[14px]"
         variants={itemVariants}
       >
         <span className="h-4 w-[3px] shrink-0 animate-blink rounded-full bg-foreground" />
         Portfolio / 2026
       </motion.p>
 
-      {/* Title */}
+      {/* Title — single h1 with block spans */}
       <motion.h1
-        className="font-display text-5xl font-bold leading-[0.9] tracking-tighter sm:text-6xl lg:text-7xl xl:text-[9rem]"
+        className="font-display text-4xl font-bold leading-[0.9] tracking-tighter sm:text-5xl lg:text-[58px] xl:text-[7.2rem]"
         variants={itemVariants}
       >
-        MAX IN
-      </motion.h1>
-
-      <motion.h1
-        className="inline-block font-display text-5xl font-bold leading-[0.9] tracking-tighter sm:text-6xl lg:text-7xl xl:text-[9rem]"
-        variants={itemVariants}
-      >
+        <span className="block">MAX IN</span>
         <span className="inline-block bg-gradient-to-r from-[#4F7BF7] to-[#8B5CF6] bg-clip-text pr-[0.05em] text-transparent">
           PROGRESS
         </span>
@@ -89,9 +108,9 @@ export function HeroText() {
         Vibe Coder Who Loves Crypto and Trading.
       </motion.p>
 
-      {/* Date & Time */}
+      {/* Activity Ticker */}
       <motion.div variants={itemVariants}>
-        <LiveDateTime />
+        <ActivityTicker />
       </motion.div>
     </motion.div>
   );
