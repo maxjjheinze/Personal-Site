@@ -75,7 +75,6 @@ function renderPageToCanvas(
     const avatarSize = w >= 1280 ? 205 : 184;
 
     const baseX = containerLeft + paddingX;
-    const titleSize = w >= 1280 ? 92 : 46;
 
     // Find the actual visible left edge of the title "M" by pixel-scanning.
     // Render "M" on a tiny temp canvas, scan columns left-to-right for the
@@ -102,28 +101,34 @@ function renderPageToCanvas(
       return 0;
     }
 
-    const titleLeftEdge = findVisualLeftEdge(`800 ${titleSize}px sans-serif`, "M", titleSize);
-    const tickerLeftEdge = findVisualLeftEdge("700 12px sans-serif", "B", 12);
+    // Use explicit pixel values for xl (92px font) and lg (46px font)
+    const isXL = w >= 1280;
+    const fontSize = isXL ? 92 : 46;
+    const maxInY = isXL ? centerY - 30 : centerY - 15;
+    const progressY = isXL ? centerY + 75 : centerY + 38;
+    const tickerY = isXL ? centerY + 120 : centerY + 60;
+    const tickerFontSize = isXL ? 12 : 10;
+
+    const titleLeftEdge = findVisualLeftEdge(`800 ${fontSize}px sans-serif`, "M", fontSize);
+    const tickerLeftEdge = findVisualLeftEdge(`700 ${tickerFontSize}px sans-serif`, "B", tickerFontSize);
     const visualOffset = titleLeftEdge - tickerLeftEdge;
 
     // "MAX IN"
     ctx.fillStyle = "#EDEDED";
-    ctx.font = `800 ${titleSize}px sans-serif`;
-    const maxInY = centerY - titleSize * 0.15;
+    ctx.font = `800 ${fontSize}px sans-serif`;
     ctx.fillText("MAX IN", baseX, maxInY);
 
     // "PROGRESS"
-    const progY = maxInY + titleSize * 1.05;
     const grad = ctx.createLinearGradient(baseX, 0, baseX + 500, 0);
     grad.addColorStop(0, "#4F7BF7");
     grad.addColorStop(1, "#8B5CF6");
     ctx.fillStyle = grad;
-    ctx.fillText("PROGRESS", baseX, progY);
+    ctx.fillText("PROGRESS", baseX, progressY);
 
-    // Ticker — shifted right so its visible stroke aligns with title's visible stroke
+    // Ticker
     ctx.fillStyle = "rgba(131,131,140,0.85)";
-    ctx.font = "700 12px sans-serif";
-    ctx.fillText("BUILDING IN PUBLIC · MELBOURNE, AU", baseX + visualOffset, progY + 40);
+    ctx.font = `700 ${tickerFontSize}px sans-serif`;
+    ctx.fillText("BUILDING IN PUBLIC · MELBOURNE, AU", baseX + visualOffset, tickerY);
 
     // Avatar
     const gap = 96;
