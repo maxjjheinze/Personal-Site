@@ -47,7 +47,7 @@ function ModalShell({
   originRect,
   children,
   accentColor,
-  maxWidth = "max-w-3xl",
+  maxWidth = "max-w-[960px]",
 }: ModalProps & { children: ReactNode; accentColor: string; maxWidth?: string }) {
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
