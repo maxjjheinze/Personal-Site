@@ -18,13 +18,17 @@ export function AnimatedGrid({ mouseX = 0, mouseY = 0 }: AnimatedGridProps) {
       animate={{ opacity: 1 }}
       transition={{ duration: 1.5 }}
     >
-      {/* Dot grid */}
+      {/* Line grid with radial fade toward center */}
       <motion.div
         className="absolute inset-0"
         style={{
           backgroundImage:
-            "radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)",
+            "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
           backgroundSize: "80px 80px",
+          maskImage:
+            "radial-gradient(ellipse 60% 60% at 65% 50%, transparent 20%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,1) 80%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse 60% 60% at 65% 50%, transparent 20%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,1) 80%)",
           x,
           y,
         }}

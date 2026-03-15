@@ -54,14 +54,20 @@ function renderPageToCanvas(
   ctx.fillStyle = BG_CSS;
   ctx.fillRect(0, 0, w, h);
 
-  // Dot grid (matching AnimatedGrid dot pattern)
-  ctx.fillStyle = "rgba(255,255,255,0.15)";
+  // Grid lines (matching AnimatedGrid line pattern)
+  ctx.strokeStyle = "rgba(255,255,255,0.025)";
+  ctx.lineWidth = 1;
   for (let x = 0; x < w; x += 80) {
-    for (let y = 0; y < h; y += 80) {
-      ctx.beginPath();
-      ctx.arc(x, y, 1, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, h);
+    ctx.stroke();
+  }
+  for (let y = 0; y < h; y += 80) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(w, y);
+    ctx.stroke();
   }
 
   // No scale transform — content renders at native size now
