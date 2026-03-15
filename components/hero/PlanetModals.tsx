@@ -80,7 +80,7 @@ function ModalShell({
 
       {/* panel */}
       <motion.div
-        className={`relative z-10 mx-auto w-full ${maxWidth} min-h-[70vh] overflow-hidden rounded-3xl border border-foreground/[0.06] bg-background/[0.92] shadow-2xl backdrop-blur-2xl`}
+        className={`relative z-10 mx-auto w-full ${maxWidth} min-h-[84vh] overflow-hidden rounded-3xl border border-foreground/[0.06] bg-background/[0.92] shadow-2xl backdrop-blur-2xl`}
         variants={panel}
         style={
           originRect
