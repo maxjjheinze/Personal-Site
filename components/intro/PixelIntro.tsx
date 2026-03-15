@@ -72,10 +72,10 @@ function renderPageToCanvas(
 
   if (isDesktop) {
     const centerY = h / 2;
-    const avatarSize = w >= 1280 ? 256 : 230;
+    const avatarSize = w >= 1280 ? 205 : 184;
 
     const baseX = containerLeft + paddingX;
-    const titleSize = w >= 1280 ? 115 : 58;
+    const titleSize = w >= 1280 ? 92 : 46;
 
     // Find the actual visible left edge of the title "M" by pixel-scanning.
     // Render "M" on a tiny temp canvas, scan columns left-to-right for the
@@ -103,7 +103,7 @@ function renderPageToCanvas(
     }
 
     const titleLeftEdge = findVisualLeftEdge(`800 ${titleSize}px sans-serif`, "M", titleSize);
-    const tickerLeftEdge = findVisualLeftEdge("700 14px sans-serif", "B", 14);
+    const tickerLeftEdge = findVisualLeftEdge("700 12px sans-serif", "B", 12);
     const visualOffset = titleLeftEdge - tickerLeftEdge;
 
     // "MAX IN"
@@ -121,11 +121,11 @@ function renderPageToCanvas(
 
     // Ticker — shifted right so its visible stroke aligns with title's visible stroke
     ctx.fillStyle = "rgba(131,131,140,0.85)";
-    ctx.font = "700 14px sans-serif";
-    ctx.fillText("BUILDING IN PUBLIC · MELBOURNE, AU", baseX + visualOffset, progY + 50);
+    ctx.font = "700 12px sans-serif";
+    ctx.fillText("BUILDING IN PUBLIC · MELBOURNE, AU", baseX + visualOffset, progY + 40);
 
     // Avatar
-    const gap = 128;
+    const gap = 96;
     const textAreaW = containerW - paddingX * 2 - avatarSize - gap;
     const avatarX = containerLeft + paddingX + textAreaW + gap;
     const avatarY = centerY - avatarSize / 2;
@@ -140,7 +140,7 @@ function renderPageToCanvas(
     ctx.fillRect(avatarX - avatarSize * 0.4, avatarY - avatarSize * 0.4, avatarSize * 1.8, avatarSize * 1.8);
 
     // Orbit rings
-    const orbitOffsets = [40, 68, 96];
+    const orbitOffsets = [32, 54, 77];
     for (const offset of orbitOffsets) {
       ctx.strokeStyle = "rgba(237,237,237,0.04)";
       ctx.lineWidth = 1;
@@ -168,7 +168,7 @@ function renderPageToCanvas(
     const centerX = w / 2;
     ctx.textAlign = "center";
 
-    const titleSize = Math.min(w * 0.12, 58);
+    const titleSize = Math.min(w * 0.1, 46);
     ctx.fillStyle = "#EDEDED";
     ctx.font = `800 ${titleSize}px sans-serif`;
     ctx.fillText("MAX IN", centerX, h * 0.2 + titleSize + 10);
