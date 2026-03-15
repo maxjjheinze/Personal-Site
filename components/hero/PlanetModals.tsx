@@ -11,34 +11,66 @@ interface ModalProps {
 
 /* ─── animation variants ─── */
 const backdrop = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1 },
-  exit: { opacity: 0 },
+  hidden: { opacity: 0, backdropFilter: "blur(0px)" },
+  visible: { opacity: 1, backdropFilter: "blur(12px)" },
+  exit: { opacity: 0, backdropFilter: "blur(0px)" },
 };
 
 const panel = {
-  hidden: { scale: 0.85, opacity: 0, y: 30 },
+  hidden: { scale: 0.6, opacity: 0, y: 60, filter: "blur(8px)" },
   visible: {
     scale: 1,
     opacity: 1,
     y: 0,
-    transition: { type: "spring", stiffness: 260, damping: 28, mass: 0.8 },
+    filter: "blur(0px)",
+    transition: {
+      type: "spring",
+      stiffness: 180,
+      damping: 22,
+      mass: 0.9,
+      filter: { duration: 0.4 },
+    },
   },
   exit: {
-    scale: 0.9,
+    scale: 0.85,
     opacity: 0,
-    y: 20,
-    transition: { duration: 0.2, ease: "easeIn" },
+    y: 30,
+    filter: "blur(6px)",
+    transition: { duration: 0.25, ease: [0.4, 0, 1, 1] },
+  },
+};
+
+const accentGlow = {
+  hidden: { opacity: 0, scale: 0.5 },
+  visible: {
+    opacity: 0.1,
+    scale: 1,
+    transition: { duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.2 },
   },
 };
 
 const stagger = {
-  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.15 } },
+  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.25 } },
 };
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] } },
+  hidden: { opacity: 0, y: 28, filter: "blur(4px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
+  },
+};
+
+const cardSlide = {
+  hidden: { opacity: 0, x: -20, y: 12 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] },
+  },
 };
 
 /* ─── shared shell ─── */
@@ -68,14 +100,18 @@ function ModalShell({
       initial="hidden"
       animate="visible"
       exit="exit"
-      transition={{ duration: 0.25 }}
+      transition={{ duration: 0.4 }}
     >
       {/* backdrop */}
-      <div
+      <motion.div
         role="presentation"
-        className="absolute inset-0 bg-black/70 backdrop-blur-md"
+        className="absolute inset-0 bg-black/70"
         style={{ overscrollBehavior: "contain" }}
         onClick={onClose}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.4 }}
       />
 
       {/* panel */}
@@ -90,9 +126,12 @@ function ModalShell({
         onClick={(e) => e.stopPropagation()}
       >
         {/* accent glow at top */}
-        <div
+        <motion.div
           className="pointer-events-none absolute -top-24 left-1/2 h-48 w-[70%] -translate-x-1/2 rounded-full blur-3xl"
-          style={{ background: accentColor, opacity: 0.07 }}
+          style={{ background: accentColor }}
+          variants={accentGlow}
+          initial="hidden"
+          animate="visible"
         />
 
         {/* content wrapper */}
@@ -103,15 +142,18 @@ function ModalShell({
           animate="visible"
         >
           {/* close button */}
-          <button
+          <motion.button
             onClick={onClose}
             aria-label="Close"
-            className="absolute right-8 top-8 flex h-9 w-9 items-center justify-center rounded-full border border-foreground/[0.08] bg-foreground/[0.03] text-muted-foreground transition-all duration-200 hover:border-foreground/20 hover:bg-foreground/[0.08] hover:text-foreground"
+            className="absolute right-8 top-8 flex h-9 w-9 items-center justify-center rounded-full border border-foreground/[0.08] bg-foreground/[0.03] text-muted-foreground transition-all duration-200 hover:border-foreground/20 hover:bg-foreground/[0.08] hover:text-foreground hover:rotate-90"
+            initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ delay: 0.4, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
               <path d="M1 1l12 12M13 1L1 13" />
             </svg>
-          </button>
+          </motion.button>
 
           {children}
         </motion.div>
@@ -188,7 +230,7 @@ export function ConnectModal({ onClose, originRect }: ModalProps) {
             target={link.external ? "_blank" : undefined}
             rel={link.external ? "noopener noreferrer" : undefined}
             className="group flex items-center gap-6 rounded-2xl border border-foreground/[0.06] bg-foreground/[0.02] px-7 py-6 transition-all duration-300 hover:border-foreground/[0.14] hover:bg-foreground/[0.05]"
-            variants={fadeUp}
+            variants={cardSlide}
           >
             <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl border border-foreground/[0.06] bg-foreground/[0.03] text-muted-foreground transition-colors duration-300 ${link.accent}`}>
               {link.icon}
@@ -264,18 +306,16 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
         </motion.p>
 
         {/* stats / highlights */}
-        <motion.div
-          className="mt-12 grid grid-cols-3 gap-5"
-          variants={fadeUp}
-        >
+        <div className="mt-12 grid grid-cols-3 gap-5">
           {[
             { value: "Melbourne", label: "Based in" },
             { value: "2024", label: "Graduated" },
             { value: "Building", label: "Status" },
           ].map((stat) => (
-            <div
+            <motion.div
               key={stat.label}
               className="rounded-xl border border-foreground/[0.06] bg-foreground/[0.02] px-5 py-6 text-center"
+              variants={cardSlide}
             >
               <p className="font-display text-sm font-semibold text-foreground/90">
                 {stat.value}
@@ -283,9 +323,9 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
               <p className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground/45">
                 {stat.label}
               </p>
-            </div>
+            </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </ModalShell>
   );
@@ -341,7 +381,7 @@ export function ProjectsModal({ onClose, originRect }: ModalProps) {
           <motion.div
             key={project.title}
             className="group rounded-2xl border border-foreground/[0.06] bg-foreground/[0.02] px-7 py-7 transition-all duration-300 hover:border-foreground/[0.14] hover:bg-foreground/[0.05]"
-            variants={fadeUp}
+            variants={cardSlide}
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
