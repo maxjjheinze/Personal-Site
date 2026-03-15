@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { useMousePosition } from "@/hooks/useMousePosition";
 import { AnimatedGrid } from "./AnimatedGrid";
+import { AmbientParticles } from "./AmbientParticles";
 import { HeroText } from "./HeroText";
 import { AvatarSection } from "./AvatarSection";
 
@@ -16,7 +17,10 @@ export function Hero() {
       className="relative flex min-h-screen items-center justify-center overflow-x-clip"
     >
       {/* Grid background */}
-      <AnimatedGrid mouseX={mouse.x} mouseY={mouse.y} />
+      <AnimatedGrid />
+
+      {/* Grid with cursor warp */}
+      <AmbientParticles mouseX={mouse.x} mouseY={mouse.y} />
 
       {/* Ambient glow orbs */}
       <div className="pointer-events-none absolute right-[10%] top-[20%] h-[320px] w-[320px] rounded-full bg-accent/[0.06] blur-[100px]" />

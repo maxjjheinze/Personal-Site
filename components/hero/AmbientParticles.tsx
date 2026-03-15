@@ -7,7 +7,7 @@ interface GridWarpProps {
   mouseY?: number;
 }
 
-const GRID_SIZE = 80;
+const GRID_SIZE = 68;
 const WARP_RADIUS = 200;
 const WARP_STRENGTH = 30;
 const ZONE_PADDING = 60;
