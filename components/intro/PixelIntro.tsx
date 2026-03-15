@@ -77,17 +77,34 @@ function renderPageToCanvas(
     const baseX = containerLeft + paddingX;
     const titleSize = w >= 1280 ? 115 : 58;
 
-    // Measure the visual left-side bearing of the title "M" at its font size.
-    // Large glyphs have more invisible whitespace before the visible stroke.
-    // We offset the ticker by the same amount so they visually align.
-    ctx.font = `800 ${titleSize}px sans-serif`;
-    const titleBearing = ctx.measureText("M").actualBoundingBoxLeft;
+    // Find the actual visible left edge of the title "M" by pixel-scanning.
+    // Render "M" on a tiny temp canvas, scan columns left-to-right for the
+    // first non-empty pixel. Do the same for the ticker "B". The difference
+    // tells us exactly how many pixels to shift the ticker to visually align.
+    function findVisualLeftEdge(font: string, char: string, size: number): number {
+      const tmp = document.createElement("canvas");
+      tmp.width = size * 2;
+      tmp.height = size * 2;
+      const tc = tmp.getContext("2d")!;
+      tc.fillStyle = "#000000";
+      tc.fillRect(0, 0, tmp.width, tmp.height);
+      tc.fillStyle = "#FFFFFF";
+      tc.font = font;
+      tc.fillText(char, 0, size * 1.2);
+      const imgData = tc.getImageData(0, 0, tmp.width, tmp.height);
+      const px = imgData.data;
+      for (let col = 0; col < tmp.width; col++) {
+        for (let row = 0; row < tmp.height; row++) {
+          const idx = (row * tmp.width + col) * 4;
+          if (px[idx] > 10) return col; // found first bright pixel
+        }
+      }
+      return 0;
+    }
 
-    ctx.font = "700 14px sans-serif";
-    const tickerBearing = ctx.measureText("B").actualBoundingBoxLeft;
-
-    // The ticker needs to shift right by the difference in glyph bearings
-    const bearingDiff = titleBearing - tickerBearing;
+    const titleLeftEdge = findVisualLeftEdge(`800 ${titleSize}px sans-serif`, "M", titleSize);
+    const tickerLeftEdge = findVisualLeftEdge("700 14px sans-serif", "B", 14);
+    const visualOffset = titleLeftEdge - tickerLeftEdge;
 
     // "MAX IN"
     ctx.fillStyle = "#EDEDED";
@@ -102,10 +119,10 @@ function renderPageToCanvas(
     ctx.fillStyle = grad;
     ctx.fillText("PROGRESS", baseX, progY);
 
-    // Ticker — shifted right to visually align with the large title glyphs
+    // Ticker — shifted right so its visible stroke aligns with title's visible stroke
     ctx.fillStyle = "rgba(131,131,140,0.85)";
     ctx.font = "700 14px sans-serif";
-    ctx.fillText("BUILDING IN PUBLIC · MELBOURNE, AU", baseX + bearingDiff, progY + 50);
+    ctx.fillText("BUILDING IN PUBLIC · MELBOURNE, AU", baseX + visualOffset, progY + 50);
 
     // Avatar
     const gap = 128;
