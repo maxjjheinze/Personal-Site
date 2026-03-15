@@ -176,6 +176,59 @@ function AboutModal({ onClose, originRect }: ModalProps) {
   );
 }
 
+function DefaultModal({ title, onClose, originRect }: ModalProps & { title: string }) {
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [onClose]);
+
+  return (
+    <motion.div
+      key="default-modal"
+      className="fixed inset-0 z-[10000] flex items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <div
+        role="presentation"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        style={{ overscrollBehavior: "contain" }}
+        onClick={onClose}
+      />
+      <motion.div
+        className="relative z-10 mx-4 w-full max-w-lg rounded-2xl border border-border bg-background/95 p-8 backdrop-blur-xl"
+        initial={{ scale: 0.5, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.5, opacity: 0, y: 20 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        style={originRect ? { transformOrigin: `${originRect.x}px ${originRect.y}px` } : undefined}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="font-display text-xl font-semibold">
+            {title}
+          </h2>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="text-lg text-muted-foreground transition-colors hover:text-foreground"
+          >
+            &#x2715;
+          </button>
+        </div>
+        <div className="flex min-h-[200px] items-center justify-center text-muted-foreground">
+          Coming soon...
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
   const introComplete = useIntroComplete();
   const avatarX = useSpring(mouseX * 0.02, { stiffness: 100, damping: 30 });
@@ -332,13 +385,6 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
   }, []);
 
   const handlePlanetClick = useCallback((label: string, index: number) => {
-    if (label === "MY PROJECTS") {
-      const el = document.getElementById("projects");
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
-        return;
-      }
-    }
     // Capture pill position for source-aware transition
     const pillEl = planetRefs.current[index];
     if (pillEl) {
@@ -466,6 +512,9 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
             )}
             {activePlanet === "ABOUT ME" && (
               <AboutModal onClose={closePlanet} originRect={modalOrigin} />
+            )}
+            {activePlanet === "MY PROJECTS" && (
+              <DefaultModal title="My Projects" onClose={closePlanet} originRect={modalOrigin} />
             )}
           </AnimatePresence>,
           document.body
