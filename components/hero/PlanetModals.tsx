@@ -80,7 +80,7 @@ function ModalShell({
 
       {/* panel */}
       <motion.div
-        className={`relative z-10 mx-auto w-full ${maxWidth} overflow-hidden rounded-3xl border border-foreground/[0.06] bg-background/[0.92] shadow-2xl backdrop-blur-2xl`}
+        className={`relative z-10 mx-auto w-full ${maxWidth} min-h-[70vh] overflow-hidden rounded-3xl border border-foreground/[0.06] bg-background/[0.92] shadow-2xl backdrop-blur-2xl`}
         variants={panel}
         style={
           originRect
@@ -171,10 +171,10 @@ export function ConnectModal({ onClose, originRect }: ModalProps) {
         <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-muted-foreground/50">
           Get in Touch
         </p>
-        <h2 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+        <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
           Let&apos;s Connect
         </h2>
-        <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-4 max-w-lg text-xs leading-relaxed text-muted-foreground">
           Whether you want to collaborate, chat about crypto, or just say hey — I&apos;m always down to connect.
         </p>
       </motion.div>
@@ -194,10 +194,10 @@ export function ConnectModal({ onClose, originRect }: ModalProps) {
               {link.icon}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-display text-sm font-medium text-foreground/90 transition-colors group-hover:text-foreground">
+              <p className="font-display text-xs font-medium text-foreground/90 transition-colors group-hover:text-foreground">
                 {link.label}
               </p>
-              <p className="mt-0.5 text-xs text-muted-foreground/60 transition-colors group-hover:text-muted-foreground/80">
+              <p className="mt-0.5 text-[11px] text-muted-foreground/60 transition-colors group-hover:text-muted-foreground/80">
                 {link.description}
               </p>
             </div>
@@ -229,7 +229,7 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
         <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-muted-foreground/50">
           The Story
         </p>
-        <h2 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+        <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
           About Me
         </h2>
       </motion.div>
@@ -237,7 +237,7 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
       {/* bio content */}
       <div className="space-y-8">
         <motion.p
-          className="text-sm leading-[1.9] text-foreground/70"
+          className="text-xs leading-[2] text-foreground/70"
           variants={fadeUp}
         >
           I&apos;m Max, 23, from Melbourne. I work a 9 to 5 in chemical distribution
@@ -246,7 +246,7 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
         </motion.p>
 
         <motion.p
-          className="text-sm leading-[1.9] text-foreground/70"
+          className="text-xs leading-[2] text-foreground/70"
           variants={fadeUp}
         >
           Now I vibe code apps, tools, and websites, trade crypto, and mess around with
@@ -256,7 +256,7 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
         </motion.p>
 
         <motion.p
-          className="text-sm leading-[1.9] text-foreground/70"
+          className="text-xs leading-[2] text-foreground/70"
           variants={fadeUp}
         >
           I believe in good karma and having the right people around you. If you&apos;re
@@ -277,7 +277,7 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
               key={stat.label}
               className="rounded-xl border border-foreground/[0.06] bg-foreground/[0.02] px-5 py-6 text-center"
             >
-              <p className="font-display text-base font-semibold text-foreground/90">
+              <p className="font-display text-sm font-semibold text-foreground/90">
                 {stat.value}
               </p>
               <p className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground/45">
@@ -327,10 +327,10 @@ export function ProjectsModal({ onClose, originRect }: ModalProps) {
         <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-muted-foreground/50">
           What I&apos;m Building
         </p>
-        <h2 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+        <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
           My Projects
         </h2>
-        <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-4 max-w-lg text-xs leading-relaxed text-muted-foreground">
           Things I&apos;m shipping, experimenting with, and working towards.
         </p>
       </motion.div>
@@ -353,16 +353,16 @@ export function ProjectsModal({ onClose, originRect }: ModalProps) {
                       boxShadow: `0 0 8px ${project.accent}66`,
                     }}
                   />
-                  <h3 className="font-display text-sm font-medium text-foreground/90">
+                  <h3 className="font-display text-xs font-medium text-foreground/90">
                     {project.title}
                   </h3>
                 </div>
-                <p className="mt-2 ml-5 text-xs leading-relaxed text-muted-foreground/60">
+                <p className="mt-2 ml-5 text-[11px] leading-relaxed text-muted-foreground/60">
                   {project.description}
                 </p>
               </div>
               <span
-                className={`flex-shrink-0 rounded-full border px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider ${project.tagColor}`}
+                className={`flex-shrink-0 rounded-full border px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-wider ${project.tagColor}`}
               >
                 {project.tag}
               </span>
