@@ -247,9 +247,9 @@ function sampleParticles(
 
 export function PixelIntro({
   children,
-  pixelSize = 2,
+  pixelSize = 1,
   duration = 1750,
-  maxStagger = 400,
+  maxStagger = 800,
 }: PixelIntroProps) {
   const [showCanvas, setShowCanvas] = useState(true);
   const [introComplete, setIntroComplete] = useState(false);
