@@ -12,7 +12,7 @@ interface AvatarSectionProps {
 }
 
 const ORBITS = [
-  { label: "LET'S CONNECT", radiusOffset: 40, speed: 0.2625, startAngle: 0, color: "#7B2FBE" },
+  { label: "LET'S CONNECT", radiusOffset: 40, speed: 0.2625, startAngle: 0, color: "#FFFFFF" },
   { label: "ABOUT ME", radiusOffset: 68, speed: -0.1875, startAngle: 2.1, color: "#BF5AF2" },
   { label: "MY PROJECTS", radiusOffset: 96, speed: 0.135, startAngle: 4.2, color: "#00D4FF" },
 ];
