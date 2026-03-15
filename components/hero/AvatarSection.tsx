@@ -360,7 +360,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
 
   return (
     <>
-      <div ref={solarSystemRef} className="transition-transform duration-200 ease-out">
+      <div ref={solarSystemRef} data-solar-system className="transition-transform duration-200 ease-out">
       <motion.div
         className="relative flex flex-shrink-0 items-center justify-center"
         initial={{ opacity: 0, scale: 0.9 }}

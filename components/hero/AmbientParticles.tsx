@@ -10,11 +10,18 @@ interface GridGlowProps {
 const GRID_SIZE = 80;
 const GLOW_RADIUS = 180;
 
+interface ExclusionZone {
+  cx: number;
+  cy: number;
+  r: number;
+}
+
 export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridGlowProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef(0);
   const cursorRef = useRef({ x: -9999, y: -9999 });
   const glowMapRef = useRef<Map<string, number>>(new Map());
+  const exclusionRef = useRef<ExclusionZone | null>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   // Suppress unused prop warnings — props kept for API compat with Hero
@@ -47,6 +54,16 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridGlowProps) {
 
     function handleMouse(e: MouseEvent) {
       cursorRef.current = { x: e.clientX, y: e.clientY };
+
+      // Measure solar system exclusion zone each move (cheap DOM read)
+      const solarEl = document.querySelector("[data-solar-system]");
+      if (solarEl) {
+        const rect = solarEl.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const r = Math.max(rect.width, rect.height) / 2;
+        exclusionRef.current = { cx, cy, r };
+      }
     }
     window.addEventListener("mousemove", handleMouse, { passive: true });
 
@@ -67,29 +84,46 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridGlowProps) {
       ctx.clearRect(0, 0, cw, ch);
 
       const cursor = cursorRef.current;
+      const zone = exclusionRef.current;
+
+      // Check if cursor is inside the solar system exclusion zone
+      const cursorInZone = zone
+        ? Math.sqrt((cursor.x - zone.cx) ** 2 + (cursor.y - zone.cy) ** 2) < zone.r
+        : false;
 
       // Determine which grid intersections are near the cursor
-      const startCol = Math.max(0, Math.floor((cursor.x - GLOW_RADIUS) / GRID_SIZE));
-      const endCol = Math.ceil((cursor.x + GLOW_RADIUS) / GRID_SIZE);
-      const startRow = Math.max(0, Math.floor((cursor.y - GLOW_RADIUS) / GRID_SIZE));
-      const endRow = Math.ceil((cursor.y + GLOW_RADIUS) / GRID_SIZE);
-
-      // Set target glow for nearby intersections
       const activeKeys = new Set<string>();
-      for (let col = startCol; col <= endCol; col++) {
-        for (let row = startRow; row <= endRow; row++) {
-          const ix = col * GRID_SIZE;
-          const iy = row * GRID_SIZE;
-          const dx = cursor.x - ix;
-          const dy = cursor.y - iy;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < GLOW_RADIUS) {
-            const key = `${col},${row}`;
-            activeKeys.add(key);
-            const targetOpacity = (1 - dist / GLOW_RADIUS) * 0.35;
-            const current = glowMap.get(key) ?? 0;
-            // Ease toward target
-            glowMap.set(key, current + (targetOpacity - current) * 0.15);
+
+      if (!cursorInZone) {
+        const startCol = Math.max(0, Math.floor((cursor.x - GLOW_RADIUS) / GRID_SIZE));
+        const endCol = Math.ceil((cursor.x + GLOW_RADIUS) / GRID_SIZE);
+        const startRow = Math.max(0, Math.floor((cursor.y - GLOW_RADIUS) / GRID_SIZE));
+        const endRow = Math.ceil((cursor.y + GLOW_RADIUS) / GRID_SIZE);
+
+        // Set target glow for nearby intersections (skip those inside exclusion zone)
+        for (let col = startCol; col <= endCol; col++) {
+          for (let row = startRow; row <= endRow; row++) {
+            const ix = col * GRID_SIZE;
+            const iy = row * GRID_SIZE;
+
+            // Skip intersections inside the solar system zone
+            if (zone) {
+              const dzx = ix - zone.cx;
+              const dzy = iy - zone.cy;
+              if (Math.sqrt(dzx * dzx + dzy * dzy) < zone.r) continue;
+            }
+
+            const dx = cursor.x - ix;
+            const dy = cursor.y - iy;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < GLOW_RADIUS) {
+              const key = `${col},${row}`;
+              activeKeys.add(key);
+              const targetOpacity = (1 - dist / GLOW_RADIUS) * 0.35;
+              const current = glowMap.get(key) ?? 0;
+              // Ease toward target
+              glowMap.set(key, current + (targetOpacity - current) * 0.15);
+            }
           }
         }
       }
