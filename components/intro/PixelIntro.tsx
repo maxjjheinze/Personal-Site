@@ -52,13 +52,13 @@ function renderPageToCanvas(
   // Grid lines
   ctx.strokeStyle = "rgba(255,255,255,0.025)";
   ctx.lineWidth = 1;
-  for (let gx = 0; gx < w; gx += 80) {
+  for (let gx = 0; gx < w; gx += 68) {
     ctx.beginPath();
     ctx.moveTo(gx, 0);
     ctx.lineTo(gx, h);
     ctx.stroke();
   }
-  for (let gy = 0; gy < h; gy += 80) {
+  for (let gy = 0; gy < h; gy += 68) {
     ctx.beginPath();
     ctx.moveTo(0, gy);
     ctx.lineTo(w, gy);
