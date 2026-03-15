@@ -249,7 +249,7 @@ export function PixelIntro({
   children,
   pixelSize = 2,
   duration = 1750,
-  maxStagger = 800,
+  maxStagger = 1500,
 }: PixelIntroProps) {
   const [showCanvas, setShowCanvas] = useState(true);
   const [introComplete, setIntroComplete] = useState(false);
