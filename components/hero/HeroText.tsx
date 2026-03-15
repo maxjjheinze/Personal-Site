@@ -64,7 +64,7 @@ function ActivityTicker() {
       <AnimatePresence mode="wait">
         <motion.p
           key={index}
-          className="font-mono text-xs font-bold uppercase tracking-[0.25em] text-muted-foreground"
+          className="font-mono text-sm font-bold uppercase tracking-[0.25em] text-muted-foreground"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -20, opacity: 0 }}
@@ -90,7 +90,7 @@ export function HeroText() {
       {/* Title */}
       <motion.h1
         data-intro-title
-        className="font-display text-3xl font-bold leading-[0.9] tracking-tighter sm:text-4xl lg:text-[46px] xl:text-[5.5rem]"
+        className="font-display text-4xl font-bold leading-[0.9] tracking-tighter sm:text-5xl lg:text-[58px] xl:text-[7.2rem]"
         style={{ marginLeft: "-0.07em" }}
         variants={itemVariants}
       >
