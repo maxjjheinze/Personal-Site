@@ -120,8 +120,8 @@ function renderPageToCanvas(
 
     // "PROGRESS"
     const grad = ctx.createLinearGradient(baseX, 0, baseX + 500, 0);
-    grad.addColorStop(0, "#4F7BF7");
-    grad.addColorStop(1, "#8B5CF6");
+    grad.addColorStop(0, "#5A8AFF");
+    grad.addColorStop(1, "#A578FF");
     ctx.fillStyle = grad;
     ctx.fillText("PROGRESS", baseX, progressY);
 
@@ -178,8 +178,8 @@ function renderPageToCanvas(
     ctx.fillText("MAX IN", centerX, h * 0.2 + titleSize + 10);
 
     const grad = ctx.createLinearGradient(centerX - 200, 0, centerX + 200, 0);
-    grad.addColorStop(0, "#4F7BF7");
-    grad.addColorStop(1, "#8B5CF6");
+    grad.addColorStop(0, "#5A8AFF");
+    grad.addColorStop(1, "#A578FF");
     ctx.fillStyle = grad;
     ctx.fillText("PROGRESS", centerX, h * 0.2 + titleSize * 2 + 10);
 
