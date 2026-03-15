@@ -105,8 +105,8 @@ function renderPageToCanvas(
     const isXL = w >= 1280;
     const fontSize = isXL ? 92 : 46;
     const maxInY = isXL ? centerY - 30 : centerY - 15;
-    const progressY = isXL ? centerY + 115 : centerY + 58;
-    const tickerY = isXL ? centerY + 160 : centerY + 80;
+    const progressY = isXL ? centerY + 75 : centerY + 38;
+    const tickerY = isXL ? centerY + 120 : centerY + 60;
     const tickerFontSize = isXL ? 12 : 10;
 
     const titleLeftEdge = findVisualLeftEdge(`800 ${fontSize}px sans-serif`, "M", fontSize);
