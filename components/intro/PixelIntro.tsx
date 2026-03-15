@@ -77,8 +77,18 @@ function renderPageToCanvas(
   const paddingX = w >= 1024 ? 80 : w >= 768 ? 48 : 24;
 
   if (isDesktop) {
-    const textX = containerLeft + paddingX - 80;
     const contentCenterY = h / 2;
+
+    // Match the hero's CSS layout:
+    // - max-w-7xl (1280px) container centered with lg:px-20 (80px) padding
+    // - flex-row with gap-32 (128px)
+    // - flex-1 text area + avatar
+    const avatarSize = w >= 1280 ? 256 : 230;
+    const gap = 128; // lg:gap-32
+    const innerW = containerW - paddingX * 2;
+    // flex-1 takes remaining space after avatar + gap
+    const textAreaW = innerW - avatarSize - gap;
+    const textX = containerLeft + paddingX;
 
     // Title — shifted left by 0.07em to match CSS marginLeft: -0.07em
     const titleSize = w >= 1280 ? 115 : 58;
@@ -93,7 +103,7 @@ function renderPageToCanvas(
     ctx.fillStyle = grad;
     ctx.fillText("PROGRESS", titleOffsetX, contentCenterY + titleSize * 0.8);
 
-    // Activity ticker placeholder — stays at textX (aligned with title after offset)
+    // Activity ticker — aligned with title
     ctx.fillStyle = "rgba(131,131,140,0.6)";
     ctx.font = "700 14px sans-serif";
     ctx.letterSpacing = "3px";
@@ -104,11 +114,7 @@ function renderPageToCanvas(
     );
     ctx.letterSpacing = "0px";
 
-    // Avatar — sizes match new AvatarSection (no 0.8 scale)
-    const avatarSize = w >= 1280 ? 256 : 230;
-    const gap = 96;
-    const textWidth = containerW - paddingX * 2 - gap - avatarSize;
-    const avatarX = containerLeft + paddingX + textWidth + gap;
+    const avatarX = textX + textAreaW + gap;
     const avatarY = contentCenterY - avatarSize / 2;
     const cx = avatarX + avatarSize / 2;
     const cy = avatarY + avatarSize / 2;
