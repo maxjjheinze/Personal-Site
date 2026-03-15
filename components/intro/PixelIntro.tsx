@@ -109,10 +109,11 @@ function renderPageToCanvas(
     // "MAX IN"
     ctx.fillStyle = "#EDEDED";
     ctx.font = `800 ${titleSize}px sans-serif`;
-    ctx.fillText("MAX IN", baseX, centerY - 50);
+    const maxInY = centerY - titleSize * 0.15;
+    ctx.fillText("MAX IN", baseX, maxInY);
 
     // "PROGRESS"
-    const progY = centerY + titleSize * 0.8;
+    const progY = maxInY + titleSize * 1.05;
     const grad = ctx.createLinearGradient(baseX, 0, baseX + 500, 0);
     grad.addColorStop(0, "#4F7BF7");
     grad.addColorStop(1, "#8B5CF6");
