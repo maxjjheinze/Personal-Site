@@ -89,7 +89,8 @@ export function HeroText() {
     >
       {/* Title */}
       <motion.h1
-        className="font-display text-4xl font-bold leading-[0.9] tracking-tighter sm:text-5xl lg:text-[58px] xl:text-[7.2rem] ml-[-0.04em]"
+        className="font-display text-4xl font-bold leading-[0.9] tracking-tighter sm:text-5xl lg:text-[58px] xl:text-[7.2rem]"
+        style={{ marginLeft: "-0.07em" }}
         variants={itemVariants}
       >
         <span className="block">MAX IN</span>
