@@ -11,7 +11,7 @@ const GRID_SIZE = 68;
 const WARP_RADIUS = 200;
 const WARP_STRENGTH = 30;
 const ZONE_PADDING = 60;
-const ZONE_FADE = 80;
+const ZONE_FADE = 160;
 
 interface ExclusionZone {
   cx: number;
@@ -105,6 +105,21 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridWarpProps) {
       return [px + (dx / dist) * push, py + (dy / dist) * push];
     }
 
+    function getAlpha(baseX: number, baseY: number, zone: ExclusionZone | null): number {
+      const BASE_ALPHA = 0.025;
+      if (!zone) return BASE_ALPHA;
+      const dx = baseX - zone.cx;
+      const dy = baseY - zone.cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < zone.r) return 0;
+      if (dist < zone.r + ZONE_FADE) {
+        const t = (dist - zone.r) / ZONE_FADE;
+        // Smooth ease-in curve for gradual fade
+        return BASE_ALPHA * t * t;
+      }
+      return BASE_ALPHA;
+    }
+
     function tick() {
       const ctx = canvas!.getContext("2d");
       if (!ctx) return;
@@ -128,66 +143,59 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridWarpProps) {
 
       ctx.lineWidth = 1;
 
-      // Vertical lines
+      // Draw individual segments for correct per-segment alpha
+      // Vertical segments
       for (let col = 0; col <= cols; col++) {
         const baseX = col * GRID_SIZE;
-        ctx.beginPath();
+        for (let row = 0; row < rows; row++) {
+          const y1Base = row * GRID_SIZE;
+          const y2Base = (row + 1) * GRID_SIZE;
 
-        for (let row = 0; row <= rows; row++) {
-          const baseY = row * GRID_SIZE;
-          const [wx, wy] = warpPoint(baseX, baseY, cx, cy);
+          const a1 = getAlpha(baseX, y1Base, zone);
+          const a2 = getAlpha(baseX, y2Base, zone);
 
-          let alpha = 0.025;
-          if (zone) {
-            const dzx = baseX - zone.cx;
-            const dzy = baseY - zone.cy;
-            const distToZone = Math.sqrt(dzx * dzx + dzy * dzy);
-            if (distToZone < zone.r) alpha = 0;
-            else if (distToZone < zone.r + ZONE_FADE) alpha *= (distToZone - zone.r) / ZONE_FADE;
-          }
+          // Skip fully transparent segments
+          if (a1 <= 0 && a2 <= 0) continue;
 
-          if (alpha <= 0) {
-            ctx.stroke();
-            ctx.beginPath();
-            continue;
-          }
+          const [wx1, wy1] = warpPoint(baseX, y1Base, cx, cy);
+          const [wx2, wy2] = warpPoint(baseX, y2Base, cx, cy);
 
-          ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-          if (row === 0) ctx.moveTo(wx, wy);
-          else ctx.lineTo(wx, wy);
+          // Use average alpha for the segment
+          const avgAlpha = (a1 + a2) / 2;
+          if (avgAlpha <= 0.001) continue;
+
+          ctx.strokeStyle = `rgba(255, 255, 255, ${avgAlpha})`;
+          ctx.beginPath();
+          ctx.moveTo(wx1, wy1);
+          ctx.lineTo(wx2, wy2);
+          ctx.stroke();
         }
-        ctx.stroke();
       }
 
-      // Horizontal lines
+      // Horizontal segments
       for (let row = 0; row <= rows; row++) {
         const baseY = row * GRID_SIZE;
-        ctx.beginPath();
+        for (let col = 0; col < cols; col++) {
+          const x1Base = col * GRID_SIZE;
+          const x2Base = (col + 1) * GRID_SIZE;
 
-        for (let col = 0; col <= cols; col++) {
-          const baseX = col * GRID_SIZE;
-          const [wx, wy] = warpPoint(baseX, baseY, cx, cy);
+          const a1 = getAlpha(x1Base, baseY, zone);
+          const a2 = getAlpha(x2Base, baseY, zone);
 
-          let alpha = 0.025;
-          if (zone) {
-            const dzx = baseX - zone.cx;
-            const dzy = baseY - zone.cy;
-            const distToZone = Math.sqrt(dzx * dzx + dzy * dzy);
-            if (distToZone < zone.r) alpha = 0;
-            else if (distToZone < zone.r + ZONE_FADE) alpha *= (distToZone - zone.r) / ZONE_FADE;
-          }
+          if (a1 <= 0 && a2 <= 0) continue;
 
-          if (alpha <= 0) {
-            ctx.stroke();
-            ctx.beginPath();
-            continue;
-          }
+          const [wx1, wy1] = warpPoint(x1Base, baseY, cx, cy);
+          const [wx2, wy2] = warpPoint(x2Base, baseY, cx, cy);
 
-          ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-          if (col === 0) ctx.moveTo(wx, wy);
-          else ctx.lineTo(wx, wy);
+          const avgAlpha = (a1 + a2) / 2;
+          if (avgAlpha <= 0.001) continue;
+
+          ctx.strokeStyle = `rgba(255, 255, 255, ${avgAlpha})`;
+          ctx.beginPath();
+          ctx.moveTo(wx1, wy1);
+          ctx.lineTo(wx2, wy2);
+          ctx.stroke();
         }
-        ctx.stroke();
       }
 
       rafRef.current = requestAnimationFrame(tick);

@@ -74,7 +74,7 @@ function renderPageToCanvas(
     const centerY = h / 2;
     const avatarSize = w >= 1280 ? 205 : 184;
 
-    const baseX = containerLeft + paddingX;
+    const baseX = containerLeft + paddingX + 68;
 
     // Find the actual visible left edge of the title "M" by pixel-scanning.
     // Render "M" on a tiny temp canvas, scan columns left-to-right for the
@@ -130,10 +130,8 @@ function renderPageToCanvas(
     ctx.font = `700 ${tickerFontSize}px sans-serif`;
     ctx.fillText("BUILDING IN PUBLIC · MELBOURNE, AU", baseX + visualOffset, tickerY);
 
-    // Avatar
-    const gap = 96;
-    const textAreaW = containerW - paddingX * 2 - avatarSize - gap;
-    const avatarX = containerLeft + paddingX + textAreaW + gap;
+    // Avatar — matches lg:gap-6 (24px) with lg:-ml-[68px] on avatar wrapper
+    const avatarX = containerLeft + containerW - paddingX - avatarSize;
     const avatarY = centerY - avatarSize / 2;
     const cx = avatarX + avatarSize / 2;
     const cy = avatarY + avatarSize / 2;

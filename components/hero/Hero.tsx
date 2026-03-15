@@ -28,11 +28,13 @@ export function Hero() {
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-7xl px-6 md:px-12 lg:px-20">
-        <div className="flex flex-col items-center gap-10 lg:flex-row lg:gap-24">
-          <div className="flex-1">
+        <div className="flex flex-col items-center gap-10 lg:flex-row lg:gap-6">
+          <div className="flex-1 lg:pl-[68px]">
             <HeroText />
           </div>
-          <AvatarSection mouseX={mouse.x} mouseY={mouse.y} />
+          <div className="lg:-ml-[68px]">
+            <AvatarSection mouseX={mouse.x} mouseY={mouse.y} />
+          </div>
         </div>
       </div>
     </section>
