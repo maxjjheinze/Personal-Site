@@ -324,20 +324,8 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
 
         const r = r0 + orbit.radiusOffset;
         const angle = anglesRef.current[i];
-        let x = Math.cos(angle) * r;
-        let y = Math.sin(angle) * r;
-
-        // Magnetic cursor pull
-        const planetWorldX = center.x + x;
-        const planetWorldY = center.y + y;
-        const dx = cursor.x - planetWorldX;
-        const dy = cursor.y - planetWorldY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 80 && dist > 0) {
-          const strength = (1 - dist / 80) * 6;
-          x += (dx / dist) * strength;
-          y += (dy / dist) * strength;
-        }
+        const x = Math.cos(angle) * r;
+        const y = Math.sin(angle) * r;
 
         const el = planetRefs.current[i];
         if (el) {
