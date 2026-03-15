@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk, Space_Mono } from "next/font/google";
-import { CustomCursor } from "@/components/CustomCursor";
+
 import "./globals.css";
 
 const inter = Inter({
@@ -50,7 +50,7 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
-        <CustomCursor />
+
         {children}
       </body>
     </html>
