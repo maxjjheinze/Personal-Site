@@ -12,9 +12,9 @@ interface AvatarSectionProps {
 }
 
 const ORBITS = [
-  { label: "LET'S CONNECT", radiusOffset: 40, speed: 0.2625, startAngle: 0, color: "#4F7BF7" },
-  { label: "ABOUT ME", radiusOffset: 68, speed: -0.1875, startAngle: 2.1, color: "#8B5CF6" },
-  { label: "MY PROJECTS", radiusOffset: 96, speed: 0.135, startAngle: 4.2, color: "#38BDF8" },
+  { label: "LET'S CONNECT", radiusOffset: 32, speed: 0.2625, startAngle: 0, color: "#4F7BF7" },
+  { label: "ABOUT ME", radiusOffset: 55, speed: -0.1875, startAngle: 2.1, color: "#8B5CF6" },
+  { label: "MY PROJECTS", radiusOffset: 78, speed: 0.135, startAngle: 4.2, color: "#38BDF8" },
 ];
 
 interface ModalProps {
@@ -287,7 +287,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
       const cy = rect.top + rect.height / 2;
       avatarCenterRef.current = { x: cx, y: cy };
       const dist = Math.sqrt((e.clientX - cx) ** 2 + (e.clientY - cy) ** 2);
-      const solarRadius = avatarRadiusRef.current + 96 + 60;
+      const solarRadius = avatarRadiusRef.current + 78 + 50;
       const fadeZone = 120;
       isNearRef.current = dist < solarRadius + fadeZone;
       if (dist <= solarRadius) {
@@ -453,7 +453,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
         <motion.div
           ref={avatarRef}
           data-intro-avatar
-          className="relative h-[154px] w-[154px] overflow-hidden rounded-full border-2 border-foreground/10 sm:h-[179px] sm:w-[179px] lg:h-[230px] lg:w-[230px] xl:h-64 xl:w-64"
+          className="relative h-[120px] w-[120px] overflow-hidden rounded-full border-2 border-foreground/10 sm:h-[140px] sm:w-[140px] lg:h-[180px] lg:w-[180px] xl:h-[200px] xl:w-[200px]"
           animate={prefersReducedMotion ? {} : { scale: [1, 1.02, 1] }}
           whileHover={{ scale: 1.05 }}
           transition={prefersReducedMotion ? { type: "spring", stiffness: 300, damping: 20 } : {
@@ -466,7 +466,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
             fill
             className="object-cover"
             priority
-            sizes="(max-width: 640px) 154px, (max-width: 1024px) 179px, (max-width: 1280px) 230px, 256px"
+            sizes="(max-width: 640px) 120px, (max-width: 1024px) 140px, (max-width: 1280px) 180px, 200px"
           />
         </motion.div>
 
@@ -483,19 +483,19 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
               onClick={() => handlePlanetClick(orbit.label, i)}
             >
               <div
-                className="flex items-center gap-2 rounded-full border border-foreground/[0.08] bg-background/60 px-3 py-1.5 backdrop-blur-sm transition-all duration-300 group-hover:border-foreground/20 group-hover:bg-background/80"
+                className="flex items-center gap-1.5 rounded-full border border-foreground/[0.08] bg-background/60 px-2.5 py-1 backdrop-blur-sm transition-all duration-300 group-hover:border-foreground/20 group-hover:bg-background/80"
                 style={{
                   boxShadow: `0 0 12px ${orbit.color}15`,
                 }}
               >
                 <div
-                  className="h-2.5 w-2.5 flex-shrink-0 rounded-full transition-transform duration-300 group-hover:scale-125"
+                  className="h-2 w-2 flex-shrink-0 rounded-full transition-transform duration-300 group-hover:scale-125"
                   style={{
                     backgroundColor: orbit.color,
                     boxShadow: `0 0 8px ${orbit.color}66`,
                   }}
                 />
-                <span className="font-mono text-[12px] font-medium uppercase tracking-[0.15em] text-muted-foreground/70 group-hover:text-foreground/90 transition-colors duration-300 whitespace-nowrap select-none">
+                <span className="font-mono text-[10px] font-medium uppercase tracking-[0.15em] text-muted-foreground/70 group-hover:text-foreground/90 transition-colors duration-300 whitespace-nowrap select-none">
                   {orbit.label}
                 </span>
               </div>
