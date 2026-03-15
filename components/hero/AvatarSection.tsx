@@ -12,9 +12,9 @@ interface AvatarSectionProps {
 }
 
 const ORBITS = [
-  { label: "LET'S CONNECT", radiusOffset: 40, speed: 0.2625, startAngle: 0, color: "#4F7BF7" },
-  { label: "ABOUT ME", radiusOffset: 68, speed: -0.1875, startAngle: 2.1, color: "#8B5CF6" },
-  { label: "MY PROJECTS", radiusOffset: 96, speed: 0.135, startAngle: 4.2, color: "#38BDF8" },
+  { label: "LET'S CONNECT", radiusOffset: 40, speed: 0.2625, startAngle: 0, color: "#00FF88" },
+  { label: "ABOUT ME", radiusOffset: 68, speed: -0.1875, startAngle: 2.1, color: "#BF5AF2" },
+  { label: "MY PROJECTS", radiusOffset: 96, speed: 0.135, startAngle: 4.2, color: "#00D4FF" },
 ];
 
 interface ModalProps {
@@ -480,7 +480,7 @@ export function AvatarSection({ mouseX = 0, mouseY = 0 }: AvatarSectionProps) {
                   className="h-2.5 w-2.5 flex-shrink-0 rounded-full transition-transform duration-300 group-hover:scale-125"
                   style={{
                     backgroundColor: orbit.color,
-                    boxShadow: `0 0 8px ${orbit.color}66`,
+                    boxShadow: `0 0 10px ${orbit.color}99, 0 0 20px ${orbit.color}44`,
                   }}
                 />
                 <span className="font-display text-[12px] font-medium uppercase tracking-[0.15em] text-muted-foreground/70 group-hover:text-foreground/90 transition-colors duration-300 whitespace-nowrap select-none">
