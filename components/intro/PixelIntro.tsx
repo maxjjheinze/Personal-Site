@@ -81,9 +81,18 @@ function renderPageToCanvas(
   // Subtract 40 from measured Y to get their final visible positions.
   const HIDDEN_Y_OFFSET = 40;
 
+  // Use ticker's left edge as the single alignment anchor for all text.
+  // The title has marginLeft: -0.07em to compensate for Space Grotesk glyph
+  // bearing, but the canvas uses sans-serif which has different metrics.
+  // Using one X for everything guarantees alignment in the canvas.
+  const anchorX = tickerEl
+    ? tickerEl.getBoundingClientRect().left
+    : titleEl
+      ? titleEl.getBoundingClientRect().left
+      : 0;
+
   if (titleEl) {
     const titleRect = titleEl.getBoundingClientRect();
-    const titleX = titleRect.left;
     const titleY = titleRect.top - HIDDEN_Y_OFFSET;
 
     const titleStyle = getComputedStyle(titleEl);
@@ -92,19 +101,19 @@ function renderPageToCanvas(
     // "MAX IN" — first line
     ctx.fillStyle = "#EDEDED";
     ctx.font = `800 ${fontSize}px sans-serif`;
-    ctx.fillText("MAX IN", titleX, titleY + fontSize * 0.82);
+    ctx.fillText("MAX IN", anchorX, titleY + fontSize * 0.82);
 
-    // "PROGRESS" — use measured position
+    // "PROGRESS"
     if (progressEl) {
       const progRect = progressEl.getBoundingClientRect();
-      const grad = ctx.createLinearGradient(progRect.left, 0, progRect.right, 0);
+      const grad = ctx.createLinearGradient(anchorX, 0, anchorX + (progRect.right - progRect.left), 0);
       grad.addColorStop(0, "#4F7BF7");
       grad.addColorStop(1, "#8B5CF6");
       ctx.fillStyle = grad;
-      ctx.fillText("PROGRESS", progRect.left, progRect.top - HIDDEN_Y_OFFSET + fontSize * 0.82);
+      ctx.fillText("PROGRESS", anchorX, progRect.top - HIDDEN_Y_OFFSET + fontSize * 0.82);
     }
 
-    // Activity ticker (has its own y:40 offset from itemVariants)
+    // Activity ticker
     if (tickerEl) {
       const tickerRect = tickerEl.getBoundingClientRect();
       ctx.fillStyle = "rgba(131,131,140,0.85)";
@@ -112,7 +121,7 @@ function renderPageToCanvas(
       ctx.letterSpacing = "3px";
       ctx.fillText(
         "BUILDING IN PUBLIC · MELBOURNE, AU",
-        tickerRect.left,
+        anchorX,
         tickerRect.top - HIDDEN_Y_OFFSET + 14
       );
       ctx.letterSpacing = "0px";
