@@ -140,7 +140,7 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridWarpProps) {
     <canvas
       ref={canvasRef}
       className="pointer-events-none absolute inset-0"
-      style={{ zIndex: 1 }}
+      style={{ zIndex: 15 }}
     />
   );
 }
