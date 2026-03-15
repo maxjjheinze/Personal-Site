@@ -47,7 +47,7 @@ function ModalShell({
   originRect,
   children,
   accentColor,
-  maxWidth = "max-w-[960px]",
+  maxWidth = "max-w-[1152px]",
 }: ModalProps & { children: ReactNode; accentColor: string; maxWidth?: string }) {
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
@@ -97,7 +97,7 @@ function ModalShell({
 
         {/* content wrapper */}
         <motion.div
-          className="relative p-10 sm:p-14 md:p-16"
+          className="relative p-12 sm:p-16 md:p-20"
           variants={stagger}
           initial="hidden"
           animate="visible"
@@ -167,20 +167,20 @@ export function ConnectModal({ onClose, originRect }: ModalProps) {
   return (
     <ModalShell onClose={onClose} originRect={originRect} accentColor="#FFFFFF">
       {/* header */}
-      <motion.div className="mb-12" variants={fadeUp}>
-        <p className="mb-3 font-mono text-[11px] font-medium uppercase tracking-[0.35em] text-muted-foreground/60">
+      <motion.div className="mb-14" variants={fadeUp}>
+        <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-muted-foreground/50">
           Get in Touch
         </p>
-        <h2 className="font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+        <h2 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
           Let&apos;s Connect
         </h2>
-        <p className="mt-4 max-w-lg text-base leading-relaxed text-muted-foreground">
+        <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground">
           Whether you want to collaborate, chat about crypto, or just say hey — I&apos;m always down to connect.
         </p>
       </motion.div>
 
       {/* links grid */}
-      <div className="space-y-4">
+      <div className="space-y-5">
         {contactLinks.map((link) => (
           <motion.a
             key={link.href}
@@ -190,14 +190,14 @@ export function ConnectModal({ onClose, originRect }: ModalProps) {
             className="group flex items-center gap-6 rounded-2xl border border-foreground/[0.06] bg-foreground/[0.02] px-7 py-6 transition-all duration-300 hover:border-foreground/[0.14] hover:bg-foreground/[0.05]"
             variants={fadeUp}
           >
-            <div className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl border border-foreground/[0.06] bg-foreground/[0.03] text-muted-foreground transition-colors duration-300 ${link.accent}`}>
+            <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl border border-foreground/[0.06] bg-foreground/[0.03] text-muted-foreground transition-colors duration-300 ${link.accent}`}>
               {link.icon}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-display text-base font-medium text-foreground/90 transition-colors group-hover:text-foreground">
+              <p className="font-display text-sm font-medium text-foreground/90 transition-colors group-hover:text-foreground">
                 {link.label}
               </p>
-              <p className="mt-0.5 text-sm text-muted-foreground/60 transition-colors group-hover:text-muted-foreground/80">
+              <p className="mt-0.5 text-xs text-muted-foreground/60 transition-colors group-hover:text-muted-foreground/80">
                 {link.description}
               </p>
             </div>
@@ -225,19 +225,19 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
   return (
     <ModalShell onClose={onClose} originRect={originRect} accentColor="#BF5AF2">
       {/* header */}
-      <motion.div className="mb-12" variants={fadeUp}>
-        <p className="mb-3 font-mono text-[11px] font-medium uppercase tracking-[0.35em] text-muted-foreground/60">
+      <motion.div className="mb-14" variants={fadeUp}>
+        <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-muted-foreground/50">
           The Story
         </p>
-        <h2 className="font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+        <h2 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
           About Me
         </h2>
       </motion.div>
 
       {/* bio content */}
-      <div className="space-y-7">
+      <div className="space-y-8">
         <motion.p
-          className="text-base leading-[1.85] text-foreground/75"
+          className="text-sm leading-[1.9] text-foreground/70"
           variants={fadeUp}
         >
           I&apos;m Max, 23, from Melbourne. I work a 9 to 5 in chemical distribution
@@ -246,7 +246,7 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
         </motion.p>
 
         <motion.p
-          className="text-base leading-[1.85] text-foreground/75"
+          className="text-sm leading-[1.9] text-foreground/70"
           variants={fadeUp}
         >
           Now I vibe code apps, tools, and websites, trade crypto, and mess around with
@@ -256,7 +256,7 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
         </motion.p>
 
         <motion.p
-          className="text-base leading-[1.85] text-foreground/75"
+          className="text-sm leading-[1.9] text-foreground/70"
           variants={fadeUp}
         >
           I believe in good karma and having the right people around you. If you&apos;re
@@ -265,7 +265,7 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
 
         {/* stats / highlights */}
         <motion.div
-          className="mt-10 grid grid-cols-3 gap-4"
+          className="mt-12 grid grid-cols-3 gap-5"
           variants={fadeUp}
         >
           {[
@@ -275,12 +275,12 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
           ].map((stat) => (
             <div
               key={stat.label}
-              className="rounded-xl border border-foreground/[0.06] bg-foreground/[0.02] px-5 py-5 text-center"
+              className="rounded-xl border border-foreground/[0.06] bg-foreground/[0.02] px-5 py-6 text-center"
             >
-              <p className="font-display text-lg font-semibold text-foreground/90">
+              <p className="font-display text-base font-semibold text-foreground/90">
                 {stat.value}
               </p>
-              <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground/50">
+              <p className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground/45">
                 {stat.label}
               </p>
             </div>
@@ -323,24 +323,24 @@ export function ProjectsModal({ onClose, originRect }: ModalProps) {
   return (
     <ModalShell onClose={onClose} originRect={originRect} accentColor="#00D4FF">
       {/* header */}
-      <motion.div className="mb-12" variants={fadeUp}>
-        <p className="mb-3 font-mono text-[11px] font-medium uppercase tracking-[0.35em] text-muted-foreground/60">
+      <motion.div className="mb-14" variants={fadeUp}>
+        <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-muted-foreground/50">
           What I&apos;m Building
         </p>
-        <h2 className="font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+        <h2 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
           My Projects
         </h2>
-        <p className="mt-4 max-w-lg text-base leading-relaxed text-muted-foreground">
+        <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground">
           Things I&apos;m shipping, experimenting with, and working towards.
         </p>
       </motion.div>
 
       {/* project cards */}
-      <div className="space-y-4">
+      <div className="space-y-5">
         {projects.map((project) => (
           <motion.div
             key={project.title}
-            className="group rounded-2xl border border-foreground/[0.06] bg-foreground/[0.02] px-7 py-6 transition-all duration-300 hover:border-foreground/[0.14] hover:bg-foreground/[0.05]"
+            className="group rounded-2xl border border-foreground/[0.06] bg-foreground/[0.02] px-7 py-7 transition-all duration-300 hover:border-foreground/[0.14] hover:bg-foreground/[0.05]"
             variants={fadeUp}
           >
             <div className="flex items-start justify-between gap-4">
@@ -353,11 +353,11 @@ export function ProjectsModal({ onClose, originRect }: ModalProps) {
                       boxShadow: `0 0 8px ${project.accent}66`,
                     }}
                   />
-                  <h3 className="font-display text-base font-medium text-foreground/90">
+                  <h3 className="font-display text-sm font-medium text-foreground/90">
                     {project.title}
                   </h3>
                 </div>
-                <p className="mt-2 ml-5 text-sm leading-relaxed text-muted-foreground/60">
+                <p className="mt-2 ml-5 text-xs leading-relaxed text-muted-foreground/60">
                   {project.description}
                 </p>
               </div>
