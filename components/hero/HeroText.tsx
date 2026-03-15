@@ -60,11 +60,11 @@ function ActivityTicker() {
   const messages = getMessages();
 
   return (
-    <div className="mt-8 h-6 overflow-hidden">
+    <div className="mt-8 h-6 overflow-hidden pl-[0.05em]">
       <AnimatePresence mode="wait">
         <motion.p
           key={index}
-          className="font-mono text-sm uppercase tracking-[0.25em] text-muted-foreground/60"
+          className="font-mono text-sm font-bold uppercase tracking-[0.25em] text-muted-foreground"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -20, opacity: 0 }}
