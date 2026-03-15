@@ -2,14 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 
-interface GridWarpProps {
+interface SpotlightGridProps {
   mouseX?: number;
   mouseY?: number;
 }
 
 const GRID_SIZE = 80;
-const WARP_RADIUS = 200;
-const WARP_STRENGTH = 30;
+const SPOTLIGHT_RADIUS = 250;
 const ZONE_PADDING = 60;
 const ZONE_FADE = 80;
 
@@ -19,7 +18,7 @@ interface ExclusionZone {
   r: number;
 }
 
-export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridWarpProps) {
+export function AmbientParticles({ mouseX = 0, mouseY = 0 }: SpotlightGridProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef(0);
   const cursorRef = useRef({ x: -9999, y: -9999 });
@@ -79,35 +78,6 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridWarpProps) {
     }
     document.addEventListener("mouseleave", handleLeave);
 
-    // Warp a point away from the cursor
-    function warpPoint(px: number, py: number, cx: number, cy: number): [number, number] {
-      const dx = px - cx;
-      const dy = py - cy;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist >= WARP_RADIUS || dist === 0) return [px, py];
-
-      const zone = exclusionRef.current;
-      if (zone) {
-        const dzx = px - zone.cx;
-        const dzy = py - zone.cy;
-        const distToZone = Math.sqrt(dzx * dzx + dzy * dzy);
-        if (distToZone < zone.r) return [px, py];
-      }
-
-      // Cursor inside exclusion zone — no warp
-      if (zone) {
-        const cdx = cx - zone.cx;
-        const cdy = cy - zone.cy;
-        if (Math.sqrt(cdx * cdx + cdy * cdy) < zone.r) return [px, py];
-      }
-
-      const factor = (1 - dist / WARP_RADIUS);
-      const push = factor * factor * WARP_STRENGTH;
-      const nx = px + (dx / dist) * push;
-      const ny = py + (dy / dist) * push;
-      return [nx, ny];
-    }
-
     function tick() {
       const ctx = canvas!.getContext("2d");
       if (!ctx) return;
@@ -117,37 +87,42 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridWarpProps) {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, cw, ch);
 
-      // Smooth cursor for fluid warp
+      // Smooth cursor
       const target = cursorRef.current;
       const smooth = smoothCursorRef.current;
-      smooth.x += (target.x - smooth.x) * 0.12;
-      smooth.y += (target.y - smooth.y) * 0.12;
+      smooth.x += (target.x - smooth.x) * 0.1;
+      smooth.y += (target.y - smooth.y) * 0.1;
 
       const cx = smooth.x;
       const cy = smooth.y;
-
       const zone = exclusionRef.current;
 
-      // Calculate grid bounds with padding
       const cols = Math.ceil(cw / GRID_SIZE) + 1;
       const rows = Math.ceil(ch / GRID_SIZE) + 1;
 
+      // Draw vertical lines — only visible segments near spotlight
       ctx.lineWidth = 1;
-
-      // Draw vertical lines (as warped curves)
       for (let col = 0; col <= cols; col++) {
         const baseX = col * GRID_SIZE;
         ctx.beginPath();
+        let drawing = false;
 
-        for (let row = 0; row <= rows; row++) {
-          const baseY = row * GRID_SIZE;
-          const [wx, wy] = warpPoint(baseX, baseY, cx, cy);
+        for (let py = 0; py <= ch; py += 4) {
+          const dx = baseX - cx;
+          const dy = py - cy;
+          const dist = Math.sqrt(dx * dx + dy * dy);
 
-          // Calculate opacity — fade near exclusion zone
-          let alpha = 0.025;
-          if (zone) {
+          // Spotlight falloff
+          let alpha = 0;
+          if (dist < SPOTLIGHT_RADIUS) {
+            const falloff = 1 - dist / SPOTLIGHT_RADIUS;
+            alpha = falloff * falloff * 0.12;
+          }
+
+          // Exclusion zone fade
+          if (zone && alpha > 0) {
             const dzx = baseX - zone.cx;
-            const dzy = baseY - zone.cy;
+            const dzy = py - zone.cy;
             const distToZone = Math.sqrt(dzx * dzx + dzy * dzy);
             if (distToZone < zone.r) {
               alpha = 0;
@@ -156,35 +131,42 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridWarpProps) {
             }
           }
 
-          if (alpha <= 0) {
+          if (alpha > 0.001) {
+            ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+            if (!drawing) {
+              ctx.moveTo(baseX, py);
+              drawing = true;
+            } else {
+              ctx.lineTo(baseX, py);
+            }
+          } else if (drawing) {
             ctx.stroke();
             ctx.beginPath();
-            continue;
-          }
-
-          ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-
-          if (row === 0) {
-            ctx.moveTo(wx, wy);
-          } else {
-            ctx.lineTo(wx, wy);
+            drawing = false;
           }
         }
-        ctx.stroke();
+        if (drawing) ctx.stroke();
       }
 
-      // Draw horizontal lines (as warped curves)
+      // Draw horizontal lines
       for (let row = 0; row <= rows; row++) {
         const baseY = row * GRID_SIZE;
         ctx.beginPath();
+        let drawing = false;
 
-        for (let col = 0; col <= cols; col++) {
-          const baseX = col * GRID_SIZE;
-          const [wx, wy] = warpPoint(baseX, baseY, cx, cy);
+        for (let px = 0; px <= cw; px += 4) {
+          const dx = px - cx;
+          const dy = baseY - cy;
+          const dist = Math.sqrt(dx * dx + dy * dy);
 
-          let alpha = 0.025;
-          if (zone) {
-            const dzx = baseX - zone.cx;
+          let alpha = 0;
+          if (dist < SPOTLIGHT_RADIUS) {
+            const falloff = 1 - dist / SPOTLIGHT_RADIUS;
+            alpha = falloff * falloff * 0.12;
+          }
+
+          if (zone && alpha > 0) {
+            const dzx = px - zone.cx;
             const dzy = baseY - zone.cy;
             const distToZone = Math.sqrt(dzx * dzx + dzy * dzy);
             if (distToZone < zone.r) {
@@ -194,21 +176,21 @@ export function AmbientParticles({ mouseX = 0, mouseY = 0 }: GridWarpProps) {
             }
           }
 
-          if (alpha <= 0) {
+          if (alpha > 0.001) {
+            ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+            if (!drawing) {
+              ctx.moveTo(px, baseY);
+              drawing = true;
+            } else {
+              ctx.lineTo(px, baseY);
+            }
+          } else if (drawing) {
             ctx.stroke();
             ctx.beginPath();
-            continue;
-          }
-
-          ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-
-          if (col === 0) {
-            ctx.moveTo(wx, wy);
-          } else {
-            ctx.lineTo(wx, wy);
+            drawing = false;
           }
         }
-        ctx.stroke();
+        if (drawing) ctx.stroke();
       }
 
       rafRef.current = requestAnimationFrame(tick);
