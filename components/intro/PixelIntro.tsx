@@ -103,7 +103,7 @@ function renderPageToCanvas(
 
     // Use explicit pixel values for xl (92px font) and lg (46px font)
     const isXL = w >= 1280;
-    const fontSize = isXL ? 92 : 46;
+    const fontSize = isXL ? 38 : 46;
     const maxInY = isXL ? centerY - 30 : centerY - 15;
     const progressY = isXL ? centerY + 75 : centerY + 38;
     const tickerY = isXL ? centerY + 120 : centerY + 60;
@@ -113,8 +113,8 @@ function renderPageToCanvas(
     const tickerLeftEdge = findVisualLeftEdge(`700 ${tickerFontSize}px sans-serif`, "B", tickerFontSize);
     const visualOffset = titleLeftEdge - tickerLeftEdge;
 
-    // "MAX IN" — temporary red color to test deployment
-    ctx.fillStyle = "#FF0000";
+    // "MAX IN"
+    ctx.fillStyle = "#EDEDED";
     ctx.font = `800 ${fontSize}px sans-serif`;
     ctx.fillText("MAX IN", baseX, maxInY);
 
