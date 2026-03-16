@@ -209,7 +209,8 @@ function renderPageToCanvas(
 function sampleParticles(
   offscreen: HTMLCanvasElement,
   pixelSize: number,
-  maxStagger: number
+  maxStagger: number,
+  sampleStep: number = pixelSize
 ): Particle[] {
   const ctx = offscreen.getContext("2d")!;
   const w = offscreen.width;
@@ -218,8 +219,8 @@ function sampleParticles(
   const pixels = imgData.data;
   const particles: Particle[] = [];
 
-  for (let py = 0; py < h; py += pixelSize) {
-    for (let px = 0; px < w; px += pixelSize) {
+  for (let py = 0; py < h; py += sampleStep) {
+    for (let px = 0; px < w; px += sampleStep) {
       const idx = (py * w + px) * 4;
       const r = pixels[idx];
       const g = pixels[idx + 1];
@@ -357,7 +358,7 @@ export function PixelIntro({
 
     function startAnimation(img: HTMLImageElement | null) {
       const offscreen = renderPageToCanvas(w, h, img);
-      const particles = sampleParticles(offscreen, pixelSize, maxStagger);
+      const particles = sampleParticles(offscreen, pixelSize, maxStagger, 1);
 
       particlesRef.current = particles;
       startTimeRef.current = 0;
