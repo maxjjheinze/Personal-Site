@@ -103,7 +103,7 @@ function renderPageToCanvas(
 
     // Font size; Y positions derived proportionally from fontSize
     const isXL = w >= 1280;
-    const fontSize = isXL ? 38 : 19;
+    const fontSize = isXL ? 75 : 38;
     const maxInY = centerY - fontSize * 0.33;
     const progressY = centerY + fontSize * 0.82;
     const tickerY = centerY + fontSize * 1.3;
