@@ -113,8 +113,8 @@ function renderPageToCanvas(
     const tickerLeftEdge = findVisualLeftEdge(`700 ${tickerFontSize}px sans-serif`, "B", tickerFontSize);
     const visualOffset = titleLeftEdge - tickerLeftEdge;
 
-    // "MAX IN"
-    ctx.fillStyle = "#EDEDED";
+    // "MAX IN" — temporary red color to test deployment
+    ctx.fillStyle = "#FF0000";
     ctx.font = `800 ${fontSize}px sans-serif`;
     ctx.fillText("MAX IN", baseX, maxInY);
 
