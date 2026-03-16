@@ -130,8 +130,8 @@ function renderPageToCanvas(
     ctx.font = `700 ${tickerFontSize}px sans-serif`;
     ctx.fillText("BUILDING IN PUBLIC · MELBOURNE, AU", baseX + visualOffset, tickerY);
 
-    // Avatar — matches lg:gap-6 (24px) with lg:-ml-[68px] on avatar wrapper
-    const avatarX = containerLeft + containerW - paddingX - avatarSize;
+    // Avatar — matches lg:-translate-x-[136px] on avatar wrapper
+    const avatarX = containerLeft + containerW - paddingX - avatarSize - 136;
     const avatarY = centerY - avatarSize / 2;
     const cx = avatarX + avatarSize / 2;
     const cy = avatarY + avatarSize / 2;
