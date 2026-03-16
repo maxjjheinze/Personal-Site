@@ -113,6 +113,14 @@ function renderPageToCanvas(
     const tickerLeftEdge = findVisualLeftEdge(`700 ${tickerFontSize}px sans-serif`, "B", tickerFontSize);
     const visualOffset = titleLeftEdge - tickerLeftEdge;
 
+    // Scale text block down to visually match the actual page
+    const textScale = 38 / 92;
+    const textCenterY = (maxInY + tickerY) / 2;
+    ctx.save();
+    ctx.translate(baseX, textCenterY);
+    ctx.scale(textScale, textScale);
+    ctx.translate(-baseX, -textCenterY);
+
     // "MAX IN"
     ctx.fillStyle = "#EDEDED";
     ctx.font = `800 ${fontSize}px sans-serif`;
@@ -129,6 +137,8 @@ function renderPageToCanvas(
     ctx.fillStyle = "rgba(131,131,140,0.85)";
     ctx.font = `700 ${tickerFontSize}px sans-serif`;
     ctx.fillText("BUILDING IN PUBLIC · MELBOURNE, AU", baseX + visualOffset, tickerY);
+
+    ctx.restore();
 
     // Avatar — matches lg:-translate-x-[136px] on avatar wrapper
     const avatarX = containerLeft + containerW - paddingX - avatarSize - 136;
