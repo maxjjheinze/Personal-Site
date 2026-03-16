@@ -358,7 +358,7 @@ export function PixelIntro({
 
     function startAnimation(img: HTMLImageElement | null) {
       const offscreen = renderPageToCanvas(w, h, img);
-      const particles = sampleParticles(offscreen, pixelSize, maxStagger, 1);
+      const particles = sampleParticles(offscreen, pixelSize, maxStagger, 1.5);
 
       particlesRef.current = particles;
       startTimeRef.current = 0;
