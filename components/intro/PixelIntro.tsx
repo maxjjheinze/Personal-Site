@@ -107,10 +107,10 @@ function renderPageToCanvas(
 
     // Scaled down ~15% from CSS values so canvas rendering visually matches the page
     const isXL = w >= 1280;
-    const fontSize = isXL ? 78 : 39;
-    const maxInY = isXL ? centerY - 25 : centerY - 12;
-    const progressY = isXL ? centerY + 64 : centerY + 32;
-    const tickerY = isXL ? centerY + 105 : centerY + 52;
+    const fontSize = isXL ? 64 : 32;
+    const maxInY = isXL ? centerY - 20 : centerY - 10;
+    const progressY = isXL ? centerY + 52 : centerY + 26;
+    const tickerY = isXL ? centerY + 88 : centerY + 44;
     const tickerFontSize = isXL ? 12 : 10;
 
     const titleLeftEdge = findVisualLeftEdge(`700 ${fontSize}px ${titleFont}`, "M", fontSize);
