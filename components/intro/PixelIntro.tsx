@@ -101,12 +101,13 @@ function renderPageToCanvas(
       return 0;
     }
 
-    // Use explicit pixel values for xl (92px font) and lg (46px font)
+    // Font size for title; Y positions derived proportionally
     const isXL = w >= 1280;
-    const fontSize = isXL ? 92 : 46;
-    const maxInY = isXL ? centerY - 30 : centerY - 15;
-    const progressY = isXL ? centerY + 75 : centerY + 38;
-    const tickerY = isXL ? centerY + 120 : centerY + 60;
+    const fontSize = isXL ? 38 : 19;
+    const lineHeight = fontSize * 1.1;
+    const maxInY = centerY - lineHeight * 0.3;
+    const progressY = maxInY + lineHeight;
+    const tickerY = progressY + fontSize * 0.5;
     const tickerFontSize = isXL ? 12 : 10;
 
     const titleLeftEdge = findVisualLeftEdge(`800 ${fontSize}px sans-serif`, "M", fontSize);
