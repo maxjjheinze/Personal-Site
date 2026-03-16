@@ -70,6 +70,10 @@ function renderPageToCanvas(
   const containerLeft = (w - containerW) / 2;
   const paddingX = w >= 1024 ? 80 : w >= 768 ? 48 : 24;
 
+  // Use Space Grotesk (font-display) to match the actual page
+  const spaceGrotesk = getComputedStyle(document.documentElement).getPropertyValue("--font-space-grotesk").trim();
+  const titleFont = spaceGrotesk ? `${spaceGrotesk}, sans-serif` : "sans-serif";
+
   if (isDesktop) {
     const centerY = h / 2;
     const avatarSize = w >= 1280 ? 205 : 184;
@@ -109,13 +113,14 @@ function renderPageToCanvas(
     const tickerY = isXL ? centerY + 120 : centerY + 60;
     const tickerFontSize = isXL ? 12 : 10;
 
-    const titleLeftEdge = findVisualLeftEdge(`800 ${fontSize}px sans-serif`, "M", fontSize);
-    const tickerLeftEdge = findVisualLeftEdge(`700 ${tickerFontSize}px sans-serif`, "B", tickerFontSize);
+    const titleLeftEdge = findVisualLeftEdge(`700 ${fontSize}px ${titleFont}`, "M", fontSize);
+    const tickerLeftEdge = findVisualLeftEdge(`700 ${tickerFontSize}px ${titleFont}`, "B", tickerFontSize);
     const visualOffset = titleLeftEdge - tickerLeftEdge;
 
-    // "MAX IN"
+    // "MAX IN" — matches font-display text-[46px]/text-[5.75rem] font-bold tracking-tighter
     ctx.fillStyle = "#EDEDED";
-    ctx.font = `800 ${fontSize}px sans-serif`;
+    ctx.font = `700 ${fontSize}px ${titleFont}`;
+    ctx.letterSpacing = `${-0.05 * fontSize}px`;
     ctx.fillText("MAX IN", baseX, maxInY);
 
     // "PROGRESS"
@@ -125,10 +130,15 @@ function renderPageToCanvas(
     ctx.fillStyle = grad;
     ctx.fillText("PROGRESS", baseX, progressY);
 
+    // Reset letter spacing for ticker
+    ctx.letterSpacing = "0px";
+
     // Ticker
     ctx.fillStyle = "rgba(131,131,140,0.85)";
-    ctx.font = `700 ${tickerFontSize}px sans-serif`;
+    ctx.font = `700 ${tickerFontSize}px ${titleFont}`;
+    ctx.letterSpacing = `${0.25 * tickerFontSize}px`;
     ctx.fillText("BUILDING IN PUBLIC · MELBOURNE, AU", baseX + visualOffset, tickerY);
+    ctx.letterSpacing = "0px";
 
     // Avatar — matches lg:-translate-x-[136px] on avatar wrapper
     const avatarX = containerLeft + containerW - paddingX - avatarSize - 136;
@@ -174,7 +184,8 @@ function renderPageToCanvas(
 
     const titleSize = Math.min(w * 0.1, 46);
     ctx.fillStyle = "#EDEDED";
-    ctx.font = `800 ${titleSize}px sans-serif`;
+    ctx.font = `700 ${titleSize}px ${titleFont}`;
+    ctx.letterSpacing = `${-0.05 * titleSize}px`;
     ctx.fillText("MAX IN", centerX, h * 0.2 + titleSize + 10);
 
     const grad = ctx.createLinearGradient(centerX - 200, 0, centerX + 200, 0);
@@ -183,9 +194,12 @@ function renderPageToCanvas(
     ctx.fillStyle = grad;
     ctx.fillText("PROGRESS", centerX, h * 0.2 + titleSize * 2 + 10);
 
+    ctx.letterSpacing = "0px";
     ctx.fillStyle = "rgba(131,131,140,0.85)";
-    ctx.font = "700 12px sans-serif";
+    ctx.font = `700 12px ${titleFont}`;
+    ctx.letterSpacing = `${0.25 * 12}px`;
     ctx.fillText("BUILDING IN PUBLIC · MELBOURNE, AU", centerX, h * 0.2 + titleSize * 2 + 50);
+    ctx.letterSpacing = "0px";
 
     const avatarSize = Math.min(154, w * 0.4);
     const avatarX = centerX - avatarSize / 2;
