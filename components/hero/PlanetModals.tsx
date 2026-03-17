@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, ReactNode } from "react";
+import { useEffect, useState, ReactNode } from "react";
 import { motion } from "framer-motion";
 
 /* ─── shared types ─── */
@@ -118,7 +118,7 @@ function ModalShell({
 
       {/* panel */}
       <motion.div
-        className={`relative z-10 mx-auto w-full ${maxWidth} min-h-[84vh] overflow-hidden rounded-3xl border border-foreground/[0.06] bg-background/[0.92] shadow-2xl backdrop-blur-2xl`}
+        className={`relative z-10 mx-auto w-full ${maxWidth} min-h-[84vh] max-h-[90vh] overflow-y-auto rounded-3xl border border-foreground/[0.06] bg-background/[0.92] shadow-2xl backdrop-blur-2xl`}
         variants={panel}
         style={
           originRect
@@ -173,7 +173,7 @@ const contactLinks = [
     href: "https://x.com/MaxInProgress",
     external: true,
     icon: (
-      <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="currentColor">
+      <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
       </svg>
     ),
@@ -184,7 +184,7 @@ const contactLinks = [
     href: "mailto:maxjjheinze42@gmail.com",
     external: false,
     icon: (
-      <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
       </svg>
     ),
@@ -195,7 +195,7 @@ const contactLinks = [
 
 export function ConnectModal({ onClose, originRect }: ModalProps) {
   return (
-    <ModalShell onClose={onClose} originRect={originRect} accentColor="#FFFFFF">
+    <ModalShell onClose={onClose} originRect={originRect} accentColor="#FFFFFF" maxWidth="max-w-2xl">
       {/* header */}
       <motion.div className="mb-14" variants={fadeUp}>
         <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-muted-foreground/50">
@@ -204,8 +204,8 @@ export function ConnectModal({ onClose, originRect }: ModalProps) {
         <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
           Let&apos;s Connect
         </h2>
-        <p className="mt-4 max-w-lg text-xs leading-relaxed text-muted-foreground">
-          Good things start with a simple hello.
+        <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground">
+          DMs open. Inbox open. Always down to chat.
         </p>
       </motion.div>
 
@@ -217,23 +217,23 @@ export function ConnectModal({ onClose, originRect }: ModalProps) {
             href={link.href}
             target={link.external ? "_blank" : undefined}
             rel={link.external ? "noopener noreferrer" : undefined}
-            className="group flex items-center gap-5 rounded-xl py-4 px-5 transition-all duration-300 hover:bg-foreground/[0.04]"
+            className="group flex items-center gap-5 rounded-2xl border border-foreground/[0.06] bg-foreground/[0.02] py-6 px-7 transition-all duration-300 hover:border-foreground/[0.14] hover:bg-foreground/[0.05]"
             variants={cardSlide}
           >
-            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg text-muted-foreground/60 transition-colors duration-300 group-hover:text-foreground">
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg text-muted-foreground/60 transition-colors duration-300 group-hover:text-foreground">
               {link.icon}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-display text-xs font-medium text-foreground/80 transition-colors group-hover:text-foreground">
+              <p className="font-display text-sm font-medium text-foreground/80 transition-colors group-hover:text-foreground">
                 {link.label}
               </p>
-              <p className="mt-0.5 text-[11px] text-muted-foreground/40 transition-colors group-hover:text-muted-foreground/60">
+              <p className="mt-0.5 text-xs text-muted-foreground/40 transition-colors group-hover:text-muted-foreground/60">
                 {link.handle}
               </p>
             </div>
             <svg
               viewBox="0 0 24 24"
-              className="h-4 w-4 flex-shrink-0 text-muted-foreground/20 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-muted-foreground/50"
+              className="h-5 w-5 flex-shrink-0 text-muted-foreground/20 transition-all duration-300 group-hover:translate-x-1 group-hover:text-muted-foreground/50"
               fill="none"
               stroke="currentColor"
               strokeWidth="1.5"
@@ -251,6 +251,24 @@ export function ConnectModal({ onClose, originRect }: ModalProps) {
    ABOUT MODAL
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
+const timeline: Array<{ year: string; description: string; current?: boolean }> = [
+  { year: "2021", description: "Bachelor of Pharmaceutical Science" },
+  { year: "2022", description: "Moved to Melbourne" },
+  { year: "2023", description: "Finished degree, part-time pharmacy work" },
+  { year: "2024", description: "Full-time R&D at biotech company" },
+  { year: "2025", description: "Switched to chemical distribution, learning day trading & algo trading" },
+  { year: "2026", description: "Building in public, AI, algo trading, working 9-5", current: true },
+];
+
+const aboutChips = [
+  { label: "Melbourne", color: "#4F7BF7" },
+  { label: "Building", color: "#00D4FF" },
+  { label: "F1", color: "#E10600" },
+  { label: "GSW", color: "#FDB927" },
+  { label: "Caffeine-Powered", color: "#8B5CF6" },
+  { label: "911 Dreamer", color: "#BF5AF2" },
+];
+
 export function AboutModal({ onClose, originRect }: ModalProps) {
   return (
     <ModalShell onClose={onClose} originRect={originRect} accentColor="#BF5AF2">
@@ -266,54 +284,79 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
 
       {/* bio content */}
       <div className="space-y-8">
-        <motion.p
-          className="text-xs leading-[2] text-foreground/70"
-          variants={fadeUp}
-        >
-          I&apos;m Max, 23, from Melbourne. I work a 9 to 5 in chemical distribution
-          but I&apos;m trying to build my way out of it. I studied pharmaceutical science,
-          graduated in 2024, and somewhere along the way realised I wanted more.
+        <motion.p className="text-xs leading-[2] text-foreground/70" variants={fadeUp}>
+          I&apos;m Max, 23, based in Melbourne. I work as a Regulatory and Quality
+          Officer in chemical distribution — my 9 to 5 pays the bills while I build
+          my way to something bigger. I studied pharmaceutical science, graduated in
+          2024, and somewhere along the way realised a linear career path wasn&apos;t
+          for me.
         </motion.p>
 
-        <motion.p
-          className="text-xs leading-[2] text-foreground/70"
-          variants={fadeUp}
-        >
-          Now I vibe code apps, tools, and websites, trade crypto, and mess around with
-          algo trading. The goal is{" "}
-          <span className="font-medium text-foreground">$10k/month</span>{" "}
-          and a laptop I can work from anywhere with. I build everything in public on X.
+        <motion.p className="text-xs leading-[2] text-foreground/70" variants={fadeUp}>
+          Now I build apps, tools, and websites, trade crypto, and tinker with algo
+          trading systems. I&apos;m restless — always have been. The kind of person
+          who needs three projects running at once and still feels like there&apos;s
+          not enough going on. I run on caffeine, curiosity, and an irrational belief
+          that a Porsche 911 is in my future.
         </motion.p>
 
-        <motion.p
-          className="text-xs leading-[2] text-foreground/70"
-          variants={fadeUp}
-        >
-          I believe in good karma and having the right people around you. If you&apos;re
-          on a similar path, hit me up.
+        <motion.p className="text-xs leading-[2] text-foreground/70" variants={fadeUp}>
+          When I&apos;m not building or staring at charts, you&apos;ll find me
+          watching F1 or yelling at the TV during Warriors games. I believe the right
+          people show up when you put yourself out there. If you&apos;re on a similar
+          path — building, learning, figuring it out — I&apos;d like to hear from
+          you.
         </motion.p>
 
-        {/* stats / highlights */}
-        <div className="mt-12 grid grid-cols-3 gap-5">
-          {[
-            { value: "Melbourne", label: "Based in" },
-            { value: "2024", label: "Graduated" },
-            { value: "Building", label: "Status" },
-          ].map((stat) => (
-            <motion.div
-              key={stat.label}
-              className="rounded-xl border border-foreground/[0.06] bg-foreground/[0.02] px-5 py-6 text-center"
-              variants={cardSlide}
+        {/* The Journey — timeline */}
+        <motion.div className="mt-12" variants={fadeUp}>
+          <p className="mb-6 font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-muted-foreground/50">
+            The Journey
+          </p>
+          <div className="relative space-y-6">
+            {/* vertical line */}
+            <div className="absolute left-[4px] top-1 bottom-1 w-px bg-foreground/[0.08]" />
+
+            {timeline.map((item) => (
+              <motion.div
+                key={item.year}
+                className="relative pl-8"
+                variants={cardSlide}
+              >
+                {/* dot */}
+                <div
+                  className="absolute left-0 top-1.5 h-[9px] w-[9px] rounded-full"
+                  style={{
+                    backgroundColor: item.current ? "#BF5AF2" : "hsl(var(--muted-foreground) / 0.3)",
+                    boxShadow: item.current ? "0 0 12px #BF5AF266" : undefined,
+                  }}
+                />
+                <p className="text-sm font-semibold text-foreground/90">
+                  {item.year}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground/60">
+                  {item.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* info chips */}
+        <motion.div className="mt-10 flex flex-wrap gap-2.5" variants={fadeUp}>
+          {aboutChips.map((chip) => (
+            <span
+              key={chip.label}
+              className="flex items-center gap-2 rounded-full border border-foreground/[0.08] bg-foreground/[0.02] px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground/70"
             >
-              <p className="font-display text-sm font-semibold text-foreground/90">
-                {stat.value}
-              </p>
-              <p className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground/45">
-                {stat.label}
-              </p>
-            </motion.div>
+              <span
+                className="h-1.5 w-1.5 rounded-full"
+                style={{ backgroundColor: chip.color }}
+              />
+              {chip.label}
+            </span>
           ))}
-        </div>
+        </motion.div>
       </div>
     </ModalShell>
   );
@@ -323,29 +366,155 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
    PROJECTS MODAL
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-const projects = [
+interface Project {
+  title: string;
+  description: string;
+  tag: string;
+  tagColor: string;
+  accent: string;
+  href?: string;
+  hasPreview: boolean;
+}
+
+const projects: Project[] = [
   {
-    title: "Max in Progress",
-    description: "This personal site — my corner of the internet, built with Next.js and Framer Motion.",
+    title: "Task Manager",
+    description: "Jot down ideas quickly. Organize your tasks, and actually ensure that they\u2019ve been completed.",
     tag: "Live",
     tagColor: "text-green-400 border-green-400/20 bg-green-400/5",
     accent: "#4F7BF7",
+    href: "https://max-task-manager.vercel.app/",
+    hasPreview: true,
   },
   {
-    title: "Algo Trading Tools",
-    description: "Building automated trading strategies and analytics for crypto markets.",
+    title: "Algo Hub",
+    description: "Minimalistic front-end dashboard to track algorithmic trading statistics and metrics over time.",
+    tag: "Live",
+    tagColor: "text-green-400 border-green-400/20 bg-green-400/5",
+    accent: "#BF5AF2",
+    href: "https://algohub-public.vercel.app/",
+    hasPreview: true,
+  },
+  {
+    title: "Time Maxing",
+    description: "Are you actually as productive as you say you are? We track your Google Chrome to ensure it meets your goals.",
     tag: "In Progress",
     tagColor: "text-amber-400 border-amber-400/20 bg-amber-400/5",
-    accent: "#BF5AF2",
+    accent: "#00D4FF",
+    href: "https://time-maxxing.vercel.app/",
+    hasPreview: true,
   },
   {
     title: "More Coming Soon",
     description: "Always working on something new. Follow along on X for updates.",
     tag: "Soon",
     tagColor: "text-muted-foreground border-foreground/10 bg-foreground/[0.03]",
-    accent: "#00D4FF",
+    accent: "#555555",
+    hasPreview: false,
   },
 ];
+
+function ProjectCard({ project }: { project: Project }) {
+  const [hovered, setHovered] = useState(false);
+
+  const cardClass =
+    "group block rounded-2xl border border-foreground/[0.06] bg-foreground/[0.02] overflow-hidden transition-all duration-300 hover:border-foreground/[0.14] hover:bg-foreground/[0.05]";
+
+  const content = (
+    <>
+      {/* preview area */}
+      {project.hasPreview && (
+        <div className="relative aspect-video w-full bg-foreground/[0.02] overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div
+              className="h-24 w-24 rounded-full blur-2xl transition-opacity duration-500"
+              style={{
+                backgroundColor: project.accent,
+                opacity: hovered ? 0.4 : 0.2,
+              }}
+            />
+          </div>
+          {/* Video — uncomment when files are ready
+          <video
+            className="absolute inset-0 h-full w-full object-cover"
+            muted
+            loop
+            playsInline
+          >
+            <source src="" type="video/mp4" />
+          </video>
+          */}
+        </div>
+      )}
+
+      {/* content area */}
+      <div className="relative px-7 py-6">
+        {/* link arrow */}
+        {project.href && (
+          <svg
+            viewBox="0 0 24 24"
+            className="absolute right-5 top-5 h-4 w-4 text-muted-foreground/20 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:text-muted-foreground/50"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          >
+            <path d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+          </svg>
+        )}
+
+        <div className="flex items-center gap-3">
+          <div
+            className="h-2 w-2 flex-shrink-0 rounded-full"
+            style={{
+              backgroundColor: project.accent,
+              boxShadow: `0 0 8px ${project.accent}66`,
+            }}
+          />
+          <h3 className="font-display text-sm font-medium text-foreground/90">
+            {project.title}
+          </h3>
+        </div>
+        <p className="mt-2 ml-5 text-xs leading-relaxed text-muted-foreground/60">
+          {project.description}
+        </p>
+        <span
+          className={`mt-3 ml-5 inline-block rounded-full border px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-wider ${project.tagColor}`}
+        >
+          {project.tag}
+        </span>
+      </div>
+    </>
+  );
+
+  if (project.href) {
+    return (
+      <motion.div variants={cardSlide}>
+        <a
+          href={project.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cardClass}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+        >
+          {content}
+        </a>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div variants={cardSlide}>
+      <div
+        className={cardClass}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        {content}
+      </div>
+    </motion.div>
+  );
+}
 
 export function ProjectsModal({ onClose, originRect }: ModalProps) {
   return (
@@ -358,44 +527,15 @@ export function ProjectsModal({ onClose, originRect }: ModalProps) {
         <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
           My Projects
         </h2>
-        <p className="mt-4 max-w-lg text-xs leading-relaxed text-muted-foreground">
-          Things I&apos;m shipping, experimenting with, and working towards.
+        <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground">
+          Everything starts as a side project.
         </p>
       </motion.div>
 
       {/* project cards */}
-      <div className="space-y-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         {projects.map((project) => (
-          <motion.div
-            key={project.title}
-            className="group rounded-2xl border border-foreground/[0.06] bg-foreground/[0.02] px-7 py-7 transition-all duration-300 hover:border-foreground/[0.14] hover:bg-foreground/[0.05]"
-            variants={cardSlide}
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3">
-                  <div
-                    className="h-2 w-2 flex-shrink-0 rounded-full"
-                    style={{
-                      backgroundColor: project.accent,
-                      boxShadow: `0 0 8px ${project.accent}66`,
-                    }}
-                  />
-                  <h3 className="font-display text-xs font-medium text-foreground/90">
-                    {project.title}
-                  </h3>
-                </div>
-                <p className="mt-2 ml-5 text-[11px] leading-relaxed text-muted-foreground/60">
-                  {project.description}
-                </p>
-              </div>
-              <span
-                className={`flex-shrink-0 rounded-full border px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-wider ${project.tagColor}`}
-              >
-                {project.tag}
-              </span>
-            </div>
-          </motion.div>
+          <ProjectCard key={project.title} project={project} />
         ))}
       </div>
     </ModalShell>
