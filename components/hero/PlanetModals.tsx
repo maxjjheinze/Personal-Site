@@ -118,13 +118,13 @@ function ModalShell({
 
       {/* panel */}
       <motion.div
-        className={`relative z-10 mx-auto w-full ${maxWidth} h-[84vh] overflow-hidden rounded-3xl border border-foreground/[0.06] bg-background/[0.92] shadow-2xl backdrop-blur-2xl`}
+        className={`relative z-10 mx-auto w-full ${maxWidth} h-[84vh] overflow-y-auto rounded-3xl border border-foreground/[0.06] bg-background/[0.92] shadow-2xl backdrop-blur-2xl [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}
         variants={panel}
-        style={
-          originRect
+        style={{
+          ...(originRect
             ? { transformOrigin: `${originRect.x}px ${originRect.y}px` }
-            : undefined
-        }
+            : {}),
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* accent glow at top */}
