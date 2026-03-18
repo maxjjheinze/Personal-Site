@@ -173,7 +173,7 @@ const contactLinks = [
     href: "https://x.com/MaxInProgress",
     external: true,
     icon: (
-      <svg viewBox="0 0 24 24" className="h-[41px] w-[41px]" fill="currentColor">
+      <svg viewBox="0 0 24 24" className="h-[33px] w-[33px]" fill="currentColor">
         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
       </svg>
     ),
@@ -184,7 +184,7 @@ const contactLinks = [
     href: "mailto:maxjjheinze42@gmail.com",
     external: false,
     icon: (
-      <svg viewBox="0 0 24 24" className="h-[41px] w-[41px]" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <svg viewBox="0 0 24 24" className="h-[33px] w-[33px]" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
       </svg>
     ),
@@ -224,7 +224,7 @@ export function ConnectModal({ onClose, originRect }: ModalProps) {
               {link.icon}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-display text-[20px] font-medium text-foreground/80 transition-colors group-hover:text-foreground">
+              <p className="font-display text-[18px] font-medium text-foreground/80 transition-colors group-hover:text-foreground">
                 {link.label}
               </p>
               <p className="mt-0.5 text-[13px] text-muted-foreground/40 transition-colors group-hover:text-muted-foreground/60">
@@ -233,7 +233,7 @@ export function ConnectModal({ onClose, originRect }: ModalProps) {
             </div>
             <svg
               viewBox="0 0 24 24"
-              className="h-[30px] w-[30px] flex-shrink-0 text-muted-foreground/20 transition-all duration-300 group-hover:translate-x-1 group-hover:text-muted-foreground/50"
+              className="h-[23px] w-[23px] flex-shrink-0 text-muted-foreground/20 transition-all duration-300 group-hover:translate-x-1 group-hover:text-muted-foreground/50"
               fill="none"
               stroke="currentColor"
               strokeWidth="1.5"
