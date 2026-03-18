@@ -118,7 +118,7 @@ function ModalShell({
 
       {/* panel */}
       <motion.div
-        className={`relative z-10 mx-auto w-full ${maxWidth} h-[84vh] overflow-y-auto rounded-3xl border border-foreground/[0.06] bg-background/[0.92] shadow-2xl backdrop-blur-2xl [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}
+        className={`relative z-10 mx-auto w-full ${maxWidth} h-[84vh] overflow-y-auto scroll-smooth rounded-3xl border border-foreground/[0.06] bg-background/[0.92] shadow-2xl backdrop-blur-2xl [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}
         variants={panel}
         style={{
           ...(originRect
@@ -262,11 +262,15 @@ const timeline: Array<{ year: string; description: string; current?: boolean }> 
 
 const aboutChips = [
   { label: "Melbourne", color: "#4F7BF7" },
+  { label: "Pharma Background", color: "#34D399" },
   { label: "Building", color: "#00D4FF" },
-  { label: "F1", color: "#E10600" },
-  { label: "GSW", color: "#FDB927" },
-  { label: "Caffeine-Powered", color: "#8B5CF6" },
-  { label: "911 Dreamer", color: "#BF5AF2" },
+  { label: "Vibe Coder", color: "#F472B6" },
+  { label: "Crypto", color: "#F59E0B" },
+  { label: "Algo Trading", color: "#EF4444" },
+  { label: "I Want a Porsche", color: "#BF5AF2" },
+  { label: "Heavy on Caffeine", color: "#8B5CF6" },
+  { label: "Minimalist", color: "#6B7280" },
+  { label: "In Progress", color: "#00D4FF" },
 ];
 
 export function AboutModal({ onClose, originRect }: ModalProps) {
@@ -284,31 +288,30 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
 
       {/* bio content */}
       <div className="space-y-8">
-        <motion.p className="text-xs leading-[2] text-foreground/70" variants={fadeUp}>
+        <motion.p className="text-sm leading-[2] text-foreground/70" variants={fadeUp}>
           I&apos;m Max, 23, based in Melbourne. I work as a Regulatory and Quality
-          Officer in chemical distribution — my 9 to 5 pays the bills while I build
+          Officer in chemical distribution. My 9 to 5 pays the bills while I build
           my way to something bigger. I studied pharmaceutical science, graduated in
           2024, and somewhere along the way realised a linear career path wasn&apos;t
           for me.
         </motion.p>
 
-        <motion.p className="text-xs leading-[2] text-foreground/70" variants={fadeUp}>
+        <motion.p className="text-sm leading-[2] text-foreground/70" variants={fadeUp}>
           Now I build apps, tools, and websites, trade crypto, and tinker with algo
-          trading systems. I&apos;m restless — always have been. The kind of person
+          trading systems. I&apos;m restless. Always have been. The kind of person
           who needs three projects running at once and still feels like there&apos;s
           not enough going on. I run on caffeine, curiosity, and an irrational belief
           that a Porsche 911 is in my future.
         </motion.p>
 
-        <motion.p className="text-xs leading-[2] text-foreground/70" variants={fadeUp}>
+        <motion.p className="text-sm leading-[2] text-foreground/70" variants={fadeUp}>
           When I&apos;m not building or staring at charts, you&apos;ll find me
           watching F1 or yelling at the TV during Warriors games. I believe the right
           people show up when you put yourself out there. If you&apos;re on a similar
-          path — building, learning, figuring it out — I&apos;d like to hear from
-          you.
+          path, building, learning, figuring it out, I&apos;d like to hear from you.
         </motion.p>
 
-        {/* The Journey — timeline */}
+        {/* The Journey timeline */}
         <motion.div className="mt-12" variants={fadeUp}>
           <p className="mb-6 font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-muted-foreground/50">
             The Journey
@@ -331,10 +334,10 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
                     boxShadow: item.current ? "0 0 12px #BF5AF266" : undefined,
                   }}
                 />
-                <p className="text-sm font-semibold text-foreground/90">
+                <p className="text-base font-semibold text-foreground/90">
                   {item.year}
                 </p>
-                <p className="mt-1 text-xs text-muted-foreground/60">
+                <p className="mt-1 text-sm text-muted-foreground/60">
                   {item.description}
                 </p>
               </motion.div>
