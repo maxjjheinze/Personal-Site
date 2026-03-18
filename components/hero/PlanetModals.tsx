@@ -276,7 +276,7 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
       </motion.div>
 
       {/* bio content */}
-      <div className="space-y-8">
+      <div className="space-y-5">
         <motion.p className="text-[13px] leading-[2] text-foreground/70" variants={fadeUp}>
           I&apos;m Max, based in Melbourne. During the day, I work in Regulatory
           &amp; Quality in chemical distribution. My 9 to 5 pays the bills and at
