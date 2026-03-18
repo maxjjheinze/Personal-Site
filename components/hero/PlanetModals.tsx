@@ -332,13 +332,14 @@ interface Project {
   accent: string;
   href?: string;
   image?: string;
+  comingSoon?: boolean;
   icon: ReactNode;
 }
 
 const projects: Project[] = [
   {
     title: "Algo Hub",
-    description: "Minimalistic front-end dashboard to track algorithmic trading statistics and metrics over time.",
+    description: "Minimalistic front-end dashboard, tracking dynamic algorithmic trading statistics with unique visualizations.",
     tag: "Live",
     tagColor: "text-green-400 border-green-400/20 bg-green-400/5",
     accent: "#BF5AF2",
@@ -354,7 +355,7 @@ const projects: Project[] = [
   },
   {
     title: "Task Manager",
-    description: "Jot down ideas quickly. Organize your tasks, and actually ensure that they\u2019ve been completed.",
+    description: "Jot down ideas quickly, organize your tasks, and actually make sure you\u2019ve done them.",
     tag: "Live",
     tagColor: "text-green-400 border-green-400/20 bg-green-400/5",
     accent: "#4F7BF7",
@@ -373,7 +374,7 @@ const projects: Project[] = [
   },
   {
     title: "TimeMaxxing",
-    description: "Are you actually as productive as you say you are? We track your Google Chrome to ensure it meets your goals.",
+    description: "Are you as productive as you think you are? If you want to meet your goals, track your Google Chrome usage and be strict with your time.",
     tag: "In Progress",
     tagColor: "text-amber-400 border-amber-400/20 bg-amber-400/5",
     accent: "#00D4FF",
@@ -393,6 +394,7 @@ const projects: Project[] = [
     tag: "Soon",
     tagColor: "text-muted-foreground border-foreground/10 bg-foreground/[0.03]",
     accent: "#555555",
+    comingSoon: true,
     icon: (
       <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-foreground/[0.05]">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -405,23 +407,41 @@ const projects: Project[] = [
   },
 ];
 
-function ComingSoonAnimation() {
-  const bars = [0, 1, 2, 3, 4, 5, 6, 7];
+function ComingSoonCover() {
+  const bars = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
   return (
-    <div className="flex h-full w-full items-center justify-center gap-[6px] py-12 md:py-0">
-      {bars.map((i) => (
+    <div className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-xl bg-[#101014]">
+      {/* subtle grid lines */}
+      <div className="absolute inset-0 opacity-[0.04]" style={{
+        backgroundImage: "linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)",
+        backgroundSize: "24px 24px",
+      }} />
+      {/* equalizer bars */}
+      <div className="relative flex items-end gap-[5px] h-16">
+        {bars.map((i) => (
+          <motion.div
+            key={i}
+            className="w-[4px] rounded-full"
+            style={{ background: "linear-gradient(to top, rgba(255,255,255,0.06), rgba(255,255,255,0.15))" }}
+            animate={{ height: ["8px", `${20 + Math.sin(i * 0.8) * 12}px`, "8px"] }}
+            transition={{
+              duration: 1.6 + Math.sin(i) * 0.4,
+              repeat: Infinity,
+              delay: i * 0.12,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+      </div>
+      {/* subtle glow */}
+      <div className="absolute inset-0 flex items-center justify-center">
         <motion.div
-          key={i}
-          className="w-[3px] rounded-full bg-foreground/10"
-          animate={{ height: ["12px", "28px", "12px"] }}
-          transition={{
-            duration: 1.2,
-            repeat: Infinity,
-            delay: i * 0.15,
-            ease: "easeInOut",
-          }}
+          className="h-20 w-32 rounded-full blur-3xl"
+          style={{ backgroundColor: "rgba(255,255,255,0.03)" }}
+          animate={{ opacity: [0.3, 0.6, 0.3] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         />
-      ))}
+      </div>
     </div>
   );
 }
@@ -447,27 +467,12 @@ function ProjectCard({ project }: { project: Project }) {
     setTilt({ rotateX: 0, rotateY: 0 });
   };
 
-  const isComingSoon = !project.image;
-
   const cardContent = (
     <div
-      className={`group flex flex-col md:flex-row rounded-2xl border ${isComingSoon ? "border-dashed border-foreground/[0.06] opacity-60 hover:opacity-80" : "border-foreground/[0.06] hover:border-foreground/[0.14]"} bg-foreground/[0.02] overflow-hidden transition-all duration-300 hover:bg-foreground/[0.05]`}
+      className={`group flex flex-col md:flex-row rounded-2xl border ${project.comingSoon ? "border-dashed border-foreground/[0.06] opacity-60 hover:opacity-80" : "border-foreground/[0.06] hover:border-foreground/[0.14]"} bg-foreground/[0.02] overflow-hidden transition-all duration-300 hover:bg-foreground/[0.05]`}
     >
       {/* left content */}
-      <div className={`relative flex flex-col justify-center p-7 ${isComingSoon ? "flex-1" : "flex-1 md:max-w-[55%]"}`}>
-        {/* link arrow */}
-        {project.href && (
-          <svg
-            viewBox="0 0 24 24"
-            className="absolute right-5 top-5 h-4 w-4 text-muted-foreground/20 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:text-muted-foreground/50 md:right-auto md:left-auto md:bottom-7 md:top-auto"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          >
-            <path d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
-          </svg>
-        )}
-
+      <div className="relative flex flex-1 flex-col justify-center p-7 md:max-w-[55%]">
         <div className="flex items-center gap-3">
           {project.icon}
           <h3 className="font-display text-[15px] font-medium text-foreground/90">
@@ -484,33 +489,33 @@ function ProjectCard({ project }: { project: Project }) {
         </span>
       </div>
 
-      {/* right image area */}
-      {project.image && (
-        <div
-          className="relative w-full md:w-[45%] flex-shrink-0 p-3"
-          style={{ perspective: "600px" }}
-          ref={imageRef}
-          onMouseMove={handleMouseMove}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={handleMouseLeave}
+      {/* right image / animation area */}
+      <div
+        className="relative w-full md:w-[45%] flex-shrink-0 p-3"
+        style={{ perspective: "600px" }}
+        ref={imageRef}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={handleMouseLeave}
+      >
+        <motion.div
+          className="relative h-48 md:h-full min-h-[180px] overflow-hidden rounded-xl"
+          style={{
+            transformStyle: "preserve-3d",
+            backgroundColor: "#101014",
+          }}
+          animate={{
+            rotateX: tilt.rotateX,
+            rotateY: tilt.rotateY,
+            scale: isHovered ? 1.06 : 1,
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 150,
+            damping: 15,
+          }}
         >
-          <motion.div
-            className="relative h-48 md:h-full min-h-[180px] overflow-hidden rounded-xl"
-            style={{
-              transformStyle: "preserve-3d",
-              backgroundColor: "#4F7BF7",
-            }}
-            animate={{
-              rotateX: tilt.rotateX,
-              rotateY: tilt.rotateY,
-              scale: isHovered ? 1.06 : 1,
-            }}
-            transition={{
-              type: "spring",
-              stiffness: 150,
-              damping: 15,
-            }}
-          >
+          {project.image ? (
             <Image
               src={project.image}
               alt={`${project.title} screenshot`}
@@ -518,31 +523,26 @@ function ProjectCard({ project }: { project: Project }) {
               className="object-contain"
               sizes="(max-width: 768px) 100vw, 45vw"
             />
-            {/* vignette overlay */}
-            <div
-              className="pointer-events-none absolute inset-0"
-              style={{ boxShadow: "inset 0 0 30px 10px rgba(16,16,20,0.3)" }}
-            />
-          </motion.div>
-          {/* hover glow */}
-          <motion.div
-            className="pointer-events-none absolute inset-3 rounded-xl"
-            animate={{
-              boxShadow: isHovered
-                ? `0 25px 50px -12px ${project.accent}40, 0 12px 24px -8px rgba(0,0,0,0.5)`
-                : "0 0 0 0 transparent",
-            }}
-            transition={{ duration: 0.3 }}
+          ) : (
+            <ComingSoonCover />
+          )}
+          {/* vignette overlay */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{ boxShadow: "inset 0 0 30px 10px rgba(16,16,20,0.3)" }}
           />
-        </div>
-      )}
-
-      {/* "Coming soon" animated area */}
-      {isComingSoon && (
-        <div className="md:w-[45%] flex-shrink-0">
-          <ComingSoonAnimation />
-        </div>
-      )}
+        </motion.div>
+        {/* hover glow */}
+        <motion.div
+          className="pointer-events-none absolute inset-3 rounded-xl"
+          animate={{
+            boxShadow: isHovered
+              ? `0 25px 50px -12px ${project.accent}40, 0 12px 24px -8px rgba(0,0,0,0.5)`
+              : "0 0 0 0 transparent",
+          }}
+          transition={{ duration: 0.3 }}
+        />
+      </div>
     </div>
   );
 
