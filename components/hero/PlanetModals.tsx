@@ -263,13 +263,11 @@ const timeline: Array<{ year: string; description: string; current?: boolean }> 
 const aboutChips = [
   { label: "Melbourne", color: "#4F7BF7" },
   { label: "Pharma Background", color: "#34D399" },
-  { label: "Building", color: "#00D4FF" },
   { label: "Vibe Coder", color: "#F472B6" },
   { label: "Crypto", color: "#F59E0B" },
   { label: "Algo Trading", color: "#EF4444" },
   { label: "I Want a Porsche", color: "#BF5AF2" },
   { label: "Heavy on Caffeine", color: "#8B5CF6" },
-  { label: "Minimalist", color: "#6B7280" },
   { label: "In Progress", color: "#00D4FF" },
 ];
 
@@ -288,7 +286,7 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
 
       {/* bio content */}
       <div className="space-y-8">
-        <motion.p className="text-sm leading-[2] text-foreground/70" variants={fadeUp}>
+        <motion.p className="text-[13px] leading-[2] text-foreground/70" variants={fadeUp}>
           I&apos;m Max, 23, based in Melbourne. I work as a Regulatory and Quality
           Officer in chemical distribution. My 9 to 5 pays the bills while I build
           my way to something bigger. I studied pharmaceutical science, graduated in
@@ -296,7 +294,7 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
           for me.
         </motion.p>
 
-        <motion.p className="text-sm leading-[2] text-foreground/70" variants={fadeUp}>
+        <motion.p className="text-[13px] leading-[2] text-foreground/70" variants={fadeUp}>
           Now I build apps, tools, and websites, trade crypto, and tinker with algo
           trading systems. I&apos;m restless. Always have been. The kind of person
           who needs three projects running at once and still feels like there&apos;s
@@ -304,7 +302,7 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
           that a Porsche 911 is in my future.
         </motion.p>
 
-        <motion.p className="text-sm leading-[2] text-foreground/70" variants={fadeUp}>
+        <motion.p className="text-[13px] leading-[2] text-foreground/70" variants={fadeUp}>
           When I&apos;m not building or staring at charts, you&apos;ll find me
           watching F1 or yelling at the TV during Warriors games. I believe the right
           people show up when you put yourself out there. If you&apos;re on a similar
@@ -334,10 +332,10 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
                     boxShadow: item.current ? "0 0 12px #BF5AF266" : undefined,
                   }}
                 />
-                <p className="text-base font-semibold text-foreground/90">
+                <p className="text-sm font-semibold text-foreground/90">
                   {item.year}
                 </p>
-                <p className="mt-1 text-sm text-muted-foreground/60">
+                <p className="mt-1 text-[13px] text-muted-foreground/60">
                   {item.description}
                 </p>
               </motion.div>
