@@ -398,6 +398,7 @@ const projects: Project[] = [
     tag: "Soon",
     tagColor: "text-muted-foreground border-foreground/10 bg-foreground/[0.03]",
     accent: "#555555",
+    href: "https://x.com/MaxInProgress",
     comingSoon: true,
     icon: (
       <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-foreground/[0.05]">
