@@ -524,7 +524,7 @@ function ProjectCard({ project }: { project: Project }) {
               src={project.image}
               alt={`${project.title} screenshot`}
               fill
-              className="object-contain"
+              className="object-cover"
               sizes="(max-width: 768px) 100vw, 45vw"
             />
           ) : (
