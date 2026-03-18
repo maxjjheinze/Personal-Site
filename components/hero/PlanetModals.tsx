@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, ReactNode } from "react";
+import { useEffect, useState, useRef, ReactNode } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 /* ─── shared types ─── */
 interface ModalProps {
@@ -330,19 +331,11 @@ interface Project {
   tagColor: string;
   accent: string;
   href?: string;
-  hasPreview: boolean;
+  image?: string;
+  icon: ReactNode;
 }
 
 const projects: Project[] = [
-  {
-    title: "Task Manager",
-    description: "Jot down ideas quickly. Organize your tasks, and actually ensure that they\u2019ve been completed.",
-    tag: "Live",
-    tagColor: "text-green-400 border-green-400/20 bg-green-400/5",
-    accent: "#4F7BF7",
-    href: "https://max-task-manager.vercel.app/",
-    hasPreview: true,
-  },
   {
     title: "Algo Hub",
     description: "Minimalistic front-end dashboard to track algorithmic trading statistics and metrics over time.",
@@ -350,16 +343,49 @@ const projects: Project[] = [
     tagColor: "text-green-400 border-green-400/20 bg-green-400/5",
     accent: "#BF5AF2",
     href: "https://algohub-public.vercel.app/",
-    hasPreview: true,
+    image: "/projects/algohub.png",
+    icon: (
+      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/10">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M5 13L13 5M13 5H6.5M13 5V11.5" stroke="#F59E0B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+    ),
   },
   {
-    title: "Time Maxing",
+    title: "Task Manager",
+    description: "Jot down ideas quickly. Organize your tasks, and actually ensure that they\u2019ve been completed.",
+    tag: "Live",
+    tagColor: "text-green-400 border-green-400/20 bg-green-400/5",
+    accent: "#4F7BF7",
+    href: "https://max-task-manager.vercel.app/",
+    image: "/projects/taskmanager.png",
+    icon: (
+      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <rect x="2" y="2" width="5.5" height="5.5" rx="1.2" stroke="#4F7BF7" strokeWidth="1.5" />
+          <rect x="10.5" y="2" width="5.5" height="5.5" rx="1.2" stroke="#4F7BF7" strokeWidth="1.5" />
+          <rect x="2" y="10.5" width="5.5" height="5.5" rx="1.2" stroke="#4F7BF7" strokeWidth="1.5" />
+          <rect x="10.5" y="10.5" width="5.5" height="5.5" rx="1.2" stroke="#4F7BF7" strokeWidth="1.5" />
+        </svg>
+      </div>
+    ),
+  },
+  {
+    title: "TimeMaxxing",
     description: "Are you actually as productive as you say you are? We track your Google Chrome to ensure it meets your goals.",
     tag: "In Progress",
     tagColor: "text-amber-400 border-amber-400/20 bg-amber-400/5",
     accent: "#00D4FF",
     href: "https://time-maxxing.vercel.app/",
-    hasPreview: true,
+    image: "/projects/timemaxxing.png",
+    icon: (
+      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-500/10">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M6 2H12M7 2V4.5C7 5.5 9 7.5 9 9C9 7.5 11 5.5 11 4.5V2M7 16V13.5C7 12.5 9 10.5 9 9C9 10.5 11 12.5 11 13.5V16M6 16H12" stroke="#00D4FF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+    ),
   },
   {
     title: "More Coming Soon",
@@ -367,50 +393,52 @@ const projects: Project[] = [
     tag: "Soon",
     tagColor: "text-muted-foreground border-foreground/10 bg-foreground/[0.03]",
     accent: "#555555",
-    hasPreview: false,
+    icon: (
+      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-foreground/[0.05]">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <circle cx="4" cy="9" r="1.5" fill="#555" />
+          <circle cx="9" cy="9" r="1.5" fill="#555" />
+          <circle cx="14" cy="9" r="1.5" fill="#555" />
+        </svg>
+      </div>
+    ),
   },
 ];
 
 function ProjectCard({ project }: { project: Project }) {
-  const [hovered, setHovered] = useState(false);
+  const imageRef = useRef<HTMLDivElement>(null);
+  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
+  const [isHovered, setIsHovered] = useState(false);
 
-  const cardClass =
-    "group block rounded-2xl border border-foreground/[0.06] bg-foreground/[0.02] overflow-hidden transition-all duration-300 hover:border-foreground/[0.14] hover:bg-foreground/[0.05]";
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!imageRef.current) return;
+    const rect = imageRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    setTilt({
+      rotateX: (0.5 - y) * 16,
+      rotateY: (x - 0.5) * 12,
+    });
+  };
 
-  const content = (
-    <>
-      {/* preview area */}
-      {project.hasPreview && (
-        <div className="relative aspect-video w-full bg-foreground/[0.02] overflow-hidden">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div
-              className="h-24 w-24 rounded-full blur-2xl transition-opacity duration-500"
-              style={{
-                backgroundColor: project.accent,
-                opacity: hovered ? 0.4 : 0.2,
-              }}
-            />
-          </div>
-          {/* Video — uncomment when files are ready
-          <video
-            className="absolute inset-0 h-full w-full object-cover"
-            muted
-            loop
-            playsInline
-          >
-            <source src="" type="video/mp4" />
-          </video>
-          */}
-        </div>
-      )}
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setTilt({ rotateX: 0, rotateY: 0 });
+  };
 
-      {/* content area */}
-      <div className="relative px-7 py-6">
+  const isComingSoon = !project.image;
+
+  const cardContent = (
+    <div
+      className={`group flex flex-col md:flex-row rounded-2xl border ${isComingSoon ? "border-dashed border-foreground/[0.06] opacity-60 hover:opacity-80" : "border-foreground/[0.06] hover:border-foreground/[0.14]"} bg-foreground/[0.02] overflow-hidden transition-all duration-300 hover:bg-foreground/[0.05]`}
+    >
+      {/* left content */}
+      <div className={`relative flex flex-col justify-center p-7 ${isComingSoon ? "flex-1" : "flex-1 md:max-w-[55%]"}`}>
         {/* link arrow */}
         {project.href && (
           <svg
             viewBox="0 0 24 24"
-            className="absolute right-5 top-5 h-4 w-4 text-muted-foreground/20 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:text-muted-foreground/50"
+            className="absolute right-5 top-5 h-4 w-4 text-muted-foreground/20 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:text-muted-foreground/50 md:right-auto md:left-auto md:bottom-7 md:top-auto"
             fill="none"
             stroke="currentColor"
             strokeWidth="1.5"
@@ -420,57 +448,105 @@ function ProjectCard({ project }: { project: Project }) {
         )}
 
         <div className="flex items-center gap-3">
-          <div
-            className="h-2 w-2 flex-shrink-0 rounded-full"
-            style={{
-              backgroundColor: project.accent,
-              boxShadow: `0 0 8px ${project.accent}66`,
-            }}
-          />
-          <h3 className="font-display text-sm font-medium text-foreground/90">
+          {project.icon}
+          <h3 className="font-display text-[15px] font-medium text-foreground/90">
             {project.title}
           </h3>
         </div>
-        <p className="mt-2 ml-5 text-xs leading-relaxed text-muted-foreground/60">
+        <p className="mt-3 text-xs leading-relaxed text-muted-foreground/60">
           {project.description}
         </p>
         <span
-          className={`mt-3 ml-5 inline-block rounded-full border px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-wider ${project.tagColor}`}
+          className={`mt-4 inline-block self-start rounded-full border px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-wider ${project.tagColor}`}
         >
           {project.tag}
         </span>
       </div>
-    </>
+
+      {/* right image area */}
+      {project.image && (
+        <div
+          className="relative w-full md:w-[45%] flex-shrink-0"
+          style={{ perspective: "800px" }}
+          ref={imageRef}
+          onMouseMove={handleMouseMove}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={handleMouseLeave}
+        >
+          <motion.div
+            className="relative h-48 md:h-full min-h-[180px] overflow-hidden rounded-b-xl md:rounded-bl-none md:rounded-r-xl"
+            style={{ transformStyle: "preserve-3d" }}
+            animate={{
+              rotateX: tilt.rotateX,
+              rotateY: tilt.rotateY,
+              scale: isHovered ? 1.03 : 1,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 200,
+              damping: 20,
+            }}
+          >
+            <Image
+              src={project.image}
+              alt={`${project.title} screenshot`}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 45vw"
+            />
+            {/* vignette overlay for light screenshots */}
+            <div
+              className="pointer-events-none absolute inset-0 rounded-xl"
+              style={{ boxShadow: "inset 0 0 30px 10px rgba(16,16,20,0.3)" }}
+            />
+          </motion.div>
+          {/* hover glow */}
+          <motion.div
+            className="pointer-events-none absolute inset-0 rounded-b-xl md:rounded-bl-none md:rounded-r-xl"
+            animate={{
+              boxShadow: isHovered
+                ? `0 20px 40px -12px ${project.accent}30, 0 8px 20px -8px rgba(0,0,0,0.4)`
+                : "0 0 0 0 transparent",
+            }}
+            transition={{ duration: 0.3 }}
+          />
+        </div>
+      )}
+
+      {/* "Coming soon" pulsing area */}
+      {isComingSoon && (
+        <div className="hidden md:flex w-[45%] flex-shrink-0 items-center justify-center">
+          <div className="flex gap-2">
+            {[0, 1, 2].map((i) => (
+              <motion.div
+                key={i}
+                className="h-2 w-2 rounded-full bg-foreground/10"
+                animate={{ opacity: [0.2, 0.5, 0.2] }}
+                transition={{
+                  duration: 1.8,
+                  repeat: Infinity,
+                  delay: i * 0.3,
+                  ease: "easeInOut",
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 
   if (project.href) {
     return (
       <motion.div variants={cardSlide}>
-        <a
-          href={project.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={cardClass}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-        >
-          {content}
+        <a href={project.href} target="_blank" rel="noopener noreferrer">
+          {cardContent}
         </a>
       </motion.div>
     );
   }
 
-  return (
-    <motion.div variants={cardSlide}>
-      <div
-        className={cardClass}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
-        {content}
-      </div>
-    </motion.div>
-  );
+  return <motion.div variants={cardSlide}>{cardContent}</motion.div>;
 }
 
 export function ProjectsModal({ onClose, originRect }: ModalProps) {
@@ -490,7 +566,7 @@ export function ProjectsModal({ onClose, originRect }: ModalProps) {
       </motion.div>
 
       {/* project cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div className="flex flex-col gap-5">
         {projects.map((project) => (
           <ProjectCard key={project.title} project={project} />
         ))}
