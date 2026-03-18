@@ -118,7 +118,7 @@ function ModalShell({
 
       {/* panel */}
       <motion.div
-        className={`relative z-10 mx-auto w-full ${maxWidth} min-h-[84vh] max-h-[90vh] overflow-y-auto rounded-3xl border border-foreground/[0.06] bg-background/[0.92] shadow-2xl backdrop-blur-2xl`}
+        className={`relative z-10 mx-auto w-full ${maxWidth} min-h-[84vh] overflow-hidden rounded-3xl border border-foreground/[0.06] bg-background/[0.92] shadow-2xl backdrop-blur-2xl`}
         variants={panel}
         style={
           originRect
@@ -195,7 +195,7 @@ const contactLinks = [
 
 export function ConnectModal({ onClose, originRect }: ModalProps) {
   return (
-    <ModalShell onClose={onClose} originRect={originRect} accentColor="#FFFFFF" maxWidth="max-w-2xl">
+    <ModalShell onClose={onClose} originRect={originRect} accentColor="#FFFFFF">
       {/* header */}
       <motion.div className="mb-14" variants={fadeUp}>
         <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-muted-foreground/50">
