@@ -345,9 +345,9 @@ const projects: Project[] = [
     href: "https://algohub-public.vercel.app/",
     image: "/projects/algohub.png",
     icon: (
-      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/10">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <path d="M5 13L13 5M13 5H6.5M13 5V11.5" stroke="#F59E0B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#0A0A0A] border border-[#F59E42]/15">
+        <svg width="18" height="18" viewBox="0 0 512 512" fill="none">
+          <polyline points="96,256 176,256 208,128 304,384 336,256 416,256" stroke="#F59E42" strokeWidth="36" strokeLinecap="round" strokeLinejoin="round" fill="none" />
         </svg>
       </div>
     ),
@@ -361,12 +361,12 @@ const projects: Project[] = [
     href: "https://max-task-manager.vercel.app/",
     image: "/projects/taskmanager.png",
     icon: (
-      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10">
+      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-500/10">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <rect x="2" y="2" width="5.5" height="5.5" rx="1.2" stroke="#4F7BF7" strokeWidth="1.5" />
-          <rect x="10.5" y="2" width="5.5" height="5.5" rx="1.2" stroke="#4F7BF7" strokeWidth="1.5" />
-          <rect x="2" y="10.5" width="5.5" height="5.5" rx="1.2" stroke="#4F7BF7" strokeWidth="1.5" />
-          <rect x="10.5" y="10.5" width="5.5" height="5.5" rx="1.2" stroke="#4F7BF7" strokeWidth="1.5" />
+          <rect x="2" y="2" width="5.5" height="5.5" rx="1.2" stroke="#BF5AF2" strokeWidth="1.5" />
+          <rect x="10.5" y="2" width="5.5" height="5.5" rx="1.2" stroke="#BF5AF2" strokeWidth="1.5" />
+          <rect x="2" y="10.5" width="5.5" height="5.5" rx="1.2" stroke="#BF5AF2" strokeWidth="1.5" />
+          <rect x="10.5" y="10.5" width="5.5" height="5.5" rx="1.2" stroke="#BF5AF2" strokeWidth="1.5" />
         </svg>
       </div>
     ),
@@ -380,9 +380,9 @@ const projects: Project[] = [
     href: "https://time-maxxing.vercel.app/",
     image: "/projects/timemaxxing.png",
     icon: (
-      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-500/10">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <path d="M6 2H12M7 2V4.5C7 5.5 9 7.5 9 9C9 7.5 11 5.5 11 4.5V2M7 16V13.5C7 12.5 9 10.5 9 9C9 10.5 11 12.5 11 13.5V16M6 16H12" stroke="#00D4FF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white">
+        <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
+          <path d="M6 2H12M7 2V4.5C7 5.5 9 7.5 9 9C9 7.5 11 5.5 11 4.5V2M7 16V13.5C7 12.5 9 10.5 9 9C9 10.5 11 12.5 11 13.5V16M6 16H12" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
     ),
@@ -405,6 +405,27 @@ const projects: Project[] = [
   },
 ];
 
+function ComingSoonAnimation() {
+  const bars = [0, 1, 2, 3, 4, 5, 6, 7];
+  return (
+    <div className="flex h-full w-full items-center justify-center gap-[6px] py-12 md:py-0">
+      {bars.map((i) => (
+        <motion.div
+          key={i}
+          className="w-[3px] rounded-full bg-foreground/10"
+          animate={{ height: ["12px", "28px", "12px"] }}
+          transition={{
+            duration: 1.2,
+            repeat: Infinity,
+            delay: i * 0.15,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 function ProjectCard({ project }: { project: Project }) {
   const imageRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
@@ -416,8 +437,8 @@ function ProjectCard({ project }: { project: Project }) {
     const x = (e.clientX - rect.left) / rect.width;
     const y = (e.clientY - rect.top) / rect.height;
     setTilt({
-      rotateX: (0.5 - y) * 16,
-      rotateY: (x - 0.5) * 12,
+      rotateX: (0.5 - y) * 25,
+      rotateY: (x - 0.5) * 20,
     });
   };
 
@@ -466,46 +487,49 @@ function ProjectCard({ project }: { project: Project }) {
       {/* right image area */}
       {project.image && (
         <div
-          className="relative w-full md:w-[45%] flex-shrink-0"
-          style={{ perspective: "800px" }}
+          className="relative w-full md:w-[45%] flex-shrink-0 p-3"
+          style={{ perspective: "600px" }}
           ref={imageRef}
           onMouseMove={handleMouseMove}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={handleMouseLeave}
         >
           <motion.div
-            className="relative h-48 md:h-full min-h-[180px] overflow-hidden rounded-b-xl md:rounded-bl-none md:rounded-r-xl"
-            style={{ transformStyle: "preserve-3d" }}
+            className="relative h-48 md:h-full min-h-[180px] overflow-hidden rounded-xl"
+            style={{
+              transformStyle: "preserve-3d",
+              backgroundColor: "#4F7BF7",
+            }}
             animate={{
               rotateX: tilt.rotateX,
               rotateY: tilt.rotateY,
-              scale: isHovered ? 1.03 : 1,
+              scale: isHovered ? 1.06 : 1,
             }}
             transition={{
               type: "spring",
-              stiffness: 200,
-              damping: 20,
+              stiffness: 150,
+              damping: 15,
             }}
           >
             <Image
               src={project.image}
               alt={`${project.title} screenshot`}
               fill
-              className="object-cover"
+              className="object-contain"
               sizes="(max-width: 768px) 100vw, 45vw"
             />
-            {/* vignette overlay for light screenshots */}
+            {/* vignette overlay */}
             <div
-              className="pointer-events-none absolute inset-0 rounded-xl"
+              className="pointer-events-none absolute inset-0"
               style={{ boxShadow: "inset 0 0 30px 10px rgba(16,16,20,0.3)" }}
             />
           </motion.div>
           {/* hover glow */}
           <motion.div
-            className="pointer-events-none absolute inset-0 rounded-b-xl md:rounded-bl-none md:rounded-r-xl"
+            className="pointer-events-none absolute inset-3 rounded-xl"
             animate={{
               boxShadow: isHovered
-                ? `0 20px 40px -12px ${project.accent}30, 0 8px 20px -8px rgba(0,0,0,0.4)`
+                ? `0 25px 50px -12px ${project.accent}40, 0 12px 24px -8px rgba(0,0,0,0.5)`
                 : "0 0 0 0 transparent",
             }}
             transition={{ duration: 0.3 }}
@@ -513,24 +537,10 @@ function ProjectCard({ project }: { project: Project }) {
         </div>
       )}
 
-      {/* "Coming soon" pulsing area */}
+      {/* "Coming soon" animated area */}
       {isComingSoon && (
-        <div className="hidden md:flex w-[45%] flex-shrink-0 items-center justify-center">
-          <div className="flex gap-2">
-            {[0, 1, 2].map((i) => (
-              <motion.div
-                key={i}
-                className="h-2 w-2 rounded-full bg-foreground/10"
-                animate={{ opacity: [0.2, 0.5, 0.2] }}
-                transition={{
-                  duration: 1.8,
-                  repeat: Infinity,
-                  delay: i * 0.3,
-                  ease: "easeInOut",
-                }}
-              />
-            ))}
-          </div>
+        <div className="md:w-[45%] flex-shrink-0">
+          <ComingSoonAnimation />
         </div>
       )}
     </div>
