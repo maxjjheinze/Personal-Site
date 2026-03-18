@@ -278,27 +278,25 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
       {/* bio content */}
       <div className="space-y-8">
         <motion.p className="text-[13px] leading-[2] text-foreground/70" variants={fadeUp}>
-          I&apos;m Max, 23, based in Melbourne. I work as a Regulatory and Quality
-          Officer in chemical distribution. My 9 to 5 pays the bills while I build
-          my way to something bigger. I studied pharmaceutical science, graduated in
-          2024, and somewhere along the way realised a linear career path wasn&apos;t
-          for me.
+          I&apos;m Max, based in Melbourne. During the day, I work in Regulatory
+          &amp; Quality in chemical distribution. My 9 to 5 pays the bills and at
+          night, I&apos;m building towards something bigger.
         </motion.p>
 
         <motion.p className="text-[13px] leading-[2] text-foreground/70" variants={fadeUp}>
-          It started with small automation workflows and process improvements using
-          AI and coding. That&apos;s how I got into it. Now I build apps, tools, and
-          websites, trade crypto, and tinker with algo trading systems. I&apos;m
-          restless. Always have been. The kind of person who needs three projects
-          running at once and still feels like there&apos;s not enough going on. I run
-          on caffeine, curiosity, and an irrational belief that a Porsche 911 is in
-          my future.
+          It started with small automation workflows and process improvements at
+          work through AI and coding. Now I build tools and apps while also being
+          heavily involved in crypto and algorithmic trading.
         </motion.p>
 
         <motion.p className="text-[13px] leading-[2] text-foreground/70" variants={fadeUp}>
-          The right people show up when you put yourself out there. If you&apos;re on
-          a similar path, building, learning, figuring it out, I&apos;d like to hear
-          from you.
+          I always need something to do. The kind of person who needs three
+          projects running at once and still feels like there&apos;s not enough
+          going on.
+        </motion.p>
+
+        <motion.p className="text-[13px] leading-[2] text-foreground/70" variants={fadeUp}>
+          Similar path? Let&apos;s talk.
         </motion.p>
 
         {/* info chips */}
