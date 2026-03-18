@@ -251,15 +251,6 @@ export function ConnectModal({ onClose, originRect }: ModalProps) {
    ABOUT MODAL
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-const timeline: Array<{ year: string; description: string; current?: boolean }> = [
-  { year: "2021", description: "Bachelor of Pharmaceutical Science" },
-  { year: "2022", description: "Moved to Melbourne" },
-  { year: "2023", description: "Finished degree, part-time pharmacy work" },
-  { year: "2024", description: "Full-time R&D at biotech company" },
-  { year: "2025", description: "Switched to chemical distribution, learning day trading & algo trading" },
-  { year: "2026", description: "Building in public, AI, algo trading, working 9-5", current: true },
-];
-
 const aboutChips = [
   { label: "Melbourne", color: "#4F7BF7" },
   { label: "Pharma Background", color: "#34D399" },
@@ -295,53 +286,20 @@ export function AboutModal({ onClose, originRect }: ModalProps) {
         </motion.p>
 
         <motion.p className="text-[13px] leading-[2] text-foreground/70" variants={fadeUp}>
-          Now I build apps, tools, and websites, trade crypto, and tinker with algo
-          trading systems. I&apos;m restless. Always have been. The kind of person
-          who needs three projects running at once and still feels like there&apos;s
-          not enough going on. I run on caffeine, curiosity, and an irrational belief
-          that a Porsche 911 is in my future.
+          It started with small automation workflows and process improvements using
+          AI and coding. That&apos;s how I got into it. Now I build apps, tools, and
+          websites, trade crypto, and tinker with algo trading systems. I&apos;m
+          restless. Always have been. The kind of person who needs three projects
+          running at once and still feels like there&apos;s not enough going on. I run
+          on caffeine, curiosity, and an irrational belief that a Porsche 911 is in
+          my future.
         </motion.p>
 
         <motion.p className="text-[13px] leading-[2] text-foreground/70" variants={fadeUp}>
-          When I&apos;m not building or staring at charts, you&apos;ll find me
-          watching F1 or yelling at the TV during Warriors games. I believe the right
-          people show up when you put yourself out there. If you&apos;re on a similar
-          path, building, learning, figuring it out, I&apos;d like to hear from you.
+          The right people show up when you put yourself out there. If you&apos;re on
+          a similar path, building, learning, figuring it out, I&apos;d like to hear
+          from you.
         </motion.p>
-
-        {/* The Journey timeline */}
-        <motion.div className="mt-12" variants={fadeUp}>
-          <p className="mb-6 font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-muted-foreground/50">
-            The Journey
-          </p>
-          <div className="relative space-y-6">
-            {/* vertical line */}
-            <div className="absolute left-[4px] top-1 bottom-1 w-px bg-foreground/[0.08]" />
-
-            {timeline.map((item) => (
-              <motion.div
-                key={item.year}
-                className="relative pl-8"
-                variants={cardSlide}
-              >
-                {/* dot */}
-                <div
-                  className="absolute left-0 top-1.5 h-[9px] w-[9px] rounded-full"
-                  style={{
-                    backgroundColor: item.current ? "#BF5AF2" : "hsl(var(--muted-foreground) / 0.3)",
-                    boxShadow: item.current ? "0 0 12px #BF5AF266" : undefined,
-                  }}
-                />
-                <p className="text-sm font-semibold text-foreground/90">
-                  {item.year}
-                </p>
-                <p className="mt-1 text-[13px] text-muted-foreground/60">
-                  {item.description}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
 
         {/* info chips */}
         <motion.div className="mt-10 flex flex-wrap gap-2.5" variants={fadeUp}>
