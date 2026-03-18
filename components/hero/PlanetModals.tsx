@@ -332,6 +332,7 @@ interface Project {
   accent: string;
   href?: string;
   image?: string;
+  imageBg?: string;
   comingSoon?: boolean;
   icon: ReactNode;
 }
@@ -345,6 +346,7 @@ const projects: Project[] = [
     accent: "#BF5AF2",
     href: "https://algohub-public.vercel.app/",
     image: "/projects/algohub.png",
+    imageBg: "#0a0a08",
     icon: (
       <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#0A0A0A] border border-[#F59E42]/15">
         <svg width="18" height="18" viewBox="0 0 512 512" fill="none">
@@ -361,6 +363,7 @@ const projects: Project[] = [
     accent: "#4F7BF7",
     href: "https://max-task-manager.vercel.app/",
     image: "/projects/taskmanager.png",
+    imageBg: "#1a1c2e",
     icon: (
       <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-500/10">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -380,6 +383,7 @@ const projects: Project[] = [
     accent: "#00D4FF",
     href: "https://time-maxxing.vercel.app/",
     image: "/projects/timemaxxing.png",
+    imageBg: "#f8f9fb",
     icon: (
       <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white">
         <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
@@ -502,7 +506,7 @@ function ProjectCard({ project }: { project: Project }) {
           className="relative h-48 md:h-full min-h-[180px] overflow-hidden rounded-xl"
           style={{
             transformStyle: "preserve-3d",
-            backgroundColor: "#101014",
+            backgroundColor: project.imageBg || "#101014",
           }}
           animate={{
             rotateX: tilt.rotateX,
