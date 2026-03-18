@@ -541,7 +541,7 @@ function ProjectCard({ project }: { project: Project }) {
           className="pointer-events-none absolute inset-3 rounded-xl"
           animate={{
             boxShadow: isHovered
-              ? `0 25px 50px -12px ${project.accent}40, 0 12px 24px -8px rgba(0,0,0,0.5)`
+              ? "0 25px 50px -12px rgba(255,255,255,0.15), 0 12px 24px -8px rgba(0,0,0,0.5)"
               : "0 0 0 0 transparent",
           }}
           transition={{ duration: 0.3 }}
