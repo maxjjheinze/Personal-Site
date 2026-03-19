@@ -334,6 +334,7 @@ interface Project {
   image?: string;
   imageBg?: string;
   comingSoon?: boolean;
+  hidden?: boolean;
   icon: ReactNode;
 }
 
@@ -344,7 +345,7 @@ const projects: Project[] = [
     tag: "Live",
     tagColor: "text-green-400 border-green-400/20 bg-green-400/5",
     accent: "#BF5AF2",
-    href: "https://algohub-public.vercel.app/",
+    href: "https://algohubpublic.vercel.app/",
     image: "/projects/algohub.png",
     imageBg: "#101014",
     icon: (
@@ -361,7 +362,7 @@ const projects: Project[] = [
     tag: "Live",
     tagColor: "text-green-400 border-green-400/20 bg-green-400/5",
     accent: "#4F7BF7",
-    href: "https://max-task-manager.vercel.app/",
+    href: "https://taskmanagerpublic.vercel.app/",
     image: "/projects/taskmanager.png",
     imageBg: "#101014",
     icon: (
@@ -382,6 +383,7 @@ const projects: Project[] = [
     tagColor: "text-amber-400 border-amber-400/20 bg-amber-400/5",
     accent: "#00D4FF",
     href: "https://time-maxxing.vercel.app/",
+    hidden: true,
     image: "/projects/timemaxxing.png",
     imageBg: "#101014",
     icon: (
@@ -582,7 +584,7 @@ export function ProjectsModal({ onClose, originRect }: ModalProps) {
 
       {/* project cards */}
       <div className="flex flex-col gap-5">
-        {projects.map((project) => (
+        {projects.filter((p) => !p.hidden).map((project) => (
           <ProjectCard key={project.title} project={project} />
         ))}
       </div>
